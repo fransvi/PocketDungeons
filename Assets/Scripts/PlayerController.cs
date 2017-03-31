@@ -5,6 +5,7 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
     //Animaattori
+    //11
     public Animator CharacterAnimator;
 
     [SerializeField]
