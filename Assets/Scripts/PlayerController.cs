@@ -1,7 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
+    //Animaattori
+    public Animator CharacterAnimator;
+
     [SerializeField]
     private float _maxSpeed;
     [SerializeField]
@@ -40,7 +45,7 @@ public class PlayerController : MonoBehaviour {
     private bool _grounded;
     private bool _facingRight;
     private bool _onPlatform;
-    private bool _isJumping;
+    private bool _isJumping = false;
     private Vector2 _gravity;
 
 	void Start () {
@@ -50,7 +55,9 @@ public class PlayerController : MonoBehaviour {
         _rigidBody = GetComponent<Rigidbody2D>();
         _weaponSwing.gameObject.SetActive(false);
         _gravity = Physics2D.gravity;
-	}
+        //Animaattori
+        CharacterAnimator = GetComponent<Animator>();
+    }
 
     //KB Controls
     void Update()
@@ -91,6 +98,8 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             JumpDown();
+            //Jump-animaatio
+            
         }
         if (Input.GetKeyUp(KeyCode.Space))
         {
@@ -101,6 +110,7 @@ public class PlayerController : MonoBehaviour {
             if (!_attackOnCooldown)
             {
                 Attack();
+                CharacterAnimator.SetTrigger("Attack");
             }
 
         }
@@ -111,9 +121,9 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+ 
     void FixedUpdate () {
-        //hgfx
-        
+
         //Ignore platform when jumping on it
         _horizontalMove = Input.GetAxis("Horizontal");
 
@@ -150,6 +160,26 @@ public class PlayerController : MonoBehaviour {
     {
         if (_grounded || _airControl)
         {
+            if(_grounded && move != 0)
+            {
+                //CharacterAnimator.SetBool("Walk", true);
+                CharacterAnimator.Play("Walk");
+            }
+            else if (_isJumping)
+            {
+                CharacterAnimator.Play("Jump");
+            }
+            else if (!_grounded && !_isJumping)
+            {
+                CharacterAnimator.Play("Fall");
+            }
+            else
+            {
+                CharacterAnimator.Play("Idle");
+                //CharacterAnimator.SetBool("Walk", false);
+            }
+
+            
             //Horizontal force
             _rigidBody.velocity = new Vector2(move * _maxSpeed, _rigidBody.velocity.y);
 
@@ -195,7 +225,9 @@ public class PlayerController : MonoBehaviour {
     IEnumerator JumpCooldown()
     {
         _jumpOnCooldown = true;
+        _isJumping = true;
         yield return new WaitForSeconds(_jumpCooldown);
+        _isJumping = false;
         _jumpOnCooldown = false;
 
     }
