@@ -112,8 +112,8 @@ public class PlayerController : MonoBehaviour {
     }
 
     void FixedUpdate () {
-
-
+        //hgfx
+        
         //Ignore platform when jumping on it
         _horizontalMove = Input.GetAxis("Horizontal");
 
