@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour {
     private Transform _weaponSwing;
 
     private Rigidbody2D _rigidBody;
-    const float _groundedRadius = .2f;
+    const float _groundedRadius = .1f;
     private bool _grounded;
     private bool _facingRight;
     private bool _onPlatform;
@@ -50,7 +50,6 @@ public class PlayerController : MonoBehaviour {
         _rigidBody = GetComponent<Rigidbody2D>();
         _weaponSwing.gameObject.SetActive(false);
         _gravity = Physics2D.gravity;
-	
 	}
 
     //KB Controls
@@ -62,7 +61,7 @@ public class PlayerController : MonoBehaviour {
 
 
 
-
+        /*
         // Nuoli vasempaan
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
@@ -85,6 +84,7 @@ public class PlayerController : MonoBehaviour {
             CancelInvoke();
             InvokeRepeating("StopMove", 0, 0.05f);
         }
+        */
         // Nuoli alas
         // Go down platforms
 
@@ -115,7 +115,7 @@ public class PlayerController : MonoBehaviour {
 
 
         //Ignore platform when jumping on it
-
+        _horizontalMove = Input.GetAxis("Horizontal");
 
         if (transform.GetComponent<Rigidbody2D>().velocity.y > 0)
         {
