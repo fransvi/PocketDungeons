@@ -5,6 +5,7 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
     //Animaattori
+    //11
     public Animator CharacterAnimator;
 
     [SerializeField]
@@ -22,13 +23,23 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private LayerMask _whatIsPlatform;
     [SerializeField]
+    private LayerMask _whatIsSpikes;
+    [SerializeField]
+    private LayerMask _whatIsLadder;
+    [SerializeField]
     private LayerMask _enemyLayerMask;
     [SerializeField]
     private float _meleeRadius;
     [SerializeField]
     private float _meleeDamage;
+    [SerializeField]
+    private float _maxHealth;
+    [SerializeField]
+    private float _knockbackForce;
+    [SerializeField]
+    private Transform _ladderCheck;
 
-
+    private float _health;
     private bool _jumpOnCooldown = false;
     private float _horizontalMove = 0;
     private bool _jump = false;
@@ -40,86 +51,117 @@ public class PlayerController : MonoBehaviour {
 
     private Transform _weaponSwing;
 
+
+
+    private bool _onLadder;
     private Rigidbody2D _rigidBody;
+    private bool _invulnurable;
     const float _groundedRadius = .1f;
     private bool _grounded;
+    private float tempSpeed;
     private bool _facingRight;
     private bool _onPlatform;
     private bool _isJumping = false;
     private Vector2 _gravity;
+    private Color _color;
 
-	void Start () {
+    void Start () {
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
+        _ladderCheck = transform.Find("LadderCheck");
         _weaponSwing = transform.Find("Swing");
         _rigidBody = GetComponent<Rigidbody2D>();
+        _health = _maxHealth;
+        _invulnurable = false;
+        _onLadder = false;
         _weaponSwing.gameObject.SetActive(false);
         _gravity = Physics2D.gravity;
+        tempSpeed = _maxSpeed;
         //Animaattori
+        _color = gameObject.GetComponent<Renderer>().material.color;
         CharacterAnimator = GetComponent<Animator>();
     }
 
     //KB Controls
     void Update()
     {
-        Debug.Log("vert" + Input.GetAxis("Vertical"));
-        // float x = Input.GetAxis("Horizontal");
 
+        float angle;
+        RaycastHit2D[] hits = new RaycastHit2D[2];
+        //cast ray downwards
+        int h = Physics2D.RaycastNonAlloc(transform.position, -Vector2.up, hits);
+        if (h > 1)
+        {
+            // Debug.Log(hits[1].normal);
 
-
-
-        /*
-        // Nuoli vasempaan
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            CancelInvoke();
-            InvokeRepeating("DecreaseSpeed", 0, 0.05f);
-        }
-        if (Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            CancelInvoke();
-            InvokeRepeating("StopMove", 0, 0.05f);
-        }
-        // Nuoli oikeaan
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            CancelInvoke();
-            InvokeRepeating("AddSpeed", 0, 0.05f);
-        }
-        if (Input.GetKeyUp(KeyCode.RightArrow))
-        {
-            CancelInvoke();
-            InvokeRepeating("StopMove", 0, 0.05f);
-        }
-        */
-        // Nuoli alas
-        // Go down platforms
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            JumpDown();
-            //Jump-animaatio
-            
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            JumpUp();
-        }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            if (!_attackOnCooldown)
+            angle = Mathf.Abs(Mathf.Atan2(hits[1].normal.x, hits[1].normal.y) * Mathf.Rad2Deg); //get angle
+            if (angle > 30)
             {
-                Attack();
-                CharacterAnimator.SetTrigger("Attack");
+
+                _maxSpeed = tempSpeed / 2;
+            }
+            else
+            {
+                _maxSpeed = tempSpeed;
+            }
+        }
+
+
+            /*
+            // Nuoli vasempaan
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                CancelInvoke();
+                InvokeRepeating("DecreaseSpeed", 0, 0.05f);
+            }
+            if (Input.GetKeyUp(KeyCode.LeftArrow))
+            {
+                CancelInvoke();
+                InvokeRepeating("StopMove", 0, 0.05f);
+            }
+            // Nuoli oikeaan
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                CancelInvoke();
+                InvokeRepeating("AddSpeed", 0, 0.05f);
+            }
+            if (Input.GetKeyUp(KeyCode.RightArrow))
+            {
+                CancelInvoke();
+                InvokeRepeating("StopMove", 0, 0.05f);
+            }
+            */
+            // Nuoli alas
+            // Go down platforms
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                _jump = true;
+                //JumpDown();
+                //Jump-animaatio
+
+            }
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                _jump = false;
+                //JumpUp();
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                if (!_attackOnCooldown)
+                {
+                    Attack();
+                    CharacterAnimator.SetTrigger("Attack");
+                }
+
             }
 
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                //TODO
+            }
         }
-
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            //TODO
-        }
-    }
+    
 
  
     void FixedUpdate () {
@@ -140,7 +182,8 @@ public class PlayerController : MonoBehaviour {
             Physics2D.IgnoreLayerCollision(0, 9, false);
         }
 
-        _rigidBody.AddForce(_gravity * _rigidBody.mass);
+        //old gravity code
+        //_rigidBody.AddForce(_gravity * _rigidBody.mass);
         _grounded = false;
         //Checks for ground
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, _groundedRadius, _whatIsGround);
@@ -148,19 +191,72 @@ public class PlayerController : MonoBehaviour {
         {
             if (colliders[i].gameObject != gameObject)
             {
-                _gravity = Physics2D.gravity;
+                //_gravity = Physics2D.gravity;
                 _grounded = true;
             }
  
         }
+
+
+        Collider2D[] ladders = Physics2D.OverlapCircleAll(_ladderCheck.position, _groundedRadius, _whatIsLadder);
+        for (int i = 0; i < ladders.Length; i++)
+        {
+            if (ladders[i].gameObject != gameObject)
+            {
+                _onLadder = true;
+            }
+            
+
+        }
+        if(ladders.Length < 1)
+        {
+            _onLadder = false;
+        }
+
+
+        //TODO better hit decetion to spikes
+        /*
+        Collider2D[] hurtPoints = Physics2D.OverlapCircleAll(_groundCheck.position, _groundedRadius, _whatIsSpikes);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].gameObject != gameObject)
+            {
+                //_gravity = Physics2D.gravity;
+                _grounded = true;
+            }
+
+        }
+        */
+
+        if (_onLadder)
+        {
+            Physics2D.gravity = Vector2.zero;
+            if (Input.GetAxis("Vertical") > 0)
+            {
+                transform.Translate(0, 4 * Time.deltaTime, 0);
+            }
+            else if (Input.GetAxis("Vertical") < 0)
+            {
+                transform.Translate(0, -4 * Time.deltaTime, 0);
+            }
+        }
+        else
+        {
+            Physics2D.gravity = _gravity;
+
+        }
+
         Move(_horizontalMove, _jump);
+
+
+
     }
 
     public void Move(float move, bool jump)
     {
         if (_grounded || _airControl)
         {
-            if(_grounded && move != 0)
+            if (_grounded && move != 0)
             {
                 //CharacterAnimator.SetBool("Walk", true);
                 CharacterAnimator.Play("Walk");
@@ -179,7 +275,7 @@ public class PlayerController : MonoBehaviour {
                 //CharacterAnimator.SetBool("Walk", false);
             }
 
-            
+
             //Horizontal force
             _rigidBody.velocity = new Vector2(move * _maxSpeed, _rigidBody.velocity.y);
 
@@ -192,14 +288,16 @@ public class PlayerController : MonoBehaviour {
             {
                 Flip();
             }
+   
+            if (_grounded && _jump && !_jumpOnCooldown)
+            {
+                _grounded = false;
+                _rigidBody.AddForce(new Vector2(0f, _jumpForce));
+                StartCoroutine(JumpCooldown());
+            }
+
         }
-        //Vertical force
-        if (_grounded && _jump && !_jumpOnCooldown)
-        {
-            _grounded = false;
-            _rigidBody.AddForce(new Vector2(0f, _jumpForce));
-            StartCoroutine(JumpCooldown());
-        }
+
     }
 
     private void Flip()
@@ -211,6 +309,50 @@ public class PlayerController : MonoBehaviour {
         transform.localScale = theScale;
     }
 
+    //Player takes damage;
+    public void Hurt(float damage)
+    {
+        if (_health - damage > 0f && !_invulnurable)
+        {
+            _health -= damage;
+            _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
+            StartCoroutine(Flicker(5));
+            StartCoroutine(InvulnTimer());
+        }
+        else
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        //TODO
+    }
+
+
+    IEnumerator InvulnTimer()
+    {
+        _invulnurable = true;
+        yield return new WaitForSeconds(1f);
+        _invulnurable = false;
+    }
+
+    IEnumerator Flicker(int times)
+    {
+
+        //TODO play hurt animation
+        Renderer rend = gameObject.GetComponent<Renderer>();
+        for (int i = 0; i < times; i++)
+        {
+            rend.material.color = new Color(1f, 1f, 1f, 0f);
+            yield return new WaitForSeconds(0.1f);
+            rend.material.color = _color;
+            yield return new WaitForSeconds(0.1f);
+        }
+  
+     
+    }
 
     //Placeholder for attack anims
     IEnumerator AttackAnim()
