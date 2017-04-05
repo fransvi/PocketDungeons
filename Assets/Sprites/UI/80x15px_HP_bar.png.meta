@@ -1,9 +1,29 @@
 fileFormatVersion: 2
 guid: 47f6b39db4f78ad4e8ff2af8a85602be
-timeCreated: 1491399825
+timeCreated: 1491422374
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: 80x15px_HP_bar_0
+    21300002: 80x15px_HP_bar_1
+    21300004: 80x15px_HP_bar_2
+    21300006: 80x15px_HP_bar_3
+    21300008: 80x15px_HP_bar_4
+    21300010: 80x15px_HP_bar_5
+    21300012: 80x15px_HP_bar_6
+    21300014: 80x15px_HP_bar_7
+    21300016: 80x15px_HP_bar_8
+    21300018: 80x15px_HP_bar_9
+    21300020: 80x15px_HP_bar_10
+    21300022: 80x15px_HP_bar_11
+    21300024: 80x15px_HP_bar_12
+    21300026: 80x15px_HP_bar_13
+    21300028: 80x15px_HP_bar_14
+    21300030: 80x15px_HP_bar_15
+    21300032: 80x15px_HP_bar_16
+    21300034: 80x15px_HP_bar_17
+    21300036: 80x15px_HP_bar_18
+    21300038: 80x15px_HP_bar_19
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -27,14 +47,14 @@ TextureImporter:
   textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
-    filterMode: -1
+    filterMode: 0
     aniso: -1
     mipBias: -1
     wrapMode: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -58,9 +78,293 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+  - buildTarget: Standalone
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: iPhone
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: Android
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 287
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 272
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 257
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 242
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 227
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 212
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 197
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 182
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 167
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 152
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 137
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 122
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 107
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_13
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 77
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_15
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 62
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 47
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 17
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 80x15px_HP_bar_19
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2
+        width: 80
+        height: 15
+      alignment: 9
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
     outline: []
   spritePackingTag: 
   userData: 
