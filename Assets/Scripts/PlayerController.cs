@@ -269,10 +269,6 @@ public class PlayerController : MonoBehaviour {
             {
                 CharacterAnimator.Play("Fall");
             }
-            //else if (_onLadder) NEEDS ENTRY ANIMATION WHEN IT IS CLIMBING THE LADDERS!!
-            //{
-            //    CharacterAnimator.SetTrigger("Entry");
-            //}
             else
             {
                 CharacterAnimator.Play("Idle");
