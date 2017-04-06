@@ -12,6 +12,8 @@ public class EnemyScript : MonoBehaviour {
     private Rigidbody2D _rigidBody;
     private Color _color;
 
+    private bool testi;
+
 
     // Use this for initialization
     void Start() {
