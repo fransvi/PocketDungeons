@@ -8,107 +8,134 @@ using Pathfinding;
 [RequireComponent(typeof(Seeker))]
 public class EnemyAI : MonoBehaviour
 {
+    //Variables START
+    //Enums
+    public enum BehaviourState
+    {
+        notSpawned,
+        dead,
+        patrol,
+        idle,
+        aggressive,
+        inspect
+    }
 
+    /*public enum Action
+    {
+        moveToPoint,
+        attackStrategy //Initiate attacking strategy towards a target
+    }*/
+
+    //Connections
     public Transform target;
-
-    //How many times each second AI will update its path
-    public float updateRate = 2f;
-    private readonly float minUpdateRate = 2f;
-    private readonly float maxUpdateRate = 10f;
-    private readonly float deltaUpdateRate = 1.3f;
-
-    //Caching
+    public Path path; //The calculated path
     private Seeker seeker;
     private Rigidbody2D rb;
+    private Animator animator;
+    private SpriteRenderer sr;
 
-    //The calculated path
-    public Path path;
-
-    //The AI's speed per second
-    public float speed = 300f;
+    //Attributes
+    public float speed; //The AI's speed per second
     public ForceMode2D fMode;
+    public BehaviourState currentBehaviourState;
+    private int currentWaypoint = 0;//The waypoint we are currently moving towards
 
+    //Apumuuttujat
     [HideInInspector]
     public bool pathIsEnded = false;
-
-    //The max distance from AI to waypoint to change waypoint
-    public float nextWaypointDistance = 3f;
-
-    //The waypoint we are currently moving towards
-    private int currentWaypoint = 0;
-
     private bool searchingForPlayer = false;
 
+    //Tweaks
+    public float pathUpdateRate = 2f; //How many times each second AI will update its path
+    public float playerSearchRate = 2f; //How frequently AI will search for player GameObject (when player is dead etc.)
+    public float waypointDistanceThreshold = 3f;//The max distance from AI to waypoint to change waypoint
+    public float aggroDistance;
+    //public float hitDistance;
+
+    //Fixed values
+    private readonly float minPathUpdateRate = 2f;
+    private readonly float maxPathUpdateRate = 10f;
+    private readonly float deltaPathUpdateRate = -1.3f; //How quickly pathUpdateRate changes when distance grows (1 Update per second/1 world distance unit)
+    [SerializeField]
+    public float idleAggroDistance = 5f;
+    public readonly float aggressiveAggroDistance = 10f;
+    //private readonly float idleHitDistance;
+    //private readonly float aggressiveHitDistance;
+
+    private readonly float idleMoveSpeed = 0f;
+    [SerializeField]
+    private float aggressiveMoveSpeed = 5f;
+
+    //Variables END
+
+
+    //Functions START
+    //Initialization
     void Start()
     {
         seeker = GetComponent<Seeker>();
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        sr = GetComponent<SpriteRenderer>();
 
-        if (target == null)
-        {
-            if (!searchingForPlayer)
-            {
-                searchingForPlayer = true;
-                StartCoroutine(SearchForPlayer());
-            }
-            return;
-        }
+        StartIdle();
+        
+        StartCoroutine(SearchForPlayer());
+        StartCoroutine(BehaviourStateMachine());
+    }
+    //Behaviours
 
-        //Start a new path to the target position, return the result to the OnPathComplete method
-        seeker.StartPath(transform.position, target.position, OnPathComplete);
+    private void StartIdle()
+    {
+        //muuttujat
+        speed = idleMoveSpeed;
+        aggroDistance = idleAggroDistance;
 
-        StartCoroutine(UpdatePath());
+        //Animaattori
+        animator.SetBool("BatMove", false);
+
+        //Coroutine
+
+        //State
+        currentBehaviourState = BehaviourState.idle;
+
     }
 
-
-    IEnumerator SearchForPlayer()
+    private void StartAggressive()
     {
-        GameObject sResult = GameObject.FindGameObjectWithTag("Player");
-        if (sResult == null)
-        {
-            yield return new WaitForSeconds(1f / updateRate);
-            StartCoroutine(SearchForPlayer());
-        }
-        else
-        {
-            target = sResult.transform;
-            searchingForPlayer = false;
-            StartCoroutine(UpdatePath());
-        }
+        //muuttujat
+        speed = aggressiveMoveSpeed;
+        aggroDistance = aggressiveAggroDistance;
 
-        yield return null;
-    }
+        //Animaattori
+        animator.SetBool("BatMove", true);
 
-    IEnumerator UpdatePath()
-    {
-        if (target == null)
-        {
-            if (!searchingForPlayer)
-            {
-                searchingForPlayer = true;
-                StartCoroutine(SearchForPlayer());
-            }
-            yield return null;
-        }
+        //State
+        currentBehaviourState = BehaviourState.aggressive;
 
-        seeker.StartPath(transform.position, target.position, OnPathComplete);
-
-        updateRate = CalculateUpdateRate();
-        yield return new WaitForSeconds(1f / updateRate);
+        //Coroutine
         StartCoroutine(UpdatePath());
 
     }
 
+    private void AggroCheck()
+    {
+        if (target != null)
+        {
+            if (Vector2.Distance(transform.position, target.position) < aggroDistance)
+                StartAggressive();
+        }
+    }
+
+    //Pathfinding
     private float CalculateUpdateRate()
     {
-        //TODO: Tweakkaa tätä vielä
-        //y = -1.2x + 10
-        float rate = (-deltaUpdateRate)*(Vector2.Distance(transform.position, target.position)) + maxUpdateRate;
-        Debug.Log(rate);
-        if (rate < minUpdateRate)
-            rate = minUpdateRate;
-        else if (rate > maxUpdateRate)
-            rate = maxUpdateRate;
+        //y = -1.3x + 10
+        float rate = deltaPathUpdateRate*(Vector2.Distance(transform.position, target.position)) + maxPathUpdateRate;
+        if (rate < minPathUpdateRate)
+            rate = minPathUpdateRate;
+        else if (rate > maxPathUpdateRate)
+            rate = maxPathUpdateRate;
         return rate;
     }
 
@@ -122,46 +149,109 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    //Loops
+    private IEnumerator BehaviourStateMachine()
     {
-        if (target == null)
+        while (true)
         {
-            if (!searchingForPlayer)
+            switch (currentBehaviourState)
             {
-                searchingForPlayer = true;
-                StartCoroutine(SearchForPlayer());
+                case BehaviourState.notSpawned:
+                    break;
+                //case BehaviourState.patrol:
+                //    Patrol();
+                //    break;
+                case BehaviourState.idle:
+                    AggroCheck();
+                    break;
+                case BehaviourState.aggressive:
+                    break;
+                //case BehaviourState.inspect:
+                //    Inspect();
+                //    break;
+                case BehaviourState.dead:
+                    break;
             }
-            return;
+            yield return null;
         }
-
-        if (path == null)
-            return;
-
-        if (currentWaypoint >= path.vectorPath.Count)
-        {
-            if (pathIsEnded)
-                return;
-
-            Debug.Log("End of path reached.");
-            pathIsEnded = true;
-            return;
-        }
-        pathIsEnded = false;
-
-        //Direction to the next waypoint
-        Vector3 dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
-        dir *= speed * Time.fixedDeltaTime;
-
-        //Move the AI
-        rb.AddForce(dir, fMode);
-
-        float dist = Vector3.Distance(transform.position, path.vectorPath[currentWaypoint]);
-        if (dist < nextWaypointDistance)
-        {
-            currentWaypoint++;
-            return;
-        }
-
     }
 
+    IEnumerator SearchForPlayer()
+    {
+        //TODO: tähän järkevä ehto
+        while (true)
+        {
+            //Tsekataan intervallin välein onko target olemassa
+            if (target == null && !searchingForPlayer)
+            {
+                //Jos ei, etsitään pelaajaobjekti
+                searchingForPlayer = true;
+                GameObject sResult = null;
+                sResult = GameObject.FindGameObjectWithTag("Player");
+                //Jos löytyi
+                if (sResult != null)
+                {
+                    target = sResult.transform;
+                    searchingForPlayer = false;
+                }
+            }
+            yield return new WaitForSeconds(1f / playerSearchRate);
+        }
+    }
+
+    IEnumerator UpdatePath()
+    {
+        while (currentBehaviourState == BehaviourState.aggressive)
+        {
+            if (target != null)
+            {
+                //Start a new path to the target position, return the result to the OnPathComplete method
+                seeker.StartPath(transform.position, target.position, OnPathComplete);
+
+                pathUpdateRate = CalculateUpdateRate();
+            }
+            yield return new WaitForSeconds(1f / pathUpdateRate);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (target != null && path != null) {
+            if (currentWaypoint >= path.vectorPath.Count)
+            {
+                if (pathIsEnded)
+                    return;
+
+                Debug.Log("End of path reached.");
+                pathIsEnded = true;
+                return;
+            }
+            
+            pathIsEnded = false;
+
+            //Direction to the next waypoint
+            Vector3 dir = (path.vectorPath[currentWaypoint] - transform.position).normalized;
+
+            //Flip
+            sr.flipX = (dir.x > 0);
+
+            //Move the AI
+            //rb.AddForce(dir * speed * Time.fixedDeltaTime, fMode);
+
+            //rb.velocity += (Vector2)dir * speed * Time.fixedDeltaTime;
+            rb.velocity = (Vector2)dir * speed;
+            if (rb.velocity.magnitude > speed)
+                Debug.Log("Jouduttiin pienentää nopeutta");
+                rb.velocity = rb.velocity.normalized * speed;
+            Debug.Log("dir magnitude: " + dir.magnitude);
+            Debug.Log("velocity magnitude: " + rb.velocity.magnitude);
+
+            float dist = Vector3.Distance(transform.position, path.vectorPath[currentWaypoint]);
+            if (dist < waypointDistanceThreshold)
+            {
+                currentWaypoint++;
+            }
+        }
+    }
+    //Functions END
 }
