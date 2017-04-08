@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DoorLocked : MonoBehaviour {
 
-	bool hasKey=true; // Placeholderi; Hae boolean pelaajan inventorysta
+	bool hasKey=true; // Placeholderi; TODO Hae boolean pelaajan inventorysta
 	bool doorOpened=false;
 	public Renderer player;
 
@@ -17,10 +17,13 @@ public class DoorLocked : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		playerDoorIntersect = gameObject.GetComponent<Renderer> ().bounds.Intersects (player.bounds);
-		if (hasKey==true && Input.GetKeyUp(KeyCode.LeftControl) == true && doorOpened==false && playerDoorIntersect){
-			doorOpened = true;
-			Debug.Log ("doorOpened");
+		if (doorOpened==false){
+			playerDoorIntersect = gameObject.GetComponent<Renderer> ().bounds.Intersects (player.bounds);
+			if (hasKey==true && Input.GetKeyUp(KeyCode.LeftControl) == true && playerDoorIntersect){
+				doorOpened = true;
+				Debug.Log ("doorOpened");
+				// TODO: Avaa ovi
+			}
 		}
 	}
 }
