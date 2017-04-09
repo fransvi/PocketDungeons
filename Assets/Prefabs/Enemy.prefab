@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 50062505108907904}
   - component: {fileID: 114681654219661032}
   - component: {fileID: 23926280782355816}
-  - component: {fileID: 33848807916491468}
   - component: {fileID: 58967759340886196}
   m_Layer: 10
   m_Name: Enemy
@@ -74,14 +73,8 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &33848807916491468
-MeshFilter:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1700893721753200}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!50 &50062505108907904
 Rigidbody2D:
   serializedVersion: 4
@@ -113,6 +106,7 @@ CircleCollider2D:
   m_Material: {fileID: 6200000, guid: 9f7a5294cd44b6943869cd42182da14e, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
+  m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
@@ -130,3 +124,4 @@ MonoBehaviour:
   _health: 100
   _knockbackForce: 100
   _player: {fileID: 0}
+  _moveSpeed: 0

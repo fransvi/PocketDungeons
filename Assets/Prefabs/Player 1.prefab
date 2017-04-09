@@ -106,7 +106,7 @@ GameObject:
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1829970262670330
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,11 +305,21 @@ MonoBehaviour:
   _enemyLayerMask:
     serializedVersion: 2
     m_Bits: 1024
+  _whatIsItem:
+    serializedVersion: 2
+    m_Bits: 65536
+  _whatIsDoor:
+    serializedVersion: 2
+    m_Bits: 524288
+  _whatIsChest:
+    serializedVersion: 2
+    m_Bits: 1048576
   _meleeRadius: 0.5
   _meleeDamage: 1
   _maxHealth: 20
   _knockbackForce: 200
   _ladderCheck: {fileID: 0}
+  _bullet: {fileID: 1559540331602946, guid: 17191973378697a44bf258f30f997923, type: 2}
 --- !u!114 &114484738493684656
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -401,7 +411,7 @@ SpriteRenderer:
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.32, y: 0.32}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
 --- !u!212 &212927241275615530

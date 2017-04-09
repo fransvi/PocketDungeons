@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4261397324777544}
   - component: {fileID: 114513698809068932}
   m_Layer: 0
-  m_Name: A_ Pathfinding
+  m_Name: AStar Pathfinding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

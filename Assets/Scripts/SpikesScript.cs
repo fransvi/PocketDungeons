@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpikesScript : MonoBehaviour {
 
     [SerializeField]
-    private float _spikeDamage;
+    private int _spikeDamage;
 
     public GameObject player;
 	// Use this for initialization

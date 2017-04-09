@@ -29,17 +29,25 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private LayerMask _enemyLayerMask;
     [SerializeField]
+    private LayerMask _whatIsItem;
+    [SerializeField]
+    private LayerMask _whatIsDoor;
+    [SerializeField]
+    private LayerMask _whatIsChest;
+    [SerializeField]
     private float _meleeRadius;
     [SerializeField]
     private float _meleeDamage;
     [SerializeField]
-    private float _maxHealth;
+    private int _maxHealth;
     [SerializeField]
     private float _knockbackForce;
     [SerializeField]
     private Transform _ladderCheck;
+    [SerializeField]
+    private GameObject _bullet;
 
-    private float _health;
+    private int _health;
     private bool _jumpOnCooldown = false;
     private float _horizontalMove = 0;
     private bool _jump = false;
@@ -47,12 +55,14 @@ public class PlayerController : MonoBehaviour {
     private Transform _meleeCheck;
     private Transform _headCheck;
 
+    private GameObject _playerManager;
     private bool _attackOnCooldown = false;
 
     private Transform _weaponSwing;
 
 
-
+    private bool _drawingBow;
+    private float _bowForce;
     private bool _onLadder;
     private Rigidbody2D _rigidBody;
     private bool _invulnurable;
@@ -77,6 +87,9 @@ public class PlayerController : MonoBehaviour {
         _weaponSwing.gameObject.SetActive(false);
         _gravity = Physics2D.gravity;
         tempSpeed = _maxSpeed;
+        _playerManager = GameObject.Find("PlayerManager");
+        Physics2D.IgnoreLayerCollision(0, 16, true);
+        Physics2D.IgnoreLayerCollision(0, 18, true);
         //Animaattori
         _color = gameObject.GetComponent<Renderer>().material.color;
         CharacterAnimator = GetComponent<Animator>();
@@ -151,19 +164,111 @@ public class PlayerController : MonoBehaviour {
                 if (!_attackOnCooldown)
                 {
                     Attack();
-                    CharacterAnimator.SetTrigger("Attack");
+                    CharacterAnimator.Play("Attack");
                 }
 
             }
 
             if (Input.GetKeyDown(KeyCode.W))
             {
+                UsePotion();
                 //TODO
             }
-        }
-    
 
- 
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            PickUpItem();
+            OpenDoor();
+        }
+        if (Input.GetKey(KeyCode.R))
+        {
+            _bowForce += 1;
+        }
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            UseOffWeapon();
+            _bowForce = 0;
+        }
+}
+
+    private void OpenDoor()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.50f, _whatIsDoor);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].gameObject != gameObject)
+            {
+
+                
+                if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
+                {
+                    colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
+                }
+            }
+        }
+
+        Collider2D[] chests = Physics2D.OverlapCircleAll(_groundCheck.position, 0.50f, _whatIsChest);
+        for (int i = 0; i < chests.Length; i++)
+        {
+            if (chests[i].gameObject != gameObject)
+            {
+
+                    chests[i].gameObject.GetComponent<ChestScript>().OpenChest();
+            }
+        }
+    }
+
+    private void UseOffWeapon()
+    {
+        //Bow
+        if (_playerManager.GetComponent<PlayerInventory>().getHasBow())
+        {
+            GameObject go = Instantiate(_bullet, _meleeCheck.position, _meleeCheck.rotation);
+            if (_facingRight)
+            {
+                go.GetComponent<BulletScript>().createBullet(true, _bowForce);
+            }
+            else
+            {
+                go.GetComponent<BulletScript>().createBullet(false, _bowForce);
+            }
+
+            Destroy(go, 3.0f);
+        }
+    }
+
+    private void PickUpItem()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.5f, _whatIsItem);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].gameObject != gameObject)
+            {
+       
+                int itemInt = colliders[i].gameObject.GetComponent<ItemScript>().GetItemInt();
+                //_gravity = Physics2D.gravity;
+                if (itemInt == 0)
+                {
+                    _playerManager.GetComponent<PlayerInventory>().gainHealthPotion();
+                }
+                else if(itemInt == 1)
+                {
+                    _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
+                }
+                else if(itemInt == 2)
+                {
+                    _playerManager.GetComponent<PlayerInventory>().gainKey1();
+                }
+                else if(itemInt == 3)
+                {
+                    _playerManager.GetComponent<PlayerInventory>().gainBow();
+                }
+                colliders[i].gameObject.GetComponent<ItemScript>().Die();
+            }
+
+        }
+    }
+
     void FixedUpdate () {
 
         //Ignore platform when jumping on it
@@ -231,6 +336,7 @@ public class PlayerController : MonoBehaviour {
         if (_onLadder)
         {
             Physics2D.gravity = Vector2.zero;
+            _rigidBody.velocity = new Vector2(0, 0);
             if (Input.GetAxis("Vertical") > 0)
             {
                 transform.Translate(0, 4 * Time.deltaTime, 0);
@@ -304,6 +410,29 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+    public void UsePotion()
+    {
+        if (_playerManager.GetComponent<PlayerInventory>().getHasPotion())
+        {
+            if (_health == 20)
+            {
+                //Do nothing
+            }
+            else if (_health + 10 > 20)
+            {
+                _health = 20;
+                _playerManager.GetComponent<PlayerInventory>().useHealthPotion();
+            }
+            else
+            {
+                _health += 10;
+                _playerManager.GetComponent<PlayerInventory>().useHealthPotion();
+            }
+        }
+
+
+    }
+
     private void Flip()
     {
         // Switch player sprite heading
@@ -314,7 +443,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     //Player takes damage;
-    public void Hurt(float damage)
+    public void Hurt(int damage)
     {
         if (_health - damage > 0f && !_invulnurable)
         {
@@ -362,6 +491,7 @@ public class PlayerController : MonoBehaviour {
     IEnumerator AttackAnim()
     {
         _weaponSwing.gameObject.SetActive(true);
+        //CharacterAnimator.Play("Attack");
         _attackOnCooldown = true;
         yield return new WaitForSeconds(_attackCooldown);
         _weaponSwing.gameObject.SetActive(false);
@@ -393,6 +523,11 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+
+    public int GetHealth()
+    {
+        return _health;
+    }
 
     //Funktiot touch screen liikkumiselle
     public void AddSpeed()

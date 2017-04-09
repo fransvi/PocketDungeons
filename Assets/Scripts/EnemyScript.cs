@@ -9,34 +9,75 @@ public class EnemyScript : MonoBehaviour {
     [SerializeField]
     private Transform _player;
 
+    [SerializeField]
+    private GameObject _hurtPoint;
+    [SerializeField]
+    private float _moveSpeed;
+    [SerializeField]
+    private int _meleeDamage;
+    [SerializeField]
+
+
+    private bool _facingRight;
     private Rigidbody2D _rigidBody;
     private Color _color;
-
-    private bool testi;
 
 
     // Use this for initialization
     void Start() {
         _rigidBody = GetComponent<Rigidbody2D>();
-        Physics2D.IgnoreCollision(_player.GetComponent<BoxCollider2D>(), GetComponent<CircleCollider2D>());
+        Physics2D.IgnoreCollision(_player.GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
         _color = gameObject.GetComponent<Renderer>().material.color;
+        Physics2D.IgnoreLayerCollision(10, 16, true);
+        Physics2D.IgnoreLayerCollision(10, 0, true);
     }
 
     // Update is called once per frame
     void Update() {
+
+        float distance = Vector2.Distance(transform.position, _player.position);
+        if (distance < 5f && distance > 0.05f)
+        {
+            MeleeAttack();
+            transform.position = Vector2.MoveTowards(transform.position, _player.position, 3 * Time.deltaTime);
+        }
+
         if (_health <= 0)
         {
             Die();
         }
+        if (_rigidBody.velocity.y > 0 && !_facingRight)
+        {
+            //Flip();
+        }
+        else if (_rigidBody.velocity.y< 0 && _facingRight)
+        {
+            //Flip();
+        }
+
+
 
     }
     //Placeholder for hurt anim
     IEnumerator HurtAnim()
     {
         Renderer rend = gameObject.GetComponent<Renderer>();
-        rend.material.color = Color.white;
-        yield return new WaitForSeconds(0.10f);
-        rend.material.color = _color;
+        for (int i = 0; i < 2; i++)
+        {
+            rend.material.color = new Color(1f, 1f, 1f, 0f);
+            yield return new WaitForSeconds(0.1f);
+            rend.material.color = _color;
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    private void Flip()
+    {
+        // Switch player sprite heading
+        _facingRight = !_facingRight;
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
     }
 
 
@@ -55,6 +96,24 @@ public class EnemyScript : MonoBehaviour {
         }
         _health -= damage;
     }
+
+    private void MeleeAttack()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.05f, LayerMask.GetMask("Default"));
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].gameObject != gameObject)
+            {
+                if (colliders[i].gameObject.GetComponent<PlayerController>())
+                {
+                    colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
+                }
+
+            }
+
+        }
+    }
+
 
     private void Die()
     {
