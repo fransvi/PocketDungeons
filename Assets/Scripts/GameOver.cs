@@ -6,7 +6,11 @@ public class GameOver : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-		Global.deathScene = SceneManager.GetActiveScene();
+	}
+
+	void InitiateGameOver(){
+		// health bar -skripti kutsuu tätä funktiota
+		Global.deathScene = SceneManager.GetActiveScene().name;
 		StartCoroutine (DeathAnimation ());
 	}
 

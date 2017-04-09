@@ -8,17 +8,40 @@ public class ButtonManage : MonoBehaviour
 {
 
 	public Button[] buttons;
-	public GameObject cursor;
+	public Image cursor;
 
 	private int highlightedButton=0;
 
-	void Update(){
+	void Update() {
+		// syöttö
+		if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
+			moveCursor (-1);
+		} else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
+			moveCursor (1);
+		}
 
+		// kursorin liike
+		cursor.transform.position=new Vector3(buttons[highlightedButton].transform.position.x-130,buttons[highlightedButton].transform.position.y,cursor.transform.position.z);
+
+		// valinta
+		if (Input.GetKeyDown (KeyCode.Z) || Input.GetKeyDown (KeyCode.Space)) {
+			buttons[highlightedButton].GetComponent<Button> ().onClick.Invoke ();
+		}
+	}
+
+	void moveCursor(int amount){
+		if (highlightedButton + amount < 0) {
+			highlightedButton = buttons.GetLength (0) - 1;
+		} else if (highlightedButton + amount > buttons.Length - 1) {
+			highlightedButton = 0;
+		} else {
+			highlightedButton += amount;
+		}
 	}
 
     public void RetryBtn()
     {
-		SceneManager.LoadScene(Global.deathScene.name);
+		SceneManager.LoadScene(Global.deathScene);
 	}
 
 	public void LoadLevelBtn(string sceneName)
