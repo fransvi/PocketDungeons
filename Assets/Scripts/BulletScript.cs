@@ -18,6 +18,7 @@ public class BulletScript : MonoBehaviour {
         if (_facingRight)
         {
             GetComponent<Rigidbody2D>().velocity = transform.TransformDirection(new Vector3(_speed, 2f, 0));
+            Flip();
         }
         else
         {
@@ -76,11 +77,11 @@ public class BulletScript : MonoBehaviour {
 
         if (transform.GetComponent<Rigidbody2D>().velocity.x > 0 && !_facingRight)
         {
-            Flip();
+            //Flip();
         }
         else if (transform.GetComponent<Rigidbody2D>().velocity.x < 0 && _facingRight)
         {
-            Flip();
+            //Flip();
         }
 
     }
