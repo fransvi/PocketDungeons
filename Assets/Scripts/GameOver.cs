@@ -4,20 +4,23 @@ using UnityEngine.SceneManagement;
 
 public class GameOver : MonoBehaviour {
 
+	public GameObject canvas;
+
     // Use this for initialization
-    void Start () {
+	void Start () {
 	}
 
-	void InitiateGameOver(){
+	public void InitiateGameOver(){
 		// health bar -skripti kutsuu tätä funktiota
-		Global.deathScene = SceneManager.GetActiveScene().name;
 		StartCoroutine (DeathAnimation ());
 	}
 
 	IEnumerator DeathAnimation()
 	{
+		// Tänne kuolemisanimaatio
 		yield return new WaitForSeconds(5);
-		SceneManager.LoadScene ("GameOver");
+		canvas.gameObject.SetActive(true);
+
 	}
 	
 }

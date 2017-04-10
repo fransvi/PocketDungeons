@@ -21,7 +21,7 @@ public class ButtonManage : MonoBehaviour
 		}
 
 		// kursorin liike
-		cursor.transform.position=new Vector3(buttons[highlightedButton].transform.position.x-130,buttons[highlightedButton].transform.position.y,cursor.transform.position.z);
+		cursor.transform.position=new Vector3(buttons[highlightedButton].transform.position.x-70,buttons[highlightedButton].transform.position.y,cursor.transform.position.z);
 
 		// valinta
 		if (Input.GetKeyDown (KeyCode.Z) || Input.GetKeyDown (KeyCode.Space)) {
@@ -41,7 +41,7 @@ public class ButtonManage : MonoBehaviour
 
     public void RetryBtn()
     {
-		SceneManager.LoadScene(Global.deathScene);
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 
 	public void LoadLevelBtn(string sceneName)
@@ -62,12 +62,4 @@ public class ButtonManage : MonoBehaviour
     {
         Application.Quit();
     }
-
-	public void test29(){
-		//buttontwo.GetComponent<Button> ().onClick.Invoke ();
-	}
-
-	public void test30(){
-		Debug.Log ("jeeee");
-	}
 }
