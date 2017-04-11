@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4611919219801812}
   - component: {fileID: 60565039046756926}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: StairsRCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,10 +48,20 @@ PolygonCollider2D:
   m_GameObject: {fileID: 1070332211417638}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 89029e13864ba924080897ddb0f0b821, type: 2}
+  m_Material: {fileID: 6200000, guid: e11c78d5f8651be4ab4fafb16524d277, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
+  m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   m_Points:
     m_Paths:
     - - {x: 0.18656158, y: 0.23361206}

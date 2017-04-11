@@ -19,8 +19,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4613062596099810}
-  - component: {fileID: 60792222297503092}
-  m_Layer: 0
+  - component: {fileID: 60983380116417472}
+  m_Layer: 12
   m_Name: StairsLCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34,13 +34,13 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1489690296442742}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 26.452381, y: 13.010395, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!60 &60792222297503092
+--- !u!60 &60983380116417472
 PolygonCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -48,14 +48,22 @@ PolygonCollider2D:
   m_GameObject: {fileID: 1489690296442742}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 89029e13864ba924080897ddb0f0b821, type: 2}
+  m_Material: {fileID: 6200000, guid: e11c78d5f8651be4ab4fafb16524d277, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
+  m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.62956333, y: -0.06119728}
-      - {x: 0.9510565, y: 0.048324585}
-      - {x: 0.97337246, y: -0.78842735}
-      - {x: 0.04664421, y: -0.8002758}
-      - {x: 0.39354134, y: -0.29977608}
+    - - {x: 2.5924091, y: -0.94805336}
+      - {x: 1.7312622, y: -0.03563881}
+      - {x: 1.731262, y: -0.9480534}

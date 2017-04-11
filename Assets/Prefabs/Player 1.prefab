@@ -234,7 +234,7 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0.5
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -287,7 +287,7 @@ MonoBehaviour:
   CharacterAnimator: {fileID: 95236757827047262}
   _maxSpeed: 5
   _jumpForce: 350
-  _jumpCooldown: 0.5
+  _jumpCooldown: 1
   _attackCooldown: 0.25
   _airControl: 1
   _whatIsGround:
@@ -314,12 +314,19 @@ MonoBehaviour:
   _whatIsChest:
     serializedVersion: 2
     m_Bits: 1048576
+  _whatIsStairs:
+    serializedVersion: 2
+    m_Bits: 4096
+  _whatIsLever:
+    serializedVersion: 2
+    m_Bits: 2097152
   _meleeRadius: 0.5
   _meleeDamage: 1
   _maxHealth: 20
   _knockbackForce: 200
   _ladderCheck: {fileID: 0}
   _bullet: {fileID: 1559540331602946, guid: 17191973378697a44bf258f30f997923, type: 2}
+  _slopeFriction: 0.01
 --- !u!114 &114484738493684656
 MonoBehaviour:
   m_ObjectHideFlags: 1

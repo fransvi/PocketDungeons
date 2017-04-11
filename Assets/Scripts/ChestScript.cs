@@ -50,9 +50,14 @@ public class ChestScript : MonoBehaviour {
             for (int i = 0; i < _chestContainsAmount; i++)
             {
                 Vector3 newPos = new Vector3(_openPoint.position.x, _openPoint.position.y, _openPoint.position.z - 2);
-                GameObject go = Instantiate(_chestContainsItem, newPos, _openPoint.rotation);
+                /*
+                Vector3 euler = transform.eulerAngles;
+                euler.z = Random.Range(0f, 360f);
+                _openPoint.eulerAngles = euler;
+                */
+                GameObject go = Instantiate(_chestContainsItem, newPos, transform.rotation);
                 float itemForcey = Random.Range(150, 300);
-                float itemForcex = Random.Range(150, 300);
+                float itemForcex = Random.Range(-60, 60);
                 go.GetComponent<Rigidbody2D>().AddForce(new Vector2(itemForcex, itemForcey));
             }
             _chestState = 1;

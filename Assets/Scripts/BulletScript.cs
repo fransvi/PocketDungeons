@@ -14,7 +14,9 @@ public class BulletScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-       
+
+
+        Physics2D.IgnoreLayerCollision(18, 16);
         if (_facingRight)
         {
             GetComponent<Rigidbody2D>().velocity = transform.TransformDirection(new Vector3(_speed, 2f, 0));

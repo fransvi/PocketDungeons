@@ -25,6 +25,7 @@ public class ItemScript : MonoBehaviour {
 	void Start () {
 
         Physics2D.IgnoreLayerCollision(16, 16, true);
+        Physics2D.IgnoreLayerCollision(16, 0, true);
         _activeItem = _items[_itemInt];
         for(int i = 0; i < _items.Length; i++)
         {
@@ -56,6 +57,18 @@ public class ItemScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.01f, LayerMask.NameToLayer("Ground") | LayerMask.NameToLayer("Stairs") 
+            | LayerMask.NameToLayer("Platform"));
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].gameObject != gameObject)
+            {
+                Physics2D.gravity = Vector2.zero;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+            }
+
+        }
         _activeItem = _items[_itemInt];
         for (int i = 0; i < _items.Length; i++)
         {
