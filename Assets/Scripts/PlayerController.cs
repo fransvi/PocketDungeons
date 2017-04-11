@@ -35,6 +35,10 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private LayerMask _whatIsChest;
     [SerializeField]
+    private LayerMask _whatIsStairs;
+    [SerializeField]
+    private LayerMask _whatIsLever;
+    [SerializeField]
     private float _meleeRadius;
     [SerializeField]
     private float _meleeDamage;
@@ -58,8 +62,10 @@ public class PlayerController : MonoBehaviour {
     private GameObject _playerManager;
     private bool _attackOnCooldown = false;
 
+    private GameManager _gameManager;
     private Transform _weaponSwing;
-
+    [SerializeField]
+    private float _slopeFriction;
 
     private bool _drawingBow;
     private float _bowForce;
@@ -70,6 +76,7 @@ public class PlayerController : MonoBehaviour {
     private bool _grounded;
     private float tempSpeed;
     private bool _facingRight;
+    private bool _isTakingDamage;
     private bool _onPlatform;
     private bool _isJumping = false;
     private Vector2 _gravity;
@@ -80,6 +87,7 @@ public class PlayerController : MonoBehaviour {
         _groundCheck = transform.Find("GroundCheck");
         _ladderCheck = transform.Find("LadderCheck");
         _weaponSwing = transform.Find("Swing");
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _health = _maxHealth;
         _invulnurable = false;
@@ -99,14 +107,14 @@ public class PlayerController : MonoBehaviour {
     void Update()
     {
 
+
+        //Counter velocity on ramps
         float angle;
         RaycastHit2D[] hits = new RaycastHit2D[2];
         //cast ray downwards
         int h = Physics2D.RaycastNonAlloc(transform.position, -Vector2.up, hits);
         if (h > 1)
         {
-            // Debug.Log(hits[1].normal);
-
             angle = Mathf.Abs(Mathf.Atan2(hits[1].normal.x, hits[1].normal.y) * Mathf.Rad2Deg); //get angle
             if (angle > 30)
             {
@@ -203,6 +211,11 @@ public class PlayerController : MonoBehaviour {
                 if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
                 {
                     colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
+                    
+                }
+                if (colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
+                {
+                    _gameManager.LoadMenu();
                 }
             }
         }
@@ -214,6 +227,25 @@ public class PlayerController : MonoBehaviour {
             {
 
                     chests[i].gameObject.GetComponent<ChestScript>().OpenChest();
+            }
+        }
+
+        Collider2D[] levers = Physics2D.OverlapCircleAll(_groundCheck.position, 0.50f, _whatIsLever);
+        for (int i = 0; i < levers.Length; i++)
+        {
+            if (levers[i].gameObject != gameObject)
+            {
+                if (!levers[i].gameObject.GetComponent<LeverScript>().GetSpikesRaising() && !levers[i].gameObject.GetComponent<LeverScript>().GetSpikesLowering())
+                {
+                    if (levers[i].gameObject.GetComponent<LeverScript>().GetLeverState() == 0)
+                    {
+                        levers[i].gameObject.GetComponent<LeverScript>().SetLeverState(1);
+                    }
+                    else if (levers[i].gameObject.GetComponent<LeverScript>().GetLeverState() == 1)
+                    {
+                        levers[i].gameObject.GetComponent<LeverScript>().SetLeverState(0);
+                    }
+                }
             }
         }
     }
@@ -253,7 +285,7 @@ public class PlayerController : MonoBehaviour {
                 }
                 else if(itemInt == 1)
                 {
-                    _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
+                    _playerManager.GetComponent<PlayerInventory>().gainGold(5f);
                 }
                 else if(itemInt == 2)
                 {
@@ -262,6 +294,10 @@ public class PlayerController : MonoBehaviour {
                 else if(itemInt == 3)
                 {
                     _playerManager.GetComponent<PlayerInventory>().gainBow();
+                }
+                else if(itemInt == 4)
+                {
+                    _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
                 }
                 colliders[i].gameObject.GetComponent<ItemScript>().Die();
             }
@@ -301,7 +337,16 @@ public class PlayerController : MonoBehaviour {
             }
  
         }
+        Collider2D[] stairs = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, _whatIsStairs);
+        for (int i = 0; i < stairs.Length; i++)
+        {
+            if (stairs[i].gameObject != gameObject)
+            {
+                _grounded = true;
+                
+            }
 
+        }
 
         Collider2D[] ladders = Physics2D.OverlapCircleAll(_ladderCheck.position, _groundedRadius, _whatIsLadder);
         for (int i = 0; i < ladders.Length; i++)
@@ -399,11 +444,15 @@ public class PlayerController : MonoBehaviour {
                 Flip();
             }
    
-            if (_grounded && _jump && !_jumpOnCooldown)
+            if (_grounded && _jump && !_jumpOnCooldown && !_invulnurable)
             {
                 _grounded = false;
+                //_rigidBody.isKinematic = true;
+               // RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, 1f, _whatIsStairs);
+               // _rigidBody.velocity = new Vector2(_rigidBody.velocity.x - (hit.normal.x * _slopeFriction), _rigidBody.velocity.y);
                 _rigidBody.AddForce(new Vector2(0f, _jumpForce));
                 StartCoroutine(JumpCooldown());
+                //_rigidBody.isKinematic = false;
             }
 
         }
@@ -448,9 +497,11 @@ public class PlayerController : MonoBehaviour {
         if (_health - damage > 0f && !_invulnurable)
         {
             _health -= damage;
+
             _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
             StartCoroutine(Flicker(5));
             StartCoroutine(InvulnTimer());
+
         }
         else
         {
@@ -458,9 +509,15 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    IEnumerator DeathAnimation()
+    {
+        //TODO play death animation and load Gameover/retry screen
+        yield return new WaitForSeconds(1f);
+    }
+
     private void Die()
     {
-        //TODO
+        StartCoroutine(DeathAnimation());
     }
 
 
