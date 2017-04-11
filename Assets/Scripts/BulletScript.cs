@@ -9,13 +9,22 @@ public class BulletScript : MonoBehaviour {
     private int _bulletDamage;
     [SerializeField]
     private float _speed;
+    [SerializeField]
+    private bool _enemyProjectile;
+    [SerializeField]
+    private bool _dartTrapProjectile;
 
     private bool _facingRight;
+
+    private bool _ignoreGroundCollider;
 
     // Use this for initialization
     void Start () {
 
-
+        if (_dartTrapProjectile)
+        {
+            StartCoroutine(IgnoreGround());
+        }
         Physics2D.IgnoreLayerCollision(18, 16);
         if (_facingRight)
         {
@@ -30,6 +39,13 @@ public class BulletScript : MonoBehaviour {
 
     }
 
+    IEnumerator IgnoreGround()
+    {
+        _ignoreGroundCollider = true;
+        yield return new WaitForSeconds(1f);
+        _ignoreGroundCollider = false;
+    }
+
     public void createBullet(bool fr, float bf)
     {
         _facingRight = fr;
@@ -42,20 +58,26 @@ public class BulletScript : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other)
     {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Default") && _enemyProjectile)
+        {
+
+            other.gameObject.GetComponent<PlayerController>().Hurt(1);
+            Destroy(gameObject);
+        }
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
             other.gameObject.GetComponent<EnemyScript>().TakeDamage(_bulletDamage);
             Destroy(gameObject);
         }
-        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground") && !_dartTrapProjectile)
         {
             Destroy(gameObject);
         }
-        if (other.gameObject.layer == LayerMask.NameToLayer("Spikes"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Spikes") && !_dartTrapProjectile)
         {
             Destroy(gameObject);
         }
-        if (other.gameObject.layer == LayerMask.NameToLayer("Platform"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Platform") && !_dartTrapProjectile)
         {
             Destroy(gameObject);
         }

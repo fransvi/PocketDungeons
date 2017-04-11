@@ -8,10 +8,14 @@ public class ItemScript : MonoBehaviour {
 
     /*
     Item types:
+
     0: Health potion
-    1: Gold Coin
+    1: Large Coin
     2: Key1
-    3: OWeapon Bow
+    3: Bow
+    4: Small Coin
+    5: Bomb
+    6: Shield
 
     */
     [SerializeField]

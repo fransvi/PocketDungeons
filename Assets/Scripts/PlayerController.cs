@@ -50,6 +50,11 @@ public class PlayerController : MonoBehaviour {
     private Transform _ladderCheck;
     [SerializeField]
     private GameObject _bullet;
+    [SerializeField]
+    private GameObject _bomb;
+
+    [SerializeField]
+    private GameObject _itemPrefab;
 
     private int _health;
     private bool _jumpOnCooldown = false;
@@ -63,10 +68,15 @@ public class PlayerController : MonoBehaviour {
     private bool _attackOnCooldown = false;
 
     private GameManager _gameManager;
+
     private Transform _weaponSwing;
+    private Transform _swordSwing;
+    private Transform _maceSwing;
+
     [SerializeField]
     private float _slopeFriction;
 
+    private float _bombForce = 1f;
     private bool _drawingBow;
     private float _bowForce;
     private bool _onLadder;
@@ -87,12 +97,16 @@ public class PlayerController : MonoBehaviour {
         _groundCheck = transform.Find("GroundCheck");
         _ladderCheck = transform.Find("LadderCheck");
         _weaponSwing = transform.Find("Swing");
+        _swordSwing = transform.Find("Swing");
+        _maceSwing = transform.Find("MaceSwing");
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _health = _maxHealth;
         _invulnurable = false;
         _onLadder = false;
         _weaponSwing.gameObject.SetActive(false);
+        _maceSwing.gameObject.SetActive(false);
+        _swordSwing.gameObject.SetActive(false);
         _gravity = Physics2D.gravity;
         tempSpeed = _maxSpeed;
         _playerManager = GameObject.Find("PlayerManager");
@@ -107,7 +121,14 @@ public class PlayerController : MonoBehaviour {
     void Update()
     {
 
-
+        if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0)
+        {
+            _weaponSwing = _swordSwing;
+        }
+        else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1)
+        {
+            _weaponSwing = _maceSwing;
+        }
         //Counter velocity on ramps
         float angle;
         RaycastHit2D[] hits = new RaycastHit2D[2];
@@ -253,7 +274,7 @@ public class PlayerController : MonoBehaviour {
     private void UseOffWeapon()
     {
         //Bow
-        if (_playerManager.GetComponent<PlayerInventory>().getHasBow())
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
         {
             GameObject go = Instantiate(_bullet, _meleeCheck.position, _meleeCheck.rotation);
             if (_facingRight)
@@ -267,6 +288,11 @@ public class PlayerController : MonoBehaviour {
 
             Destroy(go, 3.0f);
         }
+        //Bomb
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2)
+        {
+            GameObject go = Instantiate(_bomb, _meleeCheck.position, _meleeCheck.rotation);
+        }
     }
 
     private void PickUpItem()
@@ -278,7 +304,6 @@ public class PlayerController : MonoBehaviour {
             {
        
                 int itemInt = colliders[i].gameObject.GetComponent<ItemScript>().GetItemInt();
-                //_gravity = Physics2D.gravity;
                 if (itemInt == 0)
                 {
                     _playerManager.GetComponent<PlayerInventory>().gainHealthPotion();
@@ -293,11 +318,32 @@ public class PlayerController : MonoBehaviour {
                 }
                 else if(itemInt == 3)
                 {
-                    _playerManager.GetComponent<PlayerInventory>().gainBow();
+ 
+                        //TODO better inventory management order through multiple arrays
+                        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2)
+                        {
+                            GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
+                            go.GetComponent<ItemScript>().SetItemInt(5);
+                        }
+                    
+
+                    _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(1);
                 }
                 else if(itemInt == 4)
                 {
                     _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
+                }
+                else if(itemInt == 5)
+                {
+
+                    //TODO better inventory management order through multiple arrays
+                    if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+                    {
+                        GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
+                        go.GetComponent<ItemScript>().SetItemInt(3);
+                    }
+
+                    _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(2);
                 }
                 colliders[i].gameObject.GetComponent<ItemScript>().Die();
             }
@@ -344,6 +390,17 @@ public class PlayerController : MonoBehaviour {
             {
                 _grounded = true;
                 
+            }
+
+        }
+        Collider2D[] pressurePads = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f,  1<<LayerMask.NameToLayer("PressurePad"));
+        for (int i = 0; i < pressurePads.Length; i++)
+        {
+            if (pressurePads[i].gameObject != gameObject)
+            {
+                _grounded = true;
+                pressurePads[i].gameObject.GetComponent<PressurePadScript>().SetPressurePadState(1);
+
             }
 
         }
@@ -447,12 +504,9 @@ public class PlayerController : MonoBehaviour {
             if (_grounded && _jump && !_jumpOnCooldown && !_invulnurable)
             {
                 _grounded = false;
-                //_rigidBody.isKinematic = true;
-               // RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, 1f, _whatIsStairs);
-               // _rigidBody.velocity = new Vector2(_rigidBody.velocity.x - (hit.normal.x * _slopeFriction), _rigidBody.velocity.y);
                 _rigidBody.AddForce(new Vector2(0f, _jumpForce));
                 StartCoroutine(JumpCooldown());
-                //_rigidBody.isKinematic = false;
+
             }
 
         }
@@ -569,15 +623,41 @@ public class PlayerController : MonoBehaviour {
     {
         StartCoroutine(AttackAnim());
         //Check if enemies hit
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, _meleeRadius, _enemyLayerMask);
-        for (int i = 0; i < colliders.Length; i++)
+
+        //Sword
+        if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0)
         {
-            if (colliders[i].gameObject != gameObject)
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, _meleeRadius, _enemyLayerMask);
+            for (int i = 0; i < colliders.Length; i++)
             {
-                //Enemy hit
-                colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
+                if (colliders[i].gameObject != gameObject)
+                {
+                    //Enemy hit
+                    colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
+                }
             }
         }
+
+        //Mace
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1)
+        {
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, _meleeRadius+0.5f, _enemyLayerMask);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i].gameObject != gameObject)
+                {
+                    //Enemy hit
+                    colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
+                    float rand = UnityEngine.Random.Range(0, 100);
+                    if(rand > 75)
+                    {
+                        colliders[i].gameObject.GetComponent<EnemyScript>().MaceStun();
+                    }
+
+                }
+            }
+        }
+
     }
 
 

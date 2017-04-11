@@ -17,6 +17,25 @@ public class PlayerInventory : MonoBehaviour {
     private GameObject _activeOffWeapon;
     private GameObject _playerController;
 
+    [SerializeField]
+    private int _currentMainWeaponInt;
+
+    private int _currentOffWeaponInt;
+
+    /*
+
+    Main Weapons
+    0 = Sword
+    1 = Mace
+
+    Off Weapons
+    0 = None
+    1 = Bow
+    2 = Bomb
+    3 = Shield
+
+    */
+
 
     private bool _hasBow;
 
@@ -39,6 +58,25 @@ public class PlayerInventory : MonoBehaviour {
 		
 	}
 
+    public int GetCurrentMainWeapon()
+    {
+        return _currentMainWeaponInt;
+    }
+
+    public void SetCurrentMainWeapon(int ne)
+    {
+        _currentMainWeaponInt = ne;
+    }
+
+    public int GetCurrentOffWeapon()
+    {
+        return _currentOffWeaponInt;
+    }
+    public void SetCurrentOffWeapon(int ne)
+    {
+        _currentOffWeaponInt = ne;
+    }
+
 
     public void gainGold(float val)
     {
@@ -58,7 +96,9 @@ public class PlayerInventory : MonoBehaviour {
         GUI.Label(new Rect(10, 10, 100, 20), "Gold: "+_playerGold);
         GUI.Label(new Rect(10, 30, 100, 20), "Key1: " + _hasKey1);
         GUI.Label(new Rect(10, 50, 100, 20), "Pot: " + _hasHealthPotion);
-        GUI.Label(new Rect(10, 70, 100, 20), "Bow: " + _hasBow);
+        GUI.Label(new Rect(10, 70, 100, 20), "CurrentMain: " + _currentMainWeaponInt);
+        GUI.Label(new Rect(10, 90, 100, 20), "CurrentOff: " + _currentOffWeaponInt);
+
     }
 
 
@@ -84,16 +124,6 @@ public class PlayerInventory : MonoBehaviour {
     public void gainHealthPotion()
     {
         this._hasHealthPotion = true;
-    }
-    // Placeholders for weapons
-    public bool getHasBow()
-    {
-        return _hasBow;
-    }
-
-    public void gainBow()
-    {
-        _hasBow = true;
     }
 
 

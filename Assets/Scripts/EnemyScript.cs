@@ -21,10 +21,14 @@ public class EnemyScript : MonoBehaviour {
     private bool _facingRight;
     private Rigidbody2D _rigidBody;
     private Color _color;
+    private float _viewDistance = 5f;
+    private float _minDistance = 0.05f;
+    private bool _stunned;
 
 
     // Use this for initialization
     void Start() {
+        _stunned = false;
         _rigidBody = GetComponent<Rigidbody2D>();
         Physics2D.IgnoreCollision(_player.GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
         _color = gameObject.GetComponent<Renderer>().material.color;
@@ -36,7 +40,7 @@ public class EnemyScript : MonoBehaviour {
     void Update() {
 
         float distance = Vector2.Distance(transform.position, _player.position);
-        if (distance < 5f && distance > 0.05f)
+        if (distance < _viewDistance && distance > _minDistance && !_stunned)
         {
             MeleeAttack();
             transform.position = Vector2.MoveTowards(transform.position, _player.position, 3 * Time.deltaTime);
@@ -97,6 +101,16 @@ public class EnemyScript : MonoBehaviour {
         _health -= damage;
     }
 
+    public void MaceStun()
+    {
+        StartCoroutine(Stunned());
+    }
+    IEnumerator Stunned()
+    {
+        _stunned = true;
+        yield return new WaitForSeconds(2f);
+        _stunned = false;
+    }
     private void MeleeAttack()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.05f, LayerMask.GetMask("Default"));
