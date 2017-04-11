@@ -3,24 +3,24 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class GameOver : MonoBehaviour {
-	public GameObject[] buttons;
 
-    private string sceneBuildIndex;
-    private Scene scene;
+	public GameObject canvas;
 
     // Use this for initialization
-    void Start () {
-        scene = SceneManager.GetActiveScene();
-        Debug.Log("Active scene is '" + scene.name + "'.");
+	void Start () {
 	}
 
-	void Update(){
-		
+	public void InitiateGameOver(){
+		// health bar -skripti kutsuu tätä funktiota
+		StartCoroutine (DeathAnimation ());
 	}
 
-    public void load() {
-		Application.LoadLevel(scene.name);
-        Debug.Log("testi");
-    }
+	IEnumerator DeathAnimation()
+	{
+		// Tänne kuolemisanimaatio
+		yield return new WaitForSeconds(5);
+		canvas.gameObject.SetActive(true);
+
+	}
 	
 }
