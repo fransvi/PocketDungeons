@@ -8,6 +8,16 @@ public class PlayerController : MonoBehaviour {
     //11
     public Animator CharacterAnimator;
 
+    //Audio
+    public AudioClip Jump;
+    public AudioClip Sword;
+    public AudioClip Landing;
+    public AudioClip Player_Hit;
+    private AudioSource source;
+    private float volLowRange = .5f;
+    private float volHighRange = 1.0f;
+    
+
     [SerializeField]
     private float _maxSpeed;
     [SerializeField]
@@ -92,6 +102,11 @@ public class PlayerController : MonoBehaviour {
     private Vector2 _gravity;
     private Color _color;
 
+    private void Awake()
+    {
+        source = GetComponent<AudioSource>();
+    }
+
     void Start () {
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
@@ -112,9 +127,15 @@ public class PlayerController : MonoBehaviour {
         _playerManager = GameObject.Find("PlayerManager");
         Physics2D.IgnoreLayerCollision(0, 16, true);
         Physics2D.IgnoreLayerCollision(0, 18, true);
+
         //Animaattori
         _color = gameObject.GetComponent<Renderer>().material.color;
         CharacterAnimator = GetComponent<Animator>();
+
+        //Audio
+        AudioSource audio = GetComponent<AudioSource>();
+        audio.Play();
+        audio.Play(44100);
     }
 
     //KB Controls
@@ -186,6 +207,7 @@ public class PlayerController : MonoBehaviour {
             if (Input.GetKeyUp(KeyCode.Space))
             {
                 _jump = false;
+                source.PlayOneShot(Jump);
                 //JumpUp();
             }
             if (Input.GetKeyDown(KeyCode.Q))
@@ -194,6 +216,7 @@ public class PlayerController : MonoBehaviour {
                 {
                     Attack();
                     CharacterAnimator.Play("Attack");
+                    source.PlayOneShot(Sword);
                 }
 
             }
@@ -555,6 +578,7 @@ public class PlayerController : MonoBehaviour {
             _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
             StartCoroutine(Flicker(5));
             StartCoroutine(InvulnTimer());
+            source.PlayOneShot(Player_Hit); // AUDIO
 
         }
         else
