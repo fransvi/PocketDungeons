@@ -42,3 +42,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Player
+    uniqueID: 2043115159
+    locked: 0
+  - name: Tavern
+    uniqueID: 3374599751
+    locked: 0
