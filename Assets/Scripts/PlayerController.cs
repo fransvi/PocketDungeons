@@ -345,6 +345,17 @@ public class PlayerController : MonoBehaviour {
 
                     _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(2);
                 }
+                else if (itemInt == 6)
+                {
+
+                }
+                else if (itemInt == 7)
+                {
+
+                }
+                else if (itemInt == 8)
+                {
+                }
                 colliders[i].gameObject.GetComponent<ItemScript>().Die();
             }
 

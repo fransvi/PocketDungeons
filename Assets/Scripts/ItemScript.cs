@@ -16,6 +16,8 @@ public class ItemScript : MonoBehaviour {
     4: Small Coin
     5: Bomb
     6: Shield
+    7: Mace
+    8: BasicSword
 
     */
     [SerializeField]
