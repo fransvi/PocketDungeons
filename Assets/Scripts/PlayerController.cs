@@ -8,6 +8,17 @@ public class PlayerController : MonoBehaviour {
     //11
     public Animator CharacterAnimator;
 
+    //Audio
+    public AudioSource jumpSound;
+	public AudioSource swordSound;
+	public AudioSource landingSound;
+	public AudioSource playerHitSound;
+	public AudioSource playerRunLoop;
+    private float volLowRange = .5f;
+    private float volHighRange = 1.0f;
+	bool jumpSoundPlayed=false;
+	bool runLoopPlayed=false;
+
     [SerializeField]
     private float _maxSpeed;
     [SerializeField]
@@ -92,6 +103,10 @@ public class PlayerController : MonoBehaviour {
     private Vector2 _gravity;
     private Color _color;
 
+    private void Awake()
+    {
+    }
+
     void Start () {
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
@@ -112,9 +127,15 @@ public class PlayerController : MonoBehaviour {
         _playerManager = GameObject.Find("PlayerManager");
         Physics2D.IgnoreLayerCollision(0, 16, true);
         Physics2D.IgnoreLayerCollision(0, 18, true);
+
         //Animaattori
         _color = gameObject.GetComponent<Renderer>().material.color;
         CharacterAnimator = GetComponent<Animator>();
+
+        //Audio
+        AudioSource audio = GetComponent<AudioSource>();
+        audio.Play();
+        audio.Play(44100);
     }
 
     //KB Controls
@@ -194,6 +215,7 @@ public class PlayerController : MonoBehaviour {
                 {
                     Attack();
                     CharacterAnimator.Play("Attack");
+                    swordSound.Play();
                 }
 
             }
@@ -468,14 +490,34 @@ public class PlayerController : MonoBehaviour {
             {
                 //CharacterAnimator.SetBool("Walk", true);
                 CharacterAnimator.Play("Walk");
+				if (!runLoopPlayed) {
+					runLoopPlayed = true;
+					playerRunLoop.loop = true;
+					playerRunLoop.Play ();
+				}
             }
             else if (_isJumping)
             {
-                CharacterAnimator.Play("Jump");
+				if (!jumpSoundPlayed) {
+					jumpSound.Play ();
+					jumpSoundPlayed = true;
+				}
+				CharacterAnimator.Play("Jump");
+				if (runLoopPlayed) {
+					playerRunLoop.loop = false;
+					runLoopPlayed = false;
+				}
             }
             else if (!_grounded && !_isJumping)
             {
-                CharacterAnimator.Play("Fall");
+				CharacterAnimator.Play("Fall");
+				if (jumpSoundPlayed) {
+					jumpSoundPlayed = false;
+				}
+				if (runLoopPlayed) {
+					playerRunLoop.loop = false;
+					runLoopPlayed = false;
+				}
             }
             //else if (_onLadder) NEEDS ENTRY ANIMATION WHEN IT IS CLIMBING THE LADDERS!!
             //{
@@ -483,10 +525,13 @@ public class PlayerController : MonoBehaviour {
             //}
             else
             {
-                CharacterAnimator.Play("Idle");
+				CharacterAnimator.Play("Idle");
+				if (runLoopPlayed) {
+					runLoopPlayed = false;
+					runLoopPlayed = false;
+				}
                 //CharacterAnimator.SetBool("Walk", false);
             }
-
 
             //Horizontal force
             _rigidBody.velocity = new Vector2(move * _maxSpeed, _rigidBody.velocity.y);
@@ -555,6 +600,7 @@ public class PlayerController : MonoBehaviour {
             _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
             StartCoroutine(Flicker(5));
             StartCoroutine(InvulnTimer());
+            playerHitSound.Play(); // AUDIO
 
         }
         else
