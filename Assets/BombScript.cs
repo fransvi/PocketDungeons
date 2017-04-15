@@ -47,7 +47,7 @@ public class BombScript : MonoBehaviour {
     IEnumerator ExpEffect(float ft)
     {
         GameObject explosion = Instantiate(explosionSprite, transform.position, Quaternion.identity) as GameObject;
-        Destroy(explosion, 1f);
+        Destroy(explosion, 0.5f);
         yield return new WaitForSeconds(ft);
 
     }

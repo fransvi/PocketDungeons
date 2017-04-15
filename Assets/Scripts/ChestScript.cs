@@ -14,6 +14,8 @@ public class ChestScript : MonoBehaviour {
 
     [SerializeField]
     private int _chestContainsInt;
+    [SerializeField]
+    private int _chestContainsType;
 
     [SerializeField]
     private GameObject _chestContainsItem;
@@ -28,6 +30,7 @@ public class ChestScript : MonoBehaviour {
 	void Start () {
 
         _chestContainsItem.GetComponent<ItemScript>().SetItemInt(_chestContainsInt);
+        _chestContainsItem.GetComponent<ItemScript>().SetItemType(_chestContainsType);
 		
 	}
 	

@@ -63,6 +63,8 @@ public class PlayerController : MonoBehaviour {
     private GameObject _bullet;
     [SerializeField]
     private GameObject _bomb;
+    [SerializeField]
+    private GameObject _potionEffectSprite;
 
     [SerializeField]
     private GameObject _itemPrefab;
@@ -315,6 +317,12 @@ public class PlayerController : MonoBehaviour {
         {
             GameObject go = Instantiate(_bomb, _meleeCheck.position, _meleeCheck.rotation);
         }
+        //Shield
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 3)
+        {
+            //TODO use shield
+        }
+
     }
 
     private void PickUpItem()
@@ -326,58 +334,109 @@ public class PlayerController : MonoBehaviour {
             {
        
                 int itemInt = colliders[i].gameObject.GetComponent<ItemScript>().GetItemInt();
-                if (itemInt == 0)
+                int itemType = colliders[i].gameObject.GetComponent<ItemScript>().GetItemType();
+
+                /*
+                    Item types:
+
+                0: Consumable
+                    0: Health potion
+                    1: Large Coin
+                    2: Small Coin
+                    3: Key1
+                1: Main Weapon
+                    0: Sword
+                    1: Mace
+                2: Off Weapon
+                    0: None
+                    1: Bow
+                    2: Bomb
+                    3: Shield
+
+                */
+
+                //Consumable loot
+                if(itemType == 0)
                 {
-                    _playerManager.GetComponent<PlayerInventory>().gainHealthPotion();
+                    if(itemInt == 0)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainHealthPotion();
+                    }
+                    else if (itemInt == 1)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainGold(5f);
+                    }
+                    else if (itemInt == 2)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
+                    }
+                    else if (itemInt == 3)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainKey1();
+                    }
+
                 }
-                else if(itemInt == 1)
+                //Main weapon
+                else if(itemType == 1)
                 {
-                    _playerManager.GetComponent<PlayerInventory>().gainGold(5f);
+                    //Sword
+                    if(itemInt == 0)
+                    {
+
+                    }
+                    //Mace
+                    else if(itemInt == 1)
+                    {
+
+                    }
                 }
-                else if(itemInt == 2)
+                //Off weapon
+                else if(itemType == 2)
                 {
-                    _playerManager.GetComponent<PlayerInventory>().gainKey1();
-                }
-                else if(itemInt == 3)
-                {
- 
-                        //TODO better inventory management order through multiple arrays
+                    //None
+                    if (itemInt == 0)
+                    {
+
+                    }
+                    //Bow
+                    else if (itemInt == 1)
+                    {
                         if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2)
                         {
                             GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
-                            go.GetComponent<ItemScript>().SetItemInt(5);
+                            
+                            go.GetComponent<ItemScript>().SetItemType(2);
+                            go.GetComponent<ItemScript>().SetItemInt(2);
                         }
-                    
 
-                    _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(1);
-                }
-                else if(itemInt == 4)
-                {
-                    _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
-                }
-                else if(itemInt == 5)
-                {
 
-                    //TODO better inventory management order through multiple arrays
-                    if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
-                    {
-                        GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
-                        go.GetComponent<ItemScript>().SetItemInt(3);
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(1);
                     }
+                    //Bomb
+                    else if (itemInt == 2)
+                    {
+                        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+                        {
+                            GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
+                            go.GetComponent<ItemScript>().SetItemType(2);
+                            go.GetComponent<ItemScript>().SetItemInt(1);
+                        }
 
-                    _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(2);
-                }
-                else if (itemInt == 6)
-                {
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(2);
 
-                }
-                else if (itemInt == 7)
-                {
+                    }
+                    //Shield
+                    else if (itemInt == 3)
+                    {
 
+                    }
+                    else if (itemInt == 4)
+                    {
+
+                    }
                 }
-                else if (itemInt == 8)
-                {
-                }
+               
+               
                 colliders[i].gameObject.GetComponent<ItemScript>().Die();
             }
 
@@ -468,7 +527,7 @@ public class PlayerController : MonoBehaviour {
         }
         */
 
-        if (_onLadder)
+                if (_onLadder)
         {
             Physics2D.gravity = Vector2.zero;
             _rigidBody.velocity = new Vector2(0, 0);
@@ -579,11 +638,13 @@ public class PlayerController : MonoBehaviour {
             }
             else if (_health + 10 > 20)
             {
+                StartCoroutine(PotionEffect(2f));
                 _health = 20;
                 _playerManager.GetComponent<PlayerInventory>().useHealthPotion();
             }
             else
             {
+                StartCoroutine(PotionEffect(2f));
                 _health += 10;
                 _playerManager.GetComponent<PlayerInventory>().useHealthPotion();
             }
@@ -631,6 +692,13 @@ public class PlayerController : MonoBehaviour {
         StartCoroutine(DeathAnimation());
     }
 
+    IEnumerator PotionEffect(float ft)
+    {
+        GameObject explosion = Instantiate(_potionEffectSprite, transform.position, Quaternion.identity) as GameObject;
+        Destroy(explosion, 1f);
+        yield return new WaitForSeconds(ft);
+
+    }
 
     IEnumerator InvulnTimer()
     {

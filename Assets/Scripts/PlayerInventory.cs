@@ -24,15 +24,22 @@ public class PlayerInventory : MonoBehaviour {
 
     /*
 
-    Main Weapons
-    0 = Sword
-    1 = Mace
+    Item types:
 
-    Off Weapons
-    0 = None
-    1 = Bow
-    2 = Bomb
-    3 = Shield
+    0: Consumable
+        0: Health potion
+        1: Large Coin
+        2: Small Coin
+        3: Key1
+    1: Main Weapon
+        0: Sword
+        1: Mace
+    2: Off Weapon
+        0: None
+        1: Bow
+        2: Bomb
+        3: Shield
+
 
     */
 
@@ -91,14 +98,19 @@ public class PlayerInventory : MonoBehaviour {
         }
     }
 
+    public float GetCurrentGold()
+    {
+        return _playerGold;
+    }
     void OnGUI()
     {
+        /*
         GUI.Label(new Rect(10, 10, 100, 20), "Gold: "+_playerGold);
         GUI.Label(new Rect(10, 30, 100, 20), "Key1: " + _hasKey1);
         GUI.Label(new Rect(10, 50, 100, 20), "Pot: " + _hasHealthPotion);
         GUI.Label(new Rect(10, 70, 100, 20), "CurrentMain: " + _currentMainWeaponInt);
         GUI.Label(new Rect(10, 90, 100, 20), "CurrentOff: " + _currentOffWeaponInt);
-
+        */
     }
 
 

@@ -51,7 +51,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1938590087127564}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.08600006, y: 0.09399992, z: 0}
+  m_LocalPosition: {x: 0.082, y: 0.127, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4795460436404654}
@@ -64,7 +64,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1538093583413946}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -17.52, y: 0.93, z: 3.6074219}
+  m_LocalPosition: {x: -11.63, y: -2.35, z: 3.6074219}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children:
   - {fileID: 4697878084437900}
@@ -112,10 +112,11 @@ MonoBehaviour:
   - {fileID: 21300002, guid: 8621158f514b628438d868d040de0f0b, type: 3}
   _openPoint: {fileID: 4697878084437900}
   _gameObjects: []
-  _chestContainsInt: 4
+  _chestContainsInt: 2
+  _chestContainsType: 0
   _chestContainsItem: {fileID: 1634300509365320, guid: c3a0e1668075282419dc605dad6891b2,
     type: 2}
-  _chestContainsAmount: 10
+  _chestContainsAmount: 15
 --- !u!212 &212856757502003724
 SpriteRenderer:
   m_ObjectHideFlags: 1
