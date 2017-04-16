@@ -88,10 +88,12 @@ public class PlayerController : MonoBehaviour {
 
     [SerializeField]
     private float _slopeFriction;
-
+    [SerializeField]
+    private GameObject _shootPoint;
     private float _bombForce = 1f;
     private bool _drawingBow;
     private bool _dying;
+    private bool _layingBomb;
     private bool _releasingBow;
     private float _bowForce;
     private bool _onLadder;
@@ -100,7 +102,7 @@ public class PlayerController : MonoBehaviour {
     const float _groundedRadius = .1f;
     private bool _grounded;
     private float tempSpeed;
-    private bool _facingRight;
+    private bool _facingRight; private bool _blocking;
     private bool _isTakingDamage;
     private bool _onPlatform;
     private bool _isJumping = false;
@@ -115,6 +117,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Start () {
+        _layingBomb = false;
         _ableToShootBow = true;
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
@@ -244,16 +247,26 @@ public class PlayerController : MonoBehaviour {
         }
         if (Input.GetKey(KeyCode.R))
         {
-            if(_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+            int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+            if (ow == 1)
             {
                 _drawingBow = true;
                 _bowForce += 1;
+            }
+            else if(ow == 2)
+            {
+
+            }
+            else if(ow == 3)
+            {
+                _blocking = true;
             }
 
         }
         if (Input.GetKeyUp(KeyCode.R))
         {
-            if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+            int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+            if (ow == 1)
             {
                 _drawingBow = false;
                 UseOffWeapon();
@@ -262,15 +275,27 @@ public class PlayerController : MonoBehaviour {
                 
 
             }
-            else
+            else if(ow == 2)
             {
                 UseOffWeapon();
+                StartCoroutine(BombLayAnim());
+            }
+            else if(ow == 3)
+            {
+                _blocking = false;
             }
 
 
         }
 }
 
+
+    IEnumerator BombLayAnim()
+    {
+        _layingBomb = true;
+        yield return new WaitForSeconds(0.45f);
+        _layingBomb = false;
+    }
     IEnumerator BowRelease()
     {
         _releasingBow = true;
@@ -336,6 +361,7 @@ public class PlayerController : MonoBehaviour {
         _ableToShootBow = true;
     }
 
+
     private void UseOffWeapon()
     {
         //Bow
@@ -356,24 +382,34 @@ public class PlayerController : MonoBehaviour {
         //Bomb
         if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2 && _ableToShootBow)
         {
-            GameObject go = Instantiate(_bomb, _meleeCheck.position, _meleeCheck.rotation);
-        }
-        //Shield
-        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 3)
-        {
-            //TODO use shield
+            GameObject go = Instantiate(_bomb, _shootPoint.transform.position, _shootPoint.transform.rotation);
+            if (_facingRight)
+            {
+                go.GetComponent<BombScript>().CreateBomb(true, 5);
+            }
+            else
+            {
+                go.GetComponent<BombScript>().CreateBomb(false, 5);
+            }
+            //Shield
+            if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 3)
+            {
+               //Done as boolean value
+            }
         }
 
     }
 
     private void PickUpItem()
     {
+        int currentOffWep = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+        int currentMainWep = _playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon();
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.5f, _whatIsItem);
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].gameObject != gameObject)
             {
-       
+
                 int itemInt = colliders[i].gameObject.GetComponent<ItemScript>().GetItemInt();
                 int itemType = colliders[i].gameObject.GetComponent<ItemScript>().GetItemType();
 
@@ -397,9 +433,9 @@ public class PlayerController : MonoBehaviour {
                 */
 
                 //Consumable loot
-                if(itemType == 0)
+                if (itemType == 0)
                 {
-                    if(itemInt == 0)
+                    if (itemInt == 0)
                     {
                         _playerManager.GetComponent<PlayerInventory>().gainHealthPotion();
                     }
@@ -418,70 +454,110 @@ public class PlayerController : MonoBehaviour {
 
                 }
                 //Main weapon
-                else if(itemType == 1)
+                else if (itemType == 1)
                 {
                     //Sword
-                    if(itemInt == 0)
+                    if (itemInt == 0)
                     {
-
+                        if(currentMainWep == 0)
+                        {
+                            DropLastItem(1, 0);
+                        }else if(currentMainWep == 1)
+                        {
+                            DropLastItem(1, 1);
+                        }
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentMainWeapon(0);
                     }
                     //Mace
-                    else if(itemInt == 1)
+                    else if (itemInt == 1)
                     {
+                        if (currentMainWep == 0)
+                        {
+                            DropLastItem(1, 0);
+                        }
+                        else if (currentMainWep == 1)
+                        {
+                            DropLastItem(1, 1);
+                        }
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentMainWeapon(1);
 
                     }
                 }
                 //Off weapon
-                else if(itemType == 2)
+
+                else if (itemType == 2)
                 {
-                    //None
-                    if (itemInt == 0)
-                    {
 
-                    }
                     //Bow
-                    else if (itemInt == 1)
+                    if (itemInt == 1)
                     {
-                        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2)
+                        if (currentOffWep == 1)
                         {
-                            GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
-                            
-                            go.GetComponent<ItemScript>().SetItemType(2);
-                            go.GetComponent<ItemScript>().SetItemInt(2);
+                            DropLastItem(2, 1);
                         }
-
-
+                        else if (currentOffWep == 2)
+                        {
+                            DropLastItem(2, 2);
+                        }
+                        else if (currentOffWep == 3)
+                        {
+                            DropLastItem(2, 3);
+                        }
                         _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(1);
                     }
                     //Bomb
                     else if (itemInt == 2)
                     {
-                        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+                        if (currentOffWep == 1)
                         {
-                            GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
-                            go.GetComponent<ItemScript>().SetItemType(2);
-                            go.GetComponent<ItemScript>().SetItemInt(1);
+                            DropLastItem(2, 1);
                         }
-
+                        else if (currentOffWep == 2)
+                        {
+                            DropLastItem(2, 2);
+                        }
+                        else if (currentOffWep == 3)
+                        {
+                            DropLastItem(2, 3);
+                        }
                         _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(2);
 
                     }
                     //Shield
                     else if (itemInt == 3)
                     {
+                        if (currentOffWep == 1)
+                        {
+                            DropLastItem(2, 1);
+                        }
+                        else if (currentOffWep == 2)
+                        {
+                            DropLastItem(2, 2);
+                        }
+                        else if (currentOffWep == 3)
+                        {
+                            DropLastItem(2, 3);
 
-                    }
-                    else if (itemInt == 4)
-                    {
+                        }
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(3);
 
                     }
                 }
-               
-               
+
+
+
                 colliders[i].gameObject.GetComponent<ItemScript>().Die();
             }
 
         }
+    }
+
+    private void DropLastItem(int itemType, int itemInt)
+    {
+        GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
+        go.GetComponent<ItemScript>().SetItemType(itemType);
+        go.GetComponent<ItemScript>().SetItemInt(itemInt);
+
     }
 
     void FixedUpdate () {
@@ -533,6 +609,16 @@ public class PlayerController : MonoBehaviour {
             {
                 _grounded = true;
                 pressurePads[i].gameObject.GetComponent<PressurePadScript>().SetPressurePadState(1);
+
+            }
+
+        }
+        Collider2D[] stageLimits = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, 1 << LayerMask.NameToLayer("StageLimit"));
+        for (int i = 0; i < stageLimits.Length; i++)
+        {
+            if (stageLimits[i].gameObject != gameObject)
+            {
+                Die();
 
             }
 
@@ -601,6 +687,11 @@ public class PlayerController : MonoBehaviour {
         {
             CharacterAnimator.Play("Die");
         }
+        else if (_blocking)
+        {
+            _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
+            CharacterAnimator.Play("ShieldBlock");
+        }
         else if (_grounded || _airControl)
         {
             if (_attackOnCooldown)
@@ -615,6 +706,7 @@ public class PlayerController : MonoBehaviour {
                 }
 
             }
+
             else if (_drawingBow && _ableToShootBow)
             {
                 CharacterAnimator.Play("BowDraw");
@@ -622,6 +714,10 @@ public class PlayerController : MonoBehaviour {
             else if (_releasingBow)
             {
                 CharacterAnimator.Play("BowRelease");
+            }
+            else if (_layingBomb)
+            {
+                CharacterAnimator.Play("AttackDefault");
             }
             else if (_invulnurable)
             {
@@ -738,7 +834,7 @@ public class PlayerController : MonoBehaviour {
     //Player takes damage;
     public void Hurt(int damage)
     {
-        if (_health - damage > 0 && !_invulnurable)
+        if (_health - damage > 0 && !_invulnurable && !_blocking)
         {
             _health -= damage;
 

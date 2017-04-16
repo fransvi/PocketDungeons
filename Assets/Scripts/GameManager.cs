@@ -18,6 +18,11 @@ public class GameManager : MonoBehaviour {
 		
 	}
 
+    public void LoadGameOverScreen()
+    {
+
+    }
+
     public void LoadMenu()
     {
         Application.LoadLevel("GameMenu");
