@@ -661,8 +661,8 @@ public class PlayerController : MonoBehaviour {
 					jumpSoundPlayed = false;
 				}
 				if (runLoopPlayed) {
-					playerRunLoop.loop = false;
 					runLoopPlayed = false;
+					playerRunLoop.loop = false;
 				}
             }
 
@@ -671,7 +671,7 @@ public class PlayerController : MonoBehaviour {
 				CharacterAnimator.Play("Idle");
 				if (runLoopPlayed) {
 					runLoopPlayed = false;
-					runLoopPlayed = false;
+					playerRunLoop.loop = false;
 				}
                 //CharacterAnimator.SetBool("Walk", false);
             }
