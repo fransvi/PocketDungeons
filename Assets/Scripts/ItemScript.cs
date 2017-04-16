@@ -95,8 +95,8 @@ public class ItemScript : MonoBehaviour {
         {
             if (colliders[i].gameObject != gameObject)
             {
-                Physics2D.gravity = Vector2.zero;
-                GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+                //Physics2D.gravity = Vector2.zero;
+                //GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
             }
 
         }

@@ -91,6 +91,8 @@ public class PlayerController : MonoBehaviour {
 
     private float _bombForce = 1f;
     private bool _drawingBow;
+    private bool _dying;
+    private bool _releasingBow;
     private float _bowForce;
     private bool _onLadder;
     private Rigidbody2D _rigidBody;
@@ -104,12 +106,16 @@ public class PlayerController : MonoBehaviour {
     private bool _isJumping = false;
     private Vector2 _gravity;
     private Color _color;
+    private bool _ableToShootBow;
+    [SerializeField]
+    private float _bowCoolDown;
 
     private void Awake()
     {
     }
 
     void Start () {
+        _ableToShootBow = true;
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
         _ladderCheck = transform.Find("LadderCheck");
@@ -119,6 +125,9 @@ public class PlayerController : MonoBehaviour {
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _health = _maxHealth;
+        _dying = false;
+        _releasingBow = false;
+        _drawingBow = false;
         _invulnurable = false;
         _onLadder = false;
         _weaponSwing.gameObject.SetActive(false);
@@ -235,14 +244,39 @@ public class PlayerController : MonoBehaviour {
         }
         if (Input.GetKey(KeyCode.R))
         {
-            _bowForce += 1;
+            if(_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+            {
+                _drawingBow = true;
+                _bowForce += 1;
+            }
+
         }
         if (Input.GetKeyUp(KeyCode.R))
         {
-            UseOffWeapon();
-            _bowForce = 0;
+            if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+            {
+                _drawingBow = false;
+                UseOffWeapon();
+                _bowForce = 0;
+                StartCoroutine(BowRelease());
+                
+
+            }
+            else
+            {
+                UseOffWeapon();
+            }
+
+
         }
 }
+
+    IEnumerator BowRelease()
+    {
+        _releasingBow = true;
+        yield return new WaitForSeconds(0.25f);
+        _releasingBow = false;
+    }
 
     private void OpenDoor()
     {
@@ -295,10 +329,17 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    IEnumerator BowCooldown()
+    {
+        _ableToShootBow = false;
+        yield return new WaitForSeconds(_bowCoolDown);
+        _ableToShootBow = true;
+    }
+
     private void UseOffWeapon()
     {
         //Bow
-        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1 && _ableToShootBow)
         {
             GameObject go = Instantiate(_bullet, _meleeCheck.position, _meleeCheck.rotation);
             if (_facingRight)
@@ -309,11 +350,11 @@ public class PlayerController : MonoBehaviour {
             {
                 go.GetComponent<BulletScript>().createBullet(false, _bowForce);
             }
-
+            StartCoroutine(BowCooldown());
             Destroy(go, 3.0f);
         }
         //Bomb
-        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2)
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2 && _ableToShootBow)
         {
             GameObject go = Instantiate(_bomb, _meleeCheck.position, _meleeCheck.rotation);
         }
@@ -527,17 +568,18 @@ public class PlayerController : MonoBehaviour {
         }
         */
 
-                if (_onLadder)
+        if (_onLadder)
         {
+
             Physics2D.gravity = Vector2.zero;
             _rigidBody.velocity = new Vector2(0, 0);
             if (Input.GetAxis("Vertical") > 0)
             {
-                transform.Translate(0, 4 * Time.deltaTime, 0);
+                transform.Translate(0, 3 * Time.deltaTime, 0);
             }
             else if (Input.GetAxis("Vertical") < 0)
             {
-                transform.Translate(0, -4 * Time.deltaTime, 0);
+                transform.Translate(0, -3 * Time.deltaTime, 0);
             }
         }
         else
@@ -554,13 +596,47 @@ public class PlayerController : MonoBehaviour {
 
     public void Move(float move, bool jump)
     {
-        if (_grounded || _airControl)
+
+        if (_dying)
         {
-            if (_grounded && move != 0)
+            CharacterAnimator.Play("Die");
+        }
+        else if (_grounded || _airControl)
+        {
+            if (_attackOnCooldown)
+            {
+                if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0)
+                {
+                    CharacterAnimator.Play("AttackSword");
+                }
+                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1)
+                {
+                    CharacterAnimator.Play("AttackMace");
+                }
+
+            }
+            else if (_drawingBow && _ableToShootBow)
+            {
+                CharacterAnimator.Play("BowDraw");
+            }
+            else if (_releasingBow)
+            {
+                CharacterAnimator.Play("BowRelease");
+            }
+            else if (_invulnurable)
+            {
+                CharacterAnimator.Play("Damage");
+            }
+            else if (_onLadder)
+            {
+                CharacterAnimator.Play("Climb");
+            }
+            else if (_grounded && move != 0)
             {
                 //CharacterAnimator.SetBool("Walk", true);
+                //CharacterAnimator.Play("Walk");
                 CharacterAnimator.Play("Walk");
-				if (!runLoopPlayed) {
+                if (!runLoopPlayed) {
 					runLoopPlayed = true;
 					playerRunLoop.loop = true;
 					playerRunLoop.Play ();
@@ -589,10 +665,7 @@ public class PlayerController : MonoBehaviour {
 					runLoopPlayed = false;
 				}
             }
-            //else if (_onLadder) NEEDS ENTRY ANIMATION WHEN IT IS CLIMBING THE LADDERS!!
-            //{
-            //    CharacterAnimator.SetTrigger("Entry");
-            //}
+
             else
             {
 				CharacterAnimator.Play("Idle");
@@ -665,7 +738,7 @@ public class PlayerController : MonoBehaviour {
     //Player takes damage;
     public void Hurt(int damage)
     {
-        if (_health - damage > 0f && !_invulnurable)
+        if (_health - damage > 0 && !_invulnurable)
         {
             _health -= damage;
 
@@ -675,8 +748,9 @@ public class PlayerController : MonoBehaviour {
             playerHitSound.Play(); // AUDIO
 
         }
-        else
+        else if(_health - damage <= 0)
         {
+            _health = 0;
             Die();
         }
     }
@@ -684,7 +758,9 @@ public class PlayerController : MonoBehaviour {
     IEnumerator DeathAnimation()
     {
         //TODO play death animation and load Gameover/retry screen
-        yield return new WaitForSeconds(1f);
+        _dying = true;
+        yield return new WaitForSeconds(1.5f);
+        _gameManager.GetComponent<GameManager>().LoadGameOverScreen();
     }
 
     private void Die()
@@ -726,11 +802,10 @@ public class PlayerController : MonoBehaviour {
     //Placeholder for attack anims
     IEnumerator AttackAnim()
     {
-        _weaponSwing.gameObject.SetActive(true);
-        //CharacterAnimator.Play("Attack");
+        //_weaponSwing.gameObject.SetActive(true);
         _attackOnCooldown = true;
         yield return new WaitForSeconds(_attackCooldown);
-        _weaponSwing.gameObject.SetActive(false);
+        //_weaponSwing.gameObject.SetActive(false);
         _attackOnCooldown = false;
     }
 
