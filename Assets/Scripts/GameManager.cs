@@ -23,6 +23,11 @@ public class GameManager : MonoBehaviour {
 
     }
 
+    public void LoadLevel1_2()
+    {
+        Application.LoadLevel("level02");
+    }
+
     public void LoadMenu()
     {
         Application.LoadLevel("GameMenu");

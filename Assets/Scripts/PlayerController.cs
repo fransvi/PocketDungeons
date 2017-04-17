@@ -319,7 +319,7 @@ public class PlayerController : MonoBehaviour {
                 }
                 if (colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
                 {
-                    _gameManager.LoadMenu();
+                    _gameManager.LoadLevel1_2();
                 }
             }
         }
