@@ -20,6 +20,14 @@ public class BulletScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        if (!_enemyProjectile)
+        {
+            Physics2D.IgnoreLayerCollision(18, 0, true);
+        }
+        else
+        {
+            Physics2D.IgnoreLayerCollision(18, 0, false);
+        }
 
         if (_dartTrapProjectile)
         {
@@ -36,6 +44,7 @@ public class BulletScript : MonoBehaviour {
             GetComponent<Rigidbody2D>().velocity = transform.TransformDirection(new Vector3(-_speed, 2f, 0));
         }
         GetComponent<Rigidbody2D>().AddForce(transform.forward * 30, ForceMode2D.Impulse);
+        Destroy(gameObject, 3f);
 
     }
 
@@ -58,7 +67,7 @@ public class BulletScript : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Default") && _enemyProjectile)
+        if (other.gameObject.tag == "Player" && _enemyProjectile)
         {
 
             other.gameObject.GetComponent<PlayerController>().Hurt(1);
@@ -71,6 +80,7 @@ public class BulletScript : MonoBehaviour {
         }
         if (other.gameObject.layer == LayerMask.NameToLayer("Ground") && !_dartTrapProjectile)
         {
+
             Destroy(gameObject);
         }
         if (other.gameObject.layer == LayerMask.NameToLayer("Spikes") && !_dartTrapProjectile)

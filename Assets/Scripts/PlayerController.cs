@@ -140,7 +140,6 @@ public class PlayerController : MonoBehaviour {
         tempSpeed = _maxSpeed;
         _playerManager = GameObject.Find("PlayerManager");
         Physics2D.IgnoreLayerCollision(0, 16, true);
-        Physics2D.IgnoreLayerCollision(0, 18, true);
 
         //Animaattori
         _color = gameObject.GetComponent<Renderer>().material.color;
@@ -312,14 +311,14 @@ public class PlayerController : MonoBehaviour {
             {
 
                 
-                if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
+                if (_playerManager.GetComponent<PlayerInventory>().getHasKey1() && colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
+                {
+                    _gameManager.LoadLevel1_2();
+                }
+                else if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
                 {
                     colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
                     
-                }
-                if (colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
-                {
-                    _gameManager.LoadLevel1_2();
                 }
             }
         }
