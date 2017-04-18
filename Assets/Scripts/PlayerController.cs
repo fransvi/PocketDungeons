@@ -222,7 +222,7 @@ public class PlayerController : MonoBehaviour {
                 _jump = false;
                 //JumpUp();
             }
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetKeyDown(KeyCode.Z))
             {
                 if (!_attackOnCooldown)
                 {
@@ -233,18 +233,18 @@ public class PlayerController : MonoBehaviour {
 
             }
 
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKeyDown(KeyCode.Y))
             {
                 UsePotion();
                 //TODO
             }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             PickUpItem();
             OpenDoor();
         }
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKey(KeyCode.X))
         {
             int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
             if (ow == 1)
@@ -266,7 +266,7 @@ public class PlayerController : MonoBehaviour {
             }
 
         }
-        if (Input.GetKeyUp(KeyCode.R))
+        if (Input.GetKeyUp(KeyCode.X))
         {
             int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
             if (ow == 1)
