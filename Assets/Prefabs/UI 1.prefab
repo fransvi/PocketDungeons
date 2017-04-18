@@ -877,7 +877,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 69b3a7551fc6c09449532496a8758c12, type: 3}
   - {fileID: 21300000, guid: 69b3a7551fc6c09449532496a8758c12, type: 3}
   _mainWeaponSprites:
-  - {fileID: 21300000, guid: 059fcf32c860c6449b536a6caf1a556b, type: 3}
+  - {fileID: 21300000, guid: 53d743e5decac684083d1c0d812ea860, type: 3}
   - {fileID: 21300000, guid: fd1f82f99bfc20440a637845279b8031, type: 3}
   _offWeaponSprites:
   - {fileID: 21300000, guid: ce0aa6fbe0ac91a429b7264b68fc45c3, type: 3}

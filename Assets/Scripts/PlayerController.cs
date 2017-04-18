@@ -250,7 +250,11 @@ public class PlayerController : MonoBehaviour {
             if (ow == 1)
             {
                 _drawingBow = true;
-                _bowForce += 1;
+                if(_bowForce < 70)
+                {
+                    _bowForce += 1;
+                }
+
             }
             else if(ow == 2)
             {
@@ -267,10 +271,12 @@ public class PlayerController : MonoBehaviour {
             int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
             if (ow == 1)
             {
-                _drawingBow = false;
-                UseOffWeapon();
-                _bowForce = 0;
-                StartCoroutine(BowRelease());
+                    _drawingBow = false;
+                    UseOffWeapon();
+                    _bowForce = 0;
+                    StartCoroutine(BowRelease());
+                
+
                 
 
             }
