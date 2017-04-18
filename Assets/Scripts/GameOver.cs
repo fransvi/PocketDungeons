@@ -20,7 +20,6 @@ public class GameOver : MonoBehaviour {
 		// Tänne kuolemisanimaatio
 		yield return new WaitForSeconds(5);
 		canvas.gameObject.SetActive(true);
-
 	}
 	
 }

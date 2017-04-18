@@ -18,6 +18,22 @@ public class GameManager : MonoBehaviour {
 		
 	}
 
+    public void LoadGameOverScreen()
+    {
+
+    }
+
+    public void LoadLevel1_2()
+    {
+        StartCoroutine(ChangeLevel());
+    }
+    IEnumerator ChangeLevel()
+    {
+        float fadeTime = GetComponent<AutoFade>().BeginFade(1);
+        yield return new WaitForSeconds(fadeTime);
+        Application.LoadLevel(Application.loadedLevel + 1);
+    }
+
     public void LoadMenu()
     {
         Application.LoadLevel("GameMenu");

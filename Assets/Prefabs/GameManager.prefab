@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4968901165345316}
   - component: {fileID: 114054822735929592}
+  - component: {fileID: 114557445388464228}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -34,7 +35,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1386823169839508}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 46.939114, y: 15.857225, z: 0.390625}
+  m_LocalPosition: {x: 21, y: 6.5, z: 0.390625}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -51,3 +52,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e83c36170f01a441aeaa5a7eff2ad7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114557445388464228
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1386823169839508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 475a67d6085951146811af3fea973f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fadeOutTexture: {fileID: 2800000, guid: 9f93ae704bf1a8f4393a1952fcb8fbdb, type: 3}
+  _fadeSpeed: 0.8

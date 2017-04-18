@@ -16,9 +16,11 @@ public class EnemyScript : MonoBehaviour {
     [SerializeField]
     private int _meleeDamage;
     [SerializeField]
-
-
     private bool _facingRight;
+    [SerializeField]
+    private GameObject _deathAnim;
+    [SerializeField]
+    private GameObject _stunnedAnim;
     private Rigidbody2D _rigidBody;
     private Color _color;
     private float _viewDistance = 5f;

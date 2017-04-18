@@ -8,6 +8,17 @@ public class PlayerController : MonoBehaviour {
     //11
     public Animator CharacterAnimator;
 
+    //Audio
+    public AudioSource jumpSound;
+	public AudioSource swordSound;
+	public AudioSource landingSound;
+	public AudioSource playerHitSound;
+	public AudioSource playerRunLoop;
+    private float volLowRange = .5f;
+    private float volHighRange = 1.0f;
+	bool jumpSoundPlayed=false;
+	bool runLoopPlayed=false;
+
     [SerializeField]
     private float _maxSpeed;
     [SerializeField]
@@ -52,6 +63,8 @@ public class PlayerController : MonoBehaviour {
     private GameObject _bullet;
     [SerializeField]
     private GameObject _bomb;
+    [SerializeField]
+    private GameObject _potionEffectSprite;
 
     [SerializeField]
     private GameObject _itemPrefab;
@@ -75,9 +88,13 @@ public class PlayerController : MonoBehaviour {
 
     [SerializeField]
     private float _slopeFriction;
-
+    [SerializeField]
+    private GameObject _shootPoint;
     private float _bombForce = 1f;
     private bool _drawingBow;
+    private bool _dying;
+    private bool _layingBomb;
+    private bool _releasingBow;
     private float _bowForce;
     private bool _onLadder;
     private Rigidbody2D _rigidBody;
@@ -85,14 +102,23 @@ public class PlayerController : MonoBehaviour {
     const float _groundedRadius = .1f;
     private bool _grounded;
     private float tempSpeed;
-    private bool _facingRight;
+    private bool _facingRight; private bool _blocking;
     private bool _isTakingDamage;
     private bool _onPlatform;
     private bool _isJumping = false;
     private Vector2 _gravity;
     private Color _color;
+    private bool _ableToShootBow;
+    [SerializeField]
+    private float _bowCoolDown;
+
+    private void Awake()
+    {
+    }
 
     void Start () {
+        _layingBomb = false;
+        _ableToShootBow = true;
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
         _ladderCheck = transform.Find("LadderCheck");
@@ -102,6 +128,9 @@ public class PlayerController : MonoBehaviour {
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _rigidBody = GetComponent<Rigidbody2D>();
         _health = _maxHealth;
+        _dying = false;
+        _releasingBow = false;
+        _drawingBow = false;
         _invulnurable = false;
         _onLadder = false;
         _weaponSwing.gameObject.SetActive(false);
@@ -111,10 +140,15 @@ public class PlayerController : MonoBehaviour {
         tempSpeed = _maxSpeed;
         _playerManager = GameObject.Find("PlayerManager");
         Physics2D.IgnoreLayerCollision(0, 16, true);
-        Physics2D.IgnoreLayerCollision(0, 18, true);
+
         //Animaattori
         _color = gameObject.GetComponent<Renderer>().material.color;
         CharacterAnimator = GetComponent<Animator>();
+
+        //Audio
+        AudioSource audio = GetComponent<AudioSource>();
+        audio.Play();
+        audio.Play(44100);
     }
 
     //KB Controls
@@ -188,37 +222,91 @@ public class PlayerController : MonoBehaviour {
                 _jump = false;
                 //JumpUp();
             }
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetKeyDown(KeyCode.Z))
             {
                 if (!_attackOnCooldown)
                 {
                     Attack();
                     CharacterAnimator.Play("Attack");
+                    swordSound.Play();
                 }
 
             }
 
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKeyDown(KeyCode.Y))
             {
                 UsePotion();
                 //TODO
             }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             PickUpItem();
             OpenDoor();
         }
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKey(KeyCode.X))
         {
-            _bowForce += 1;
+            int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+            if (ow == 1)
+            {
+                _drawingBow = true;
+                if(_bowForce < 70)
+                {
+                    _bowForce += 1;
+                }
+
+            }
+            else if(ow == 2)
+            {
+
+            }
+            else if(ow == 3)
+            {
+                _blocking = true;
+            }
+
         }
-        if (Input.GetKeyUp(KeyCode.R))
+        if (Input.GetKeyUp(KeyCode.X))
         {
-            UseOffWeapon();
-            _bowForce = 0;
+            int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+            if (ow == 1)
+            {
+                    _drawingBow = false;
+                    UseOffWeapon();
+                    _bowForce = 0;
+                    StartCoroutine(BowRelease());
+                
+
+                
+
+            }
+            else if(ow == 2)
+            {
+                UseOffWeapon();
+                StartCoroutine(BombLayAnim());
+            }
+            else if(ow == 3)
+            {
+                _blocking = false;
+            }
+
+
         }
 }
+
+
+    IEnumerator BombLayAnim()
+    {
+        _layingBomb = true;
+        yield return new WaitForSeconds(0.45f);
+        _layingBomb = false;
+    }
+    IEnumerator BowRelease()
+    {
+        _releasingBow = true;
+        yield return new WaitForSeconds(0.25f);
+        _releasingBow = false;
+    }
 
     private void OpenDoor()
     {
@@ -229,14 +317,14 @@ public class PlayerController : MonoBehaviour {
             {
 
                 
-                if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
+                if (_playerManager.GetComponent<PlayerInventory>().getHasKey1() && colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
+                {
+                    _gameManager.LoadLevel1_2();
+                }
+                else if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
                 {
                     colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
                     
-                }
-                if (colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
-                {
-                    _gameManager.LoadMenu();
                 }
             }
         }
@@ -271,10 +359,18 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    IEnumerator BowCooldown()
+    {
+        _ableToShootBow = false;
+        yield return new WaitForSeconds(_bowCoolDown);
+        _ableToShootBow = true;
+    }
+
+
     private void UseOffWeapon()
     {
         //Bow
-        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1 && _ableToShootBow)
         {
             GameObject go = Instantiate(_bullet, _meleeCheck.position, _meleeCheck.rotation);
             if (_facingRight)
@@ -285,81 +381,188 @@ public class PlayerController : MonoBehaviour {
             {
                 go.GetComponent<BulletScript>().createBullet(false, _bowForce);
             }
-
+            StartCoroutine(BowCooldown());
             Destroy(go, 3.0f);
         }
         //Bomb
-        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2)
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2 && _ableToShootBow)
         {
-            GameObject go = Instantiate(_bomb, _meleeCheck.position, _meleeCheck.rotation);
+            GameObject go = Instantiate(_bomb, _shootPoint.transform.position, _shootPoint.transform.rotation);
+            if (_facingRight)
+            {
+                go.GetComponent<BombScript>().CreateBomb(true, 5);
+            }
+            else
+            {
+                go.GetComponent<BombScript>().CreateBomb(false, 5);
+            }
+            //Shield
+            if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 3)
+            {
+               //Done as boolean value
+            }
         }
+
     }
 
     private void PickUpItem()
     {
+        int currentOffWep = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+        int currentMainWep = _playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon();
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.5f, _whatIsItem);
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].gameObject != gameObject)
             {
-       
+
                 int itemInt = colliders[i].gameObject.GetComponent<ItemScript>().GetItemInt();
-                if (itemInt == 0)
-                {
-                    _playerManager.GetComponent<PlayerInventory>().gainHealthPotion();
-                }
-                else if(itemInt == 1)
-                {
-                    _playerManager.GetComponent<PlayerInventory>().gainGold(5f);
-                }
-                else if(itemInt == 2)
-                {
-                    _playerManager.GetComponent<PlayerInventory>().gainKey1();
-                }
-                else if(itemInt == 3)
-                {
- 
-                        //TODO better inventory management order through multiple arrays
-                        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2)
-                        {
-                            GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
-                            go.GetComponent<ItemScript>().SetItemInt(5);
-                        }
-                    
+                int itemType = colliders[i].gameObject.GetComponent<ItemScript>().GetItemType();
 
-                    _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(1);
-                }
-                else if(itemInt == 4)
-                {
-                    _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
-                }
-                else if(itemInt == 5)
-                {
+                /*
+                    Item types:
 
-                    //TODO better inventory management order through multiple arrays
-                    if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1)
+                0: Consumable
+                    0: Health potion
+                    1: Large Coin
+                    2: Small Coin
+                    3: Key1
+                1: Main Weapon
+                    0: Sword
+                    1: Mace
+                2: Off Weapon
+                    0: None
+                    1: Bow
+                    2: Bomb
+                    3: Shield
+
+                */
+
+                //Consumable loot
+                if (itemType == 0)
+                {
+                    if (itemInt == 0)
                     {
-                        GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
-                        go.GetComponent<ItemScript>().SetItemInt(3);
+                        _playerManager.GetComponent<PlayerInventory>().gainHealthPotion();
+                    }
+                    else if (itemInt == 1)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainGold(5f);
+                    }
+                    else if (itemInt == 2)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
+                    }
+                    else if (itemInt == 3)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainKey1();
                     }
 
-                    _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(2);
                 }
-                else if (itemInt == 6)
+                //Main weapon
+                else if (itemType == 1)
+                {
+                    //Sword
+                    if (itemInt == 0)
+                    {
+                        if(currentMainWep == 0)
+                        {
+                            DropLastItem(1, 0);
+                        }else if(currentMainWep == 1)
+                        {
+                            DropLastItem(1, 1);
+                        }
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentMainWeapon(0);
+                    }
+                    //Mace
+                    else if (itemInt == 1)
+                    {
+                        if (currentMainWep == 0)
+                        {
+                            DropLastItem(1, 0);
+                        }
+                        else if (currentMainWep == 1)
+                        {
+                            DropLastItem(1, 1);
+                        }
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentMainWeapon(1);
+
+                    }
+                }
+                //Off weapon
+
+                else if (itemType == 2)
                 {
 
-                }
-                else if (itemInt == 7)
-                {
+                    //Bow
+                    if (itemInt == 1)
+                    {
+                        if (currentOffWep == 1)
+                        {
+                            DropLastItem(2, 1);
+                        }
+                        else if (currentOffWep == 2)
+                        {
+                            DropLastItem(2, 2);
+                        }
+                        else if (currentOffWep == 3)
+                        {
+                            DropLastItem(2, 3);
+                        }
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(1);
+                    }
+                    //Bomb
+                    else if (itemInt == 2)
+                    {
+                        if (currentOffWep == 1)
+                        {
+                            DropLastItem(2, 1);
+                        }
+                        else if (currentOffWep == 2)
+                        {
+                            DropLastItem(2, 2);
+                        }
+                        else if (currentOffWep == 3)
+                        {
+                            DropLastItem(2, 3);
+                        }
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(2);
 
+                    }
+                    //Shield
+                    else if (itemInt == 3)
+                    {
+                        if (currentOffWep == 1)
+                        {
+                            DropLastItem(2, 1);
+                        }
+                        else if (currentOffWep == 2)
+                        {
+                            DropLastItem(2, 2);
+                        }
+                        else if (currentOffWep == 3)
+                        {
+                            DropLastItem(2, 3);
+
+                        }
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(3);
+
+                    }
                 }
-                else if (itemInt == 8)
-                {
-                }
+
+
+
                 colliders[i].gameObject.GetComponent<ItemScript>().Die();
             }
 
         }
+    }
+
+    private void DropLastItem(int itemType, int itemInt)
+    {
+        GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
+        go.GetComponent<ItemScript>().SetItemType(itemType);
+        go.GetComponent<ItemScript>().SetItemInt(itemInt);
+
     }
 
     void FixedUpdate () {
@@ -415,6 +618,16 @@ public class PlayerController : MonoBehaviour {
             }
 
         }
+        Collider2D[] stageLimits = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, 1 << LayerMask.NameToLayer("StageLimit"));
+        for (int i = 0; i < stageLimits.Length; i++)
+        {
+            if (stageLimits[i].gameObject != gameObject)
+            {
+                Die();
+
+            }
+
+        }
 
         Collider2D[] ladders = Physics2D.OverlapCircleAll(_ladderCheck.position, _groundedRadius, _whatIsLadder);
         for (int i = 0; i < ladders.Length; i++)
@@ -448,15 +661,16 @@ public class PlayerController : MonoBehaviour {
 
         if (_onLadder)
         {
+
             Physics2D.gravity = Vector2.zero;
             _rigidBody.velocity = new Vector2(0, 0);
             if (Input.GetAxis("Vertical") > 0)
             {
-                transform.Translate(0, 4 * Time.deltaTime, 0);
+                transform.Translate(0, 3 * Time.deltaTime, 0);
             }
             else if (Input.GetAxis("Vertical") < 0)
             {
-                transform.Translate(0, -4 * Time.deltaTime, 0);
+                transform.Translate(0, -3 * Time.deltaTime, 0);
             }
         }
         else
@@ -473,31 +687,95 @@ public class PlayerController : MonoBehaviour {
 
     public void Move(float move, bool jump)
     {
-        if (_grounded || _airControl)
+
+        if (_dying)
         {
-            if (_grounded && move != 0)
+            CharacterAnimator.Play("Die");
+        }
+        else if (_blocking)
+        {
+            _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
+            CharacterAnimator.Play("ShieldBlock");
+        }
+        else if (_grounded || _airControl)
+        {
+            if (_attackOnCooldown)
+            {
+                if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0)
+                {
+                    CharacterAnimator.Play("AttackSword");
+                }
+                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1)
+                {
+                    CharacterAnimator.Play("AttackMace");
+                }
+
+            }
+
+            else if (_drawingBow && _ableToShootBow)
+            {
+                CharacterAnimator.Play("BowDraw");
+            }
+            else if (_releasingBow)
+            {
+                CharacterAnimator.Play("BowRelease");
+            }
+            else if (_layingBomb)
+            {
+                CharacterAnimator.Play("AttackDefault");
+            }
+            else if (_invulnurable)
+            {
+                CharacterAnimator.Play("Damage");
+            }
+            else if (_onLadder)
+            {
+                CharacterAnimator.Play("Climb");
+            }
+            else if (_grounded && move != 0)
             {
                 //CharacterAnimator.SetBool("Walk", true);
+                //CharacterAnimator.Play("Walk");
                 CharacterAnimator.Play("Walk");
+                if (!runLoopPlayed) {
+					runLoopPlayed = true;
+					playerRunLoop.loop = true;
+					playerRunLoop.Play ();
+				}
             }
             else if (_isJumping)
             {
-                CharacterAnimator.Play("Jump");
+				if (!jumpSoundPlayed) {
+					jumpSound.Play ();
+					jumpSoundPlayed = true;
+				}
+				CharacterAnimator.Play("Jump");
+				if (runLoopPlayed) {
+					playerRunLoop.loop = false;
+					runLoopPlayed = false;
+				}
             }
             else if (!_grounded && !_isJumping)
             {
-                CharacterAnimator.Play("Fall");
-            }
-            //else if (_onLadder) NEEDS ENTRY ANIMATION WHEN IT IS CLIMBING THE LADDERS!!
-            //{
-            //    CharacterAnimator.SetTrigger("Entry");
-            //}
-            else
-            {
-                CharacterAnimator.Play("Idle");
-                //CharacterAnimator.SetBool("Walk", false);
+				CharacterAnimator.Play("Fall");
+				if (jumpSoundPlayed) {
+					jumpSoundPlayed = false;
+				}
+				if (runLoopPlayed) {
+					playerRunLoop.loop = false;
+					runLoopPlayed = false;
+				}
             }
 
+            else
+            {
+				CharacterAnimator.Play("Idle");
+				if (runLoopPlayed) {
+					runLoopPlayed = false;
+					runLoopPlayed = false;
+				}
+                //CharacterAnimator.SetBool("Walk", false);
+            }
 
             //Horizontal force
             _rigidBody.velocity = new Vector2(move * _maxSpeed, _rigidBody.velocity.y);
@@ -534,11 +812,13 @@ public class PlayerController : MonoBehaviour {
             }
             else if (_health + 10 > 20)
             {
+                StartCoroutine(PotionEffect(2f));
                 _health = 20;
                 _playerManager.GetComponent<PlayerInventory>().useHealthPotion();
             }
             else
             {
+                StartCoroutine(PotionEffect(2f));
                 _health += 10;
                 _playerManager.GetComponent<PlayerInventory>().useHealthPotion();
             }
@@ -559,17 +839,19 @@ public class PlayerController : MonoBehaviour {
     //Player takes damage;
     public void Hurt(int damage)
     {
-        if (_health - damage > 0f && !_invulnurable)
+        if (_health - damage > 0 && !_invulnurable && !_blocking)
         {
             _health -= damage;
 
             _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
             StartCoroutine(Flicker(5));
             StartCoroutine(InvulnTimer());
+            playerHitSound.Play(); // AUDIO
 
         }
-        else
+        else if(_health - damage <= 0)
         {
+            _health = 0;
             Die();
         }
     }
@@ -577,7 +859,9 @@ public class PlayerController : MonoBehaviour {
     IEnumerator DeathAnimation()
     {
         //TODO play death animation and load Gameover/retry screen
-        yield return new WaitForSeconds(1f);
+        _dying = true;
+        yield return new WaitForSeconds(1.5f);
+        _gameManager.GetComponent<GameManager>().LoadGameOverScreen();
     }
 
     private void Die()
@@ -585,6 +869,13 @@ public class PlayerController : MonoBehaviour {
         StartCoroutine(DeathAnimation());
     }
 
+    IEnumerator PotionEffect(float ft)
+    {
+        GameObject explosion = Instantiate(_potionEffectSprite, transform.position, Quaternion.identity) as GameObject;
+        Destroy(explosion, 1f);
+        yield return new WaitForSeconds(ft);
+
+    }
 
     IEnumerator InvulnTimer()
     {
@@ -612,11 +903,10 @@ public class PlayerController : MonoBehaviour {
     //Placeholder for attack anims
     IEnumerator AttackAnim()
     {
-        _weaponSwing.gameObject.SetActive(true);
-        //CharacterAnimator.Play("Attack");
+        //_weaponSwing.gameObject.SetActive(true);
         _attackOnCooldown = true;
         yield return new WaitForSeconds(_attackCooldown);
-        _weaponSwing.gameObject.SetActive(false);
+        //_weaponSwing.gameObject.SetActive(false);
         _attackOnCooldown = false;
     }
 
