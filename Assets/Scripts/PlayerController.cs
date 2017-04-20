@@ -771,7 +771,7 @@ public class PlayerController : MonoBehaviour {
             {
 				CharacterAnimator.Play("Idle");
 				if (runLoopPlayed) {
-					runLoopPlayed = false;
+					playerRunLoop.loop = false;
 					runLoopPlayed = false;
 				}
                 //CharacterAnimator.SetBool("Walk", false);
