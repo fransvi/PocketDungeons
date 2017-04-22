@@ -20,11 +20,13 @@ public class ItemScript : MonoBehaviour {
     1: Main Weapon
         0: Sword
         1: Mace
+        2: SuperSword
     2: Off Weapon
         0: None
         1: Bow
         2: Bomb
         3: Shield
+        4: MagicWand
 
     */
     [SerializeField]

@@ -103,6 +103,10 @@ MonoBehaviour:
   _speed: 15
   _enemyProjectile: 1
   _dartTrapProjectile: 1
+  _projectileSprites:
+  - {fileID: 21300000, guid: 09a3d052189126c4ea31c907c0bcc381, type: 3}
+  - {fileID: 21300000, guid: 09a3d052189126c4ea31c907c0bcc381, type: 3}
+  _animator: {fileID: 0}
 --- !u!212 &212250738782659120
 SpriteRenderer:
   m_ObjectHideFlags: 1

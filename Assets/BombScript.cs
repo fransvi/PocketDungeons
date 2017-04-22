@@ -59,6 +59,10 @@ public class BombScript : MonoBehaviour {
             {
                 hit.gameObject.GetComponent<EnemyScript>().TakeDamage(damage);
             }
+            if (hit.gameObject.tag == "Breakable")
+            {
+                hit.gameObject.GetComponent<BreakableWall>().BreakWall();
+            }
 
         }
 
