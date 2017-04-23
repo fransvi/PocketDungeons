@@ -992,6 +992,8 @@ MonoBehaviour:
   _current4Slot: {fileID: 114896396261210616}
   _keySlot: {fileID: 114527419466393716}
   _coinsText: {fileID: 114907528996552274}
+  _playerController: {fileID: 1835335137751308, guid: 163ac1c790a95954499d27ae4292daed,
+    type: 2}
 --- !u!114 &114527419466393716
 MonoBehaviour:
   m_ObjectHideFlags: 1

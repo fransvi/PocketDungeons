@@ -89,11 +89,12 @@ public class BulletScript : MonoBehaviour {
         _ignoreGroundCollider = false;
     }
 
-    public void createBullet(bool fr, float bf, int type)
+    public void createBullet(bool fr, float bf, int type, bool dart)
     {
         _facingRight = fr;
         _speed = bf;
         _bulletType = type;
+        _dartTrapProjectile = dart;
         if(_speed < 10)
         {
             _speed = 10;

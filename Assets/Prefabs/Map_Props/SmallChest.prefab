@@ -50,8 +50,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1483899790830700}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.09, y: 18.56, z: 0.390625}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -16.21, y: -10.69, z: 3.6074219}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children:
   - {fileID: 4195451303272626}
@@ -112,7 +112,8 @@ MonoBehaviour:
   - {fileID: 21300002, guid: 8621158f514b628438d868d040de0f0b, type: 3}
   _openPoint: {fileID: 4195451303272626}
   _gameObjects: []
-  _chestContainsInt: 4
+  _chestContainsInt: 3
+  _chestContainsType: 2
   _chestContainsItem: {fileID: 1634300509365320, guid: c3a0e1668075282419dc605dad6891b2,
     type: 2}
   _chestContainsAmount: 10

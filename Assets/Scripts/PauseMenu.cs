@@ -11,6 +11,7 @@ public class PauseMenu : MonoBehaviour
     void Start()
     {
         Canvas.gameObject.SetActive(false);
+        Time.timeScale = 1.0f;
     }
 
     void Update()

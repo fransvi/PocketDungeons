@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Slideshow Example.unity
     guid: 9dbf539e6dfc34542851b8f99e9b9e1f
   - enabled: 1
+    path: Assets/Scenes/InitGame.unity
+    guid: 2dd9080e873be1a4fafcd1005e57e04c
+  - enabled: 1
     path: Assets/Scenes/GameMenu.unity
     guid: f47de2f3cad66b747a31310cd7324a01
   - enabled: 1
@@ -20,3 +23,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/level03.unity
     guid: 7b4f1dcecc8b1d540aea3103cfd5ee59
+  - enabled: 1
+    path: Assets/Scenes/level04.unity
+    guid: 00000000000000000000000000000000

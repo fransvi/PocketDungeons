@@ -9,16 +9,23 @@ public class ButtonManage : MonoBehaviour
 
 	public Button[] buttons;
 	public Image cursor;
+    public GameManager gm;
+
 
 	private int highlightedButton=0;
 
 	void Update() {
-		// syöttö
-		if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
+        // syöttö
+
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
 			moveCursor (-1);
 		} else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
 			moveCursor (1);
-		}
+		}else if (Input.GetKeyDown(KeyCode.P))
+        {
+            //For testing.<
+            Application.LoadLevel("sandbox");
+        }
 
 		// kursorin liike
 		cursor.transform.position=new Vector3(buttons[highlightedButton].transform.position.x-70,buttons[highlightedButton].transform.position.y,cursor.transform.position.z);
@@ -38,6 +45,13 @@ public class ButtonManage : MonoBehaviour
 			highlightedButton += amount;
 		}
 	}
+
+    public void SetGameManager(GameManager g)
+    {
+        gm = g;
+        buttons[5].onClick.AddListener(gm.ResetSaveData);
+        buttons[6].onClick.AddListener(gm.SaveData);
+    }
 
     public void RetryBtn()
     {

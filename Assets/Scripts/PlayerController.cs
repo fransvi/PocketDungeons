@@ -210,7 +210,6 @@ public class PlayerController : MonoBehaviour {
                 if (!_attackOnCooldown)
                 {
                     Attack();
-                    CharacterAnimator.Play("Attack");
                     swordSound.Play();
                 }
 
@@ -253,7 +252,7 @@ public class PlayerController : MonoBehaviour {
             }
 
         }
-        if (Input.GetKeyUp(KeyCode.X) && !_offCooldown)
+        if (Input.GetKeyUp(KeyCode.X)) // !_offWCooldown
         {
             int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
             if (ow == 1)
@@ -274,6 +273,7 @@ public class PlayerController : MonoBehaviour {
             }
             else if(ow == 3)
             {
+                Debug.Log("Blocking false");
                 _blocking = false;
             }
             else if(ow == 4)
@@ -324,6 +324,7 @@ public class PlayerController : MonoBehaviour {
                 
                 if (_playerManager.GetComponent<PlayerInventory>().getHasKey1() && colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
                 {
+                    _gameManager.SaveData();
                     _gameManager.LoadLevel1_2();
                 }
                 else if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
@@ -380,11 +381,11 @@ public class PlayerController : MonoBehaviour {
             GameObject go = Instantiate(_bullet, _meleeCheck.position, _meleeCheck.rotation);
             if (_facingRight)
             {
-                go.GetComponent<BulletScript>().createBullet(true, _bowForce, 0);
+                go.GetComponent<BulletScript>().createBullet(true, _bowForce, 0, false);
             }
             else
             {
-                go.GetComponent<BulletScript>().createBullet(false, _bowForce, 0);
+                go.GetComponent<BulletScript>().createBullet(false, _bowForce, 0, false);
             }
             StartCoroutine(BowCooldown());
             Destroy(go, 3.0f);
@@ -414,11 +415,11 @@ public class PlayerController : MonoBehaviour {
             GameObject go = Instantiate(_bullet, _shootPoint.transform.position, _shootPoint.transform.rotation);
             if (_facingRight)
             {
-                go.GetComponent<BulletScript>().createBullet(true, 10, 1);
+                go.GetComponent<BulletScript>().createBullet(true, 10, 1, false);
             }
             else
             {
-                go.GetComponent<BulletScript>().createBullet(false, 10, 1);
+                go.GetComponent<BulletScript>().createBullet(false, 10, 1, false);
             }
 
             Destroy(go, 6.0f);
@@ -662,11 +663,14 @@ public class PlayerController : MonoBehaviour {
         {
             CharacterAnimator.Play("Die");
         }
+
         else if (_blocking)
         {
             _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
             CharacterAnimator.Play("ShieldBlock");
         }
+
+
         else if (_grounded || _airControl)
         {
             if (_attackOnCooldown)
@@ -689,6 +693,7 @@ public class PlayerController : MonoBehaviour {
             {
                 CharacterAnimator.Play("AttackWand");
             }
+
 
             else if (_drawingBow && _ableToShootBow)
             {
@@ -771,6 +776,7 @@ public class PlayerController : MonoBehaviour {
             if (_grounded && _jump && !_jumpOnCooldown && !_invulnurable)
             {
                 _grounded = false;
+                _rigidBody.velocity = Vector2.zero;
                 _rigidBody.AddForce(new Vector2(0f, _jumpForce));
                 StartCoroutine(JumpCooldown());
 
@@ -821,6 +827,7 @@ public class PlayerController : MonoBehaviour {
         {
             _health -= damage;
 
+            _rigidBody.velocity = Vector2.zero;
             _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
             StartCoroutine(Flicker(5));
             StartCoroutine(InvulnTimer());
@@ -957,6 +964,10 @@ public class PlayerController : MonoBehaviour {
     public int GetHealth()
     {
         return _health;
+    }
+    public void SetHealth(int h)
+    {
+        _health = h;
     }
 
     //Funktiot touch screen liikkumiselle

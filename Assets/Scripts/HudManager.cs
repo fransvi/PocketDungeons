@@ -30,15 +30,18 @@ public class HudManager : MonoBehaviour {
     [SerializeField]
     private Text _coinsText;
 
+    [SerializeField]
     private GameObject _playerController;
     private GameObject _playerManager;
 
-	// Use this for initialization
-	void Start () {
-        _playerController = GameObject.Find("Player");
-        _playerManager = GameObject.Find("PlayerManager");
+
+    public void SetPlayerStats(GameObject player, GameObject inventory)
+    {
+        _playerController = player;
+        _playerManager = inventory;
+        
     }
-	
+
 	// Update is called once per frame
 	void Update () {
         int hp = _playerController.GetComponent<PlayerController>().GetHealth();

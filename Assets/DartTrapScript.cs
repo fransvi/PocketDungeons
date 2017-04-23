@@ -22,7 +22,7 @@ public class DartTrapScript : MonoBehaviour {
     private void Shoot()
     {
             GameObject go = Instantiate(_bullet, _shootPoint.gameObject.transform.position, _shootPoint.gameObject.transform.rotation);
-            go.GetComponent<BulletScript>().createBullet(false, _shootForce, 0);
+            go.GetComponent<BulletScript>().createBullet(false, _shootForce, 0, true);
             Destroy(go, 3.0f);
     }
 

@@ -39,7 +39,7 @@ namespace Tiled.Builder {
         private void initialize() {
 
             if (map == null) {
-                Debug.Log("Loading map data");
+                //Debug.Log("Loading map data");
                 map = new TiledMapLoader(
                     new JSONMapParser())
                     .Load(mapJson);
