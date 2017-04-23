@@ -79,7 +79,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rubble: {fileID: 1568887582500016, guid: 4c603f5c3984c4040a3edef23f44a4ef, type: 2}
-  _rubbleAmount: 5
+  _rubbleSprites:
+  - {fileID: 21300004, guid: b84254bc210722846ae17804da329859, type: 3}
+  - {fileID: 21300006, guid: b84254bc210722846ae17804da329859, type: 3}
+  - {fileID: 21300008, guid: b84254bc210722846ae17804da329859, type: 3}
+  _rubbleAmount: 3
 --- !u!212 &212301332023468968
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -112,7 +116,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c85528b65ec0e5748860d38a384a21bd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b84254bc210722846ae17804da329859, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
