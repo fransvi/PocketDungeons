@@ -114,6 +114,9 @@ MonoBehaviour:
   damage: 5
   _speed: 0
   _animator: {fileID: 0}
+  _whatIsGround:
+    serializedVersion: 2
+    m_Bits: 16777984
   explosionSprite: {fileID: 1910872018042508, guid: 4d133d5a794e05a4b868460c23ec78e8,
     type: 2}
 --- !u!212 &212907769227121148

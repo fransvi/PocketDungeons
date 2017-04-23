@@ -37,7 +37,7 @@ public class BulletScript : MonoBehaviour {
             _animator.Play("FireBallAnim");
         }
 
-        if (!_enemyProjectile)
+        if (!_dartTrapProjectile)
         {
             Physics2D.IgnoreLayerCollision(18, 0, true);
         }
@@ -103,7 +103,7 @@ public class BulletScript : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.tag == "Player" && _enemyProjectile)
+        if (other.gameObject.tag == "Player" && _dartTrapProjectile)
         {
 
             other.gameObject.GetComponent<PlayerController>().Hurt(1);

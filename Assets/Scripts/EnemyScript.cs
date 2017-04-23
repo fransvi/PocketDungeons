@@ -101,6 +101,7 @@ public class EnemyScript : MonoBehaviour {
         else if (transform.position.x > _player.transform.position.x)
         {
             //knock oikealle
+            _rigidBody.velocity = Vector2.zero;
             _rigidBody.AddForce(new Vector2(_knockbackForce, _knockbackForce));
         }
         _health -= damage;
