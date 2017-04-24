@@ -934,8 +934,13 @@ public class PlayerController : MonoBehaviour {
             {
                 if (colliders[i].gameObject != gameObject)
                 {
-                    //Enemy hit
-                    colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
+					//Enemy hit
+					if (colliders [i].gameObject.GetComponent<EnemyScript> ()) {
+						colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
+					}
+					if (colliders [i].gameObject.GetComponent<Goblin_King> ()) {
+						colliders[i].gameObject.GetComponent<Goblin_King>().TakeDamage(_meleeDamage);
+					}
                 }
             }
         }
@@ -953,7 +958,9 @@ public class PlayerController : MonoBehaviour {
                     float rand = UnityEngine.Random.Range(0, 100);
                     if(rand > 75)
                     {
-                        colliders[i].gameObject.GetComponent<EnemyScript>().MaceStun();
+						if (colliders [i].gameObject.GetComponent<EnemyScript> ()) {
+							colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
+						}
                     }
 
                 }
@@ -967,8 +974,13 @@ public class PlayerController : MonoBehaviour {
             {
                 if (colliders[i].gameObject != gameObject)
                 {
-                    //Enemy hit
-                    colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
+					//Enemy hit
+					if (colliders [i].gameObject.GetComponent<EnemyScript> ()) {
+						colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
+					}
+					if (colliders [i].gameObject.GetComponent<Goblin_King> ()) {
+						colliders[i].gameObject.GetComponent<Goblin_King>().TakeDamage(_meleeDamage);
+					}
                 }
             }
         }
