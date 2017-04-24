@@ -229,7 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a203dae23443f32469cfb18c1cb010ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftLimit: 7
+  leftLimit: 9
   rightLimit: 87
   topLimit: 11
   bottomLimit: -16

@@ -164,4 +164,6 @@ class PlayerData
     public int playerMainWeapon;
     public int playerOffWeapon;
     public float playerGold;
+    //Current Consumable
+    //Cosmetic itemit
 }

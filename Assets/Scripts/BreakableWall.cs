@@ -11,6 +11,12 @@ public class BreakableWall : MonoBehaviour {
     [SerializeField]
     private int _rubbleAmount;
 
+
+    void Start()
+    {
+        Physics2D.IgnoreLayerCollision(8, 25, true);Physics2D.IgnoreLayerCollision(9, 25, true); Physics2D.IgnoreLayerCollision(17, 25, true);
+        Physics2D.IgnoreLayerCollision(10, 25, true);Physics2D.IgnoreLayerCollision(12, 25, true); 
+    }
     public void BreakWall()
     {
         for (int i = 0; i < _rubbleAmount; i++)

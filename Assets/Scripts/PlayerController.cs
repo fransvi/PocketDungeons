@@ -541,6 +541,7 @@ public class PlayerController : MonoBehaviour {
             Physics2D.IgnoreLayerCollision(0, 9, false);
         }
         //Counter velocity on ramps
+        /*
         float angle;
         RaycastHit2D[] hits = new RaycastHit2D[2];
         //cast ray downwards
@@ -559,6 +560,7 @@ public class PlayerController : MonoBehaviour {
             }
         }
 
+        */
         //old gravity code
         //_rigidBody.AddForce(_gravity * _rigidBody.mass);
         _grounded = false;
@@ -634,6 +636,15 @@ public class PlayerController : MonoBehaviour {
 
         }
         */
+        if(_grounded && _horizontalMove == 0 && !_jump && !_isJumping)
+        {
+            _rigidBody.isKinematic = true;
+            _rigidBody.velocity = Vector2.zero;
+        }
+        else
+        {
+            _rigidBody.isKinematic = false;
+        }
 
         if (_onLadder)
         {

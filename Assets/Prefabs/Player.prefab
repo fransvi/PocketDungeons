@@ -297,9 +297,9 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
+  m_LinearDrag: 0.25
   m_AngularDrag: 0.5
-  m_GravityScale: 1
+  m_GravityScale: 1.5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -774,7 +774,7 @@ MonoBehaviour:
   playerHitSound: {fileID: 82702295507433556}
   playerRunLoop: {fileID: 82933713374388420}
   _maxSpeed: 5
-  _jumpForce: 350
+  _jumpForce: 450
   _jumpCooldown: 1
   _attackCooldown: 0.35
   _airControl: 1
@@ -811,7 +811,7 @@ MonoBehaviour:
   _meleeRadius: 0.75
   _meleeDamage: 1
   _maxHealth: 20
-  _knockbackForce: 200
+  _knockbackForce: 250
   _ladderCheck: {fileID: 0}
   _bullet: {fileID: 1559540331602946, guid: 17191973378697a44bf258f30f997923, type: 2}
   _bomb: {fileID: 1778789842989444, guid: e144ead33e3173141acbd848dd59f71a, type: 2}
