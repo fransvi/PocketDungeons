@@ -86,6 +86,10 @@ public class PlayerController : MonoBehaviour {
     private Transform _swordSwing;
     private Transform _maceSwing;
 
+    private KeyCode _key1;
+    private KeyCode _key2;
+    private KeyCode _key3;
+
     [SerializeField]
     private float _slopeFriction;
     [SerializeField]
@@ -105,6 +109,7 @@ public class PlayerController : MonoBehaviour {
     private bool _facingRight; private bool _blocking;
     private bool _isTakingDamage; private bool _offCooldown;
     private bool _onPlatform;
+    private float _selectedControls;
     private bool _isJumping = false;
     private Vector2 _gravity;
     private Color _color;
@@ -148,7 +153,17 @@ public class PlayerController : MonoBehaviour {
         //Animaattori
         _color = gameObject.GetComponent<Renderer>().material.color;
         CharacterAnimator = GetComponent<Animator>();
-
+        if(_selectedControls == 0)
+        {
+            _key1 = KeyCode.Q;
+            _key2 = KeyCode.W;
+            _key3 = KeyCode.E;
+        }else if(_selectedControls == 1)
+        {
+            _key1 = KeyCode.Z;
+            _key2 = KeyCode.X;
+            _key3 = KeyCode.C;
+        }
         //Audio
         AudioSource audio = GetComponent<AudioSource>();
         audio.Play();
@@ -196,7 +211,13 @@ public class PlayerController : MonoBehaviour {
             */
             // Nuoli alas
             // Go down platforms
+         if(_selectedControls == 0)
+        {
 
+        }else if(_selectedControls == 1)
+        {
+
+        }
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 _jump = true;
@@ -209,7 +230,7 @@ public class PlayerController : MonoBehaviour {
                 _jump = false;
                 //JumpUp();
             }
-            if (Input.GetKeyDown(KeyCode.Z))
+            if (Input.GetKeyDown(_key1))
             {
                 if (!_attackOnCooldown)
                 {
@@ -219,7 +240,7 @@ public class PlayerController : MonoBehaviour {
 
             }
 
-            if (Input.GetKeyDown(KeyCode.Y))
+            if (Input.GetKeyDown(_key3))
             {
                 UsePotion();
                 //TODO
@@ -230,7 +251,7 @@ public class PlayerController : MonoBehaviour {
             PickUpItem();
             OpenDoor();
         }
-        if (Input.GetKey(KeyCode.X))
+        if (Input.GetKey(_key2))
         {
             int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
             if (ow == 1 && !_offCooldown)
@@ -256,7 +277,7 @@ public class PlayerController : MonoBehaviour {
             }
 
         }
-        if (Input.GetKeyUp(KeyCode.X)) // !_offWCooldown
+        if (Input.GetKeyUp(_key2)) // !_offWCooldown
         {
             int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
             if (ow == 1)
@@ -899,6 +920,11 @@ public class PlayerController : MonoBehaviour {
         }
   
      
+    }
+
+    public void SetSelectedControls(int i)
+    {
+        _selectedControls = i;
     }
 
     //Placeholder for attack anims

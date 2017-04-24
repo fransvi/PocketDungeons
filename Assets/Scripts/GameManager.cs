@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour {
     public GameObject menu;
     public GameObject playerSpawnPoint;
 
-
+    public int selectedControls;
     //Data for saving
     public int playerHealth;
     public int playerMainWeapon;
@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour {
             inventory = transform.Find("PlayerManager");
             Destroy(gameObject);
         }
+        selectedControls = 0;
         LoadLevel1_2();
 
 
@@ -48,9 +49,15 @@ public class GameManager : MonoBehaviour {
         GameObject playerClone = Instantiate(player, playerSpawnPoint.transform.position, playerSpawnPoint.transform
             .rotation);
         playerClone.GetComponent<PlayerController>().SetHealth(20);
+        playerClone.GetComponent<PlayerController>().SetSelectedControls(selectedControls);
         inventory.gameObject.GetComponent<PlayerInventory>().SetPlayer(playerClone);
         ui.GetComponent<HudManager>().SetPlayerStats(playerClone, inventory.gameObject);
 
+    }
+
+    public void SetControls(int i)
+    {
+        selectedControls = i;
     }
 
     public void ResetSaveData()
@@ -124,6 +131,7 @@ public class GameManager : MonoBehaviour {
         if(scene.name != "GameMenu" && scene.name != "GameBoot")
         {
             ui = GameObject.Find("UI");
+            ui.GetComponent<HudManager>().SetControlState(selectedControls);
             LoadPlayer();
 
         }

@@ -21,11 +21,7 @@ public class ButtonManage : MonoBehaviour
 			moveCursor (-1);
 		} else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
 			moveCursor (1);
-		}else if (Input.GetKeyDown(KeyCode.P))
-        {
-            //For testing.<
-            Application.LoadLevel("sandbox");
-        }
+		}
 
 		// kursorin liike
 		cursor.transform.position=new Vector3(buttons[highlightedButton].transform.position.x-70,buttons[highlightedButton].transform.position.y,cursor.transform.position.z);
@@ -45,6 +41,11 @@ public class ButtonManage : MonoBehaviour
 			highlightedButton += amount;
 		}
 	}
+
+    public void SetControlSet(int f)
+    {
+        gm.GetComponent<GameManager>().SetControls(f);
+    }
 
     public void SetGameManager(GameManager g)
     {
