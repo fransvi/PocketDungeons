@@ -16,13 +16,17 @@ public class GameManager : MonoBehaviour {
     public GameObject ui;
     public GameObject menu;
     public GameObject playerSpawnPoint;
+    public GameObject ccmenu;
 
     public int selectedControls;
     //Data for saving
     public int playerHealth;
     public int playerMainWeapon;
     public int playerOffWeapon;
+    public bool playerHasPotion;
     public float playerGold;
+    public String playername;
+    public int playergender;
     void Awake()
     {
         if(gm == null)
@@ -46,18 +50,24 @@ public class GameManager : MonoBehaviour {
     public void LoadPlayer()
     {
         playerSpawnPoint = GameObject.Find("PlayerSpawnPoint");
+        ui = GameObject.Find("UI");
         GameObject playerClone = Instantiate(player, playerSpawnPoint.transform.position, playerSpawnPoint.transform
             .rotation);
         playerClone.GetComponent<PlayerController>().SetHealth(20);
         playerClone.GetComponent<PlayerController>().SetSelectedControls(selectedControls);
         inventory.gameObject.GetComponent<PlayerInventory>().SetPlayer(playerClone);
         ui.GetComponent<HudManager>().SetPlayerStats(playerClone, inventory.gameObject);
+        ui.GetComponent<HudManager>().SetControlState(selectedControls);
 
     }
 
     public void SetControls(int i)
     {
         selectedControls = i;
+    }
+    private string SaveFilePath
+    {
+        get { return Application.persistentDataPath + "/playerInfo.dat"; }
     }
 
     public void ResetSaveData()
@@ -70,12 +80,16 @@ public class GameManager : MonoBehaviour {
         data.playerMainWeapon = 0;
         data.playerOffWeapon = 0;
         data.playerGold = 0;
+        data.playergender = 0;
+        data.playerhaspotion = false;
+        data.playername = " ";
 
         bf.Serialize(file, data);
         file.Close();
         Debug.Log("Playerdata reset");
 
         LoadData();
+        StartCoroutine(BackToCharacterGeneration());
     }
     public void SaveData()
     {
@@ -87,6 +101,9 @@ public class GameManager : MonoBehaviour {
         data.playerMainWeapon = inventory.gameObject.GetComponent<PlayerInventory>().GetCurrentMainWeapon();
         data.playerOffWeapon = inventory.gameObject.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
         data.playerGold = inventory.gameObject.GetComponent<PlayerInventory>().GetCurrentGold();
+        data.playername = playername;
+        data.playergender = playergender;
+        data.playerhaspotion = inventory.gameObject.GetComponent<PlayerInventory>().getHasPotion();
 
         bf.Serialize(file, data);
         file.Close();
@@ -104,10 +121,14 @@ public class GameManager : MonoBehaviour {
             playerMainWeapon = data.playerMainWeapon;
             playerOffWeapon = data.playerOffWeapon;
             playerGold = data.playerGold;
+            playername = data.playername;
+            playergender = data.playergender;
+            playerHasPotion = data.playerhaspotion;
 
             inventory.gameObject.GetComponent<PlayerInventory>().SetCurrentMainWeapon(playerMainWeapon);
             inventory.gameObject.GetComponent<PlayerInventory>().SetCurrentOffWeapon(playerOffWeapon);
             inventory.gameObject.GetComponent<PlayerInventory>().SetCurrentGold(playerGold);
+            inventory.gameObject.GetComponent<PlayerInventory>().SetHasPotion(playerHasPotion);
             Debug.Log("Playerdata loaded "+ playerMainWeapon + " " + playerOffWeapon+ " " +playerGold);
         }
     }
@@ -128,17 +149,21 @@ public class GameManager : MonoBehaviour {
     //Wait on scene change and initialize different scenes
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if(scene.name != "GameMenu" && scene.name != "GameBoot")
+        if(scene.name == "CharacterCreation")
         {
-            ui = GameObject.Find("UI");
-            ui.GetComponent<HudManager>().SetControlState(selectedControls);
-            LoadPlayer();
-
+            ccmenu = GameObject.Find("CCCanvas");
+            ccmenu.GetComponent<CharacterCreatorScript>().SetGameManager(this);
         }
-        else if (scene.name == "GameMenu")
+        else if(scene.name == "GameMenu")
         {
             menu = GameObject.Find("GameMenuCanvas");
             menu.GetComponent<ButtonManage>().SetGameManager(this);
+            SaveData();
+        }
+        else if(scene.name != "GameMenu" && scene.name != "GameBoot" && scene.name != "CharacterCreation")
+        {
+            Debug.Log("Trying to load player");
+            LoadPlayer();
         }
         else
         {
@@ -150,18 +175,38 @@ public class GameManager : MonoBehaviour {
 
     public void LoadLevel1_2()
     {
-        StartCoroutine(ChangeLevel());
+        if(File.Exists(Application.persistentDataPath + "/playerInfo.dat")){
+            StartCoroutine(ChangeLevel(1));
+        }
+        else
+        {
+            StartCoroutine(ChangeLevel(0));
+        }      
+ 
     }
-    IEnumerator ChangeLevel()
+    IEnumerator ChangeLevel(int skip)
     {
         float fadeTime = GetComponent<AutoFade>().BeginFade(1);
         yield return new WaitForSeconds(fadeTime);
-        Application.LoadLevel(Application.loadedLevel + 1);
+        Application.LoadLevel(Application.loadedLevel + 1 + skip);
+    }
+    IEnumerator BackToCharacterGeneration()
+    {
+        float fadeTime = GetComponent<AutoFade>().BeginFade(1);
+        yield return new WaitForSeconds(fadeTime);
+        Application.LoadLevel(Application.loadedLevel -1);
     }
 
     public void LoadMenu()
     {
         Application.LoadLevel("GameMenu");
+    }
+
+    public void CreateCharacter(int i, String name)
+    {
+        playergender = i;
+        playername = name;
+        StartCoroutine(ChangeLevel(0));
     }
 
 }
@@ -172,6 +217,8 @@ class PlayerData
     public int playerMainWeapon;
     public int playerOffWeapon;
     public float playerGold;
-    //Current Consumable
+    public String playername;
+    public int playergender;
+    public bool playerhaspotion;
     //Cosmetic itemit
 }

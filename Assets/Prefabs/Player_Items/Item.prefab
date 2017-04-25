@@ -37,7 +37,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4943717588939384}
   - component: {fileID: 212539474350238900}
-  - component: {fileID: 95470303901119826}
   m_Layer: 0
   m_Name: SuperSword
   m_TagString: Untagged
@@ -119,7 +118,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4068807241470096}
   - component: {fileID: 212588362683766126}
-  - component: {fileID: 95570220115895146}
   m_Layer: 0
   m_Name: MagicWand
   m_TagString: Untagged
@@ -232,7 +230,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1634300509365320}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.85, y: -1.26, z: 0}
+  m_LocalPosition: {x: 7.021969, y: -6.5607004, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4485377613409256}
@@ -258,7 +256,7 @@ Transform:
   m_GameObject: {fileID: 1393107022981744}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children: []
   m_Father: {fileID: 4035799544603110}
   m_RootOrder: 10
@@ -401,7 +399,7 @@ Transform:
   m_GameObject: {fileID: 1111587538976892}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children: []
   m_Father: {fileID: 4035799544603110}
   m_RootOrder: 11
@@ -468,23 +466,6 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!95 &95470303901119826
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1111587538976892}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 32776b9a65a63404c95fefa4b720077e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!95 &95487670074923094
 Animator:
   serializedVersion: 3
@@ -492,23 +473,6 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1070289347244924}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 32776b9a65a63404c95fefa4b720077e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
---- !u!95 &95570220115895146
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1393107022981744}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 32776b9a65a63404c95fefa4b720077e, type: 2}
@@ -859,7 +823,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 1f9fad2c8d3fec443962ad24e70eb80e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3e94f8783598477498cb1ccfba4a4c8a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -899,7 +863,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 1f9fad2c8d3fec443962ad24e70eb80e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f8fd6dc0fb8cbdd4aad001b1dbebf286, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

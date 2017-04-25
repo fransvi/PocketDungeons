@@ -64,7 +64,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1386823169839508}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21, y: 6.5, z: 0.390625}
+  m_LocalPosition: {x: -64.42185, y: -39.44231, z: 0.390625}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4540997668404394}
@@ -87,10 +87,15 @@ MonoBehaviour:
   ui: {fileID: 1979836522737938, guid: 60d5c26c8016f364f974c6a0a362e7d1, type: 2}
   menu: {fileID: 0}
   playerSpawnPoint: {fileID: 0}
+  ccmenu: {fileID: 0}
+  selectedControls: 0
   playerHealth: 0
   playerMainWeapon: 0
   playerOffWeapon: 0
+  playerHasPotion: 0
   playerGold: 0
+  playername: 
+  playergender: 0
 --- !u!114 &114324460105520566
 MonoBehaviour:
   m_ObjectHideFlags: 1

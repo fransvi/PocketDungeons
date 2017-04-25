@@ -91,7 +91,6 @@ public class HudManager : MonoBehaviour {
 
         _coinsText.text = "x" + goldAmount;
         //TODO A button what do?
-
         if(offWeapon == 0)
         {
             _current3Slot.gameObject.SetActive(false);
@@ -111,6 +110,11 @@ public class HudManager : MonoBehaviour {
             _current3Slot.gameObject.SetActive(true);
             _current3Slot.sprite = _offWeaponSprites[3];
         }
+        else if(offWeapon == 4)
+        {
+            _current3Slot.gameObject.SetActive(true);
+            _current3Slot.sprite = _offWeaponSprites[4];
+        }
 
         if(mainWeapon == 0)
         {
@@ -121,6 +125,11 @@ public class HudManager : MonoBehaviour {
         {
             _current2Slot.gameObject.SetActive(true);
             _current2Slot.sprite = _mainWeaponSprites[1];
+        }
+        else if (mainWeapon == 2)
+        {
+            _current2Slot.gameObject.SetActive(true);
+            _current2Slot.sprite = _mainWeaponSprites[2];
         }
         if (hasPotion)
         {

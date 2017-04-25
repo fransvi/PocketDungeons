@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour {
     private float tempSpeed; private bool _usingWand;
     private bool _facingRight; private bool _blocking;
     private bool _isTakingDamage; private bool _offCooldown;
-    private bool _onPlatform;
+    private bool _onPlatform; private bool _onStairs;
     private float _selectedControls;
     private bool _isJumping = false;
     private Vector2 _gravity;
@@ -123,7 +123,7 @@ public class PlayerController : MonoBehaviour {
 
     void Start () {
         _layingBomb = false;
-        _ableToShootBow = true;
+        _ableToShootBow = true; _onStairs = false;
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
         _ladderCheck = transform.Find("LadderCheck");
@@ -345,19 +345,35 @@ public class PlayerController : MonoBehaviour {
         {
             if (colliders[i].gameObject != gameObject)
             {
+                if (colliders[i].gameObject.GetComponent<DoorScript>().GetRequiresKey())
+                {
+                    if (_playerManager.GetComponent<PlayerInventory>().getHasKey1() && colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
+                    {
+                        _gameManager.SaveData();
+                        _playerManager.GetComponent<PlayerInventory>().setHasKey1(false);
+                        _gameManager.LoadLevel1_2();
+                    }
+                    else if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
+                    {
+                        colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
 
+                    }
+                }
+                else
+                {
+                    if(colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 0)
+                    {
+                        colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
+                    }else if (colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
+                    {
+                        _gameManager.SaveData();
+                        _playerManager.GetComponent<PlayerInventory>().setHasKey1(false);
+                        _gameManager.LoadLevel1_2();
+                    }
+
+                }
                 
-                if (_playerManager.GetComponent<PlayerInventory>().getHasKey1() && colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
-                {
-                    _gameManager.SaveData();
-                    _playerManager.GetComponent<PlayerInventory>().setHasKey1(false);
-                    _gameManager.LoadLevel1_2();
-                }
-                else if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
-                {
-                    colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
-                    
-                }
+
             }
         }
 
@@ -585,6 +601,7 @@ public class PlayerController : MonoBehaviour {
         //old gravity code
         //_rigidBody.AddForce(_gravity * _rigidBody.mass);
         _grounded = false;
+        _onStairs = false;
         //Checks for ground
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, _groundedRadius, _whatIsGround);
         for (int i = 0; i < colliders.Length; i++)
@@ -601,6 +618,7 @@ public class PlayerController : MonoBehaviour {
         {
             if (stairs[i].gameObject != gameObject)
             {
+                _onStairs = true;
                 _grounded = true;
                 
             }
@@ -657,7 +675,7 @@ public class PlayerController : MonoBehaviour {
 
         }
         */
-        if(_grounded && _horizontalMove == 0 && !_jump && !_isJumping)
+        if(_grounded && _horizontalMove == 0 && !_jump && !_isJumping && _onStairs)
         {
             _rigidBody.isKinematic = true;
             _rigidBody.velocity = Vector2.zero;

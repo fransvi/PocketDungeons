@@ -138,6 +138,10 @@ public class PlayerInventory : MonoBehaviour {
     {
         return _hasHealthPotion;
     }
+    public void SetHasPotion(bool b)
+    {
+        _hasHealthPotion = b;
+    }
 
     public void useHealthPotion()
     {
