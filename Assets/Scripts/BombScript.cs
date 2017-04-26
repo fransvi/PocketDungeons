@@ -31,6 +31,7 @@ public class BombScript : MonoBehaviour {
         rb.velocity = transform.TransformDirection(new Vector3(speed, 0, 0));
         rb.AddForce(transform.forward * 30, ForceMode2D.Impulse);
         StartCoroutine(Explode(fusetime));
+        Physics2D.IgnoreLayerCollision(18, 16);
         _animator.Play("BombFuseAnim");
 
         if (_facingRight)
@@ -59,7 +60,7 @@ public class BombScript : MonoBehaviour {
         {
             if (colliders[i].gameObject != gameObject)
             {
-                GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
                 _grounded = true;
             }
 

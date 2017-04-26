@@ -55,10 +55,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 5
-  m_LinearDrag: 0.5
-  m_AngularDrag: 0.5
-  m_GravityScale: 1
+  m_Mass: 2
+  m_LinearDrag: 2
+  m_AngularDrag: 1
+  m_GravityScale: 1.5
   m_Material: {fileID: 6200000, guid: 66165688a75fa054489c20c1718cce56, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -75,7 +75,6 @@ CircleCollider2D:
   m_Material: {fileID: 6200000, guid: 66165688a75fa054489c20c1718cce56, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.3
@@ -149,13 +148,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
-  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: deec50a04befa7e478990842fd6fee4f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 0.16, y: 0.16}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0

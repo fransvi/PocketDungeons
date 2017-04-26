@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
     public GameObject menu;
     public GameObject playerSpawnPoint;
     public GameObject ccmenu;
+    public GameObject gameOverScreen;
 
     public int selectedControls;
     //Data for saving
@@ -42,7 +43,7 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
         }
         selectedControls = 0;
-        LoadLevel1_2();
+        LoadLevel1_2(true);
 
 
     }
@@ -135,6 +136,8 @@ public class GameManager : MonoBehaviour {
 
     public void LoadGameOverScreen()
     {
+        gameOverScreen = GameObject.Find("GameOverPrefab");
+        gameOverScreen.GetComponent<GameOver>().canvas.SetActive(true);
 
     }
     void OnEnable()
@@ -173,9 +176,9 @@ public class GameManager : MonoBehaviour {
         gm = this;
     }
 
-    public void LoadLevel1_2()
+    public void LoadLevel1_2(bool firstLoad)
     {
-        if(File.Exists(Application.persistentDataPath + "/playerInfo.dat")){
+        if(File.Exists(Application.persistentDataPath + "/playerInfo.dat") && firstLoad){
             StartCoroutine(ChangeLevel(1));
         }
         else
@@ -183,6 +186,16 @@ public class GameManager : MonoBehaviour {
             StartCoroutine(ChangeLevel(0));
         }      
  
+    }
+    public void LoadLevelInt(int num)
+    {
+        StartCoroutine(ChangeLevelNumber(num));
+    }
+    IEnumerator ChangeLevelNumber(int num)
+    {
+        float fadeTime = GetComponent<AutoFade>().BeginFade(1);
+        yield return new WaitForSeconds(fadeTime);
+        Application.LoadLevel(num);
     }
     IEnumerator ChangeLevel(int skip)
     {

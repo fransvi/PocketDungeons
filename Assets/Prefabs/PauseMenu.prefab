@@ -366,7 +366,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114826719554351954}
-        m_MethodName: LoadLevelBtn
+        m_MethodName: PauseLoadScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -581,6 +581,7 @@ MonoBehaviour:
   - {fileID: 114942271298326628}
   - {fileID: 114650474082693134}
   cursor: {fileID: 114926150576784354}
+  gm: {fileID: 0}
 --- !u!114 &114869403385186180
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -820,7 +821,7 @@ Canvas:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1760395224352910}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 2
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
@@ -829,7 +830,6 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0

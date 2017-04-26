@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour {
 	bool jumpSoundPlayed=false;
 	bool runLoopPlayed=false;
 
+    public GameObject[] _weaponsList;
+
     [SerializeField]
     private float _maxSpeed;
     [SerializeField]
@@ -249,7 +251,7 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             PickUpItem();
-            OpenDoor();
+            OpenObject();
         }
         if (Input.GetKey(_key2))
         {
@@ -338,7 +340,7 @@ public class PlayerController : MonoBehaviour {
         _usingWand = false;
     }
 
-    private void OpenDoor()
+    private void OpenObject()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.50f, _whatIsDoor);
         for (int i = 0; i < colliders.Length; i++)
@@ -351,7 +353,7 @@ public class PlayerController : MonoBehaviour {
                     {
                         _gameManager.SaveData();
                         _playerManager.GetComponent<PlayerInventory>().setHasKey1(false);
-                        _gameManager.LoadLevel1_2();
+                        _gameManager.LoadLevel1_2(false);
                     }
                     else if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
                     {
@@ -368,7 +370,7 @@ public class PlayerController : MonoBehaviour {
                     {
                         _gameManager.SaveData();
                         _playerManager.GetComponent<PlayerInventory>().setHasKey1(false);
-                        _gameManager.LoadLevel1_2();
+                        _gameManager.LoadLevel1_2(false);
                     }
 
                 }
@@ -640,8 +642,8 @@ public class PlayerController : MonoBehaviour {
         {
             if (stageLimits[i].gameObject != gameObject)
             {
+                _health = 0;
                 Die();
-
             }
 
         }
@@ -661,20 +663,7 @@ public class PlayerController : MonoBehaviour {
             _onLadder = false;
         }
 
-
-        //TODO better hit decetion to spikes
-        /*
-        Collider2D[] hurtPoints = Physics2D.OverlapCircleAll(_groundCheck.position, _groundedRadius, _whatIsSpikes);
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            if (colliders[i].gameObject != gameObject)
-            {
-                //_gravity = Physics2D.gravity;
-                _grounded = true;
-            }
-
-        }
-        */
+        //Freeze movement on stairs when velocity == 0
         if(_grounded && _horizontalMove == 0 && !_jump && !_isJumping && _onStairs)
         {
             _rigidBody.isKinematic = true;
@@ -946,11 +935,11 @@ public class PlayerController : MonoBehaviour {
     }
 
     //Placeholder for attack anims
-    IEnumerator AttackAnim()
+    IEnumerator AttackAnim(float cooldown)
     {
         //_weaponSwing.gameObject.SetActive(true);
         _attackOnCooldown = true;
-        yield return new WaitForSeconds(_attackCooldown);
+        yield return new WaitForSeconds(cooldown);
         //_weaponSwing.gameObject.SetActive(false);
         _attackOnCooldown = false;
     }
@@ -967,69 +956,43 @@ public class PlayerController : MonoBehaviour {
 
     public void Attack()
     {
-        StartCoroutine(AttackAnim());
+
         //Check if enemies hit
 
-        //Sword
-        if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0)
+        GameObject currWeapon = _weaponsList[_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon()];
+        float weaponDamage = currWeapon.GetComponent<WeaponStats>()._weaponDamage;
+        float weaponRadius = currWeapon.GetComponent<WeaponStats>()._weaponHitRadius;
+        bool weaponHasStun = currWeapon.GetComponent<WeaponStats>()._hasStunEffect;
+        float weaponSpeed = currWeapon.GetComponent<WeaponStats>()._weaponSpeed;
+        float weaponCooldown = currWeapon.GetComponent<WeaponStats>()._weaponCooldown;
+        StartCoroutine(AttackAnim(weaponCooldown));
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, weaponRadius, _enemyLayerMask);
+        for (int i = 0; i < colliders.Length; i++)
         {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, _meleeRadius, _enemyLayerMask);
-            for (int i = 0; i < colliders.Length; i++)
+            if (colliders[i].gameObject != gameObject)
             {
-                if (colliders[i].gameObject != gameObject)
+                //Enemy hit
+                if (colliders[i].gameObject.GetComponent<EnemyScript>())
                 {
-					//Enemy hit
-					if (colliders [i].gameObject.GetComponent<EnemyScript> ()) {
-						colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
-					}
-					if (colliders [i].gameObject.GetComponent<Goblin_King> ()) {
-						colliders[i].gameObject.GetComponent<Goblin_King>().TakeDamage(_meleeDamage);
-					}
-                }
-            }
-        }
-
-        //Mace
-        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1)
-        {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, _meleeRadius+0.5f, _enemyLayerMask);
-            for (int i = 0; i < colliders.Length; i++)
-            {
-                if (colliders[i].gameObject != gameObject)
-                {
-                    //Enemy hit
-                    colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
-                    float rand = UnityEngine.Random.Range(0, 100);
-                    if(rand > 75)
+                    colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(weaponDamage);
+                    if (weaponHasStun)
                     {
-						if (colliders [i].gameObject.GetComponent<EnemyScript> ()) {
-							colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
-						}
+                        float rand = UnityEngine.Random.Range(0, 100);
+                        if (rand > 75)
+                        {
+                            if (colliders[i].gameObject.GetComponent<EnemyScript>())
+                            {
+                                colliders[i].gameObject.GetComponent<EnemyScript>().MaceStun();
+                            }
+                        }
                     }
-
                 }
-            }
-        }
-        //SuperSword placeholder----
-        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2)
-        {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, _meleeRadius, _enemyLayerMask);
-            for (int i = 0; i < colliders.Length; i++)
-            {
-                if (colliders[i].gameObject != gameObject)
+                if (colliders[i].gameObject.GetComponent<Goblin_King>())
                 {
-					//Enemy hit
-					if (colliders [i].gameObject.GetComponent<EnemyScript> ()) {
-						colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
-					}
-					if (colliders [i].gameObject.GetComponent<Goblin_King> ()) {
-						colliders[i].gameObject.GetComponent<Goblin_King>().TakeDamage(_meleeDamage);
-					}
+                    colliders[i].gameObject.GetComponent<Goblin_King>().TakeDamage(weaponDamage);
                 }
             }
         }
-
-
     }
 
 

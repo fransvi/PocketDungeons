@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1eb58476ec14c049901fc63afbf516a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapJson: {fileID: 4900000, guid: 718c548ac4c49cb4593be4f3966a3eb1, type: 3}
+  mapJson: {fileID: 4900000, guid: 62309a9255139394cb2ad4fab2f45594, type: 3}
   tileSize: {x: 0.16, y: 0.16}
   spriteResource: Images/tileset_red
   tilePrefab: {fileID: 143694, guid: 089f59c6fd39d4149bf2b5ff7550197a, type: 2}

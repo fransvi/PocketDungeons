@@ -14,6 +14,11 @@ public class ButtonManage : MonoBehaviour
 
 	private int highlightedButton=0;
 
+    void Start()
+    {
+        Time.timeScale = 1.0f;
+    }
+
 	void Update() {
         // syöttö
 
@@ -61,13 +66,26 @@ public class ButtonManage : MonoBehaviour
 
 	public void LoadLevelBtn(string sceneName)
 	{
-		SceneManager.LoadScene(sceneName);
+        StartCoroutine(ChangeLevel(sceneName));
 	}
 
 	public void LoadLevelBtn(int sceneID) // build index parametrina, voi olla hyödyllinen
 	{
-		SceneManager.LoadScene(sceneID);
+        Debug.Log("load scene " + sceneID);
+        gm.LoadLevelInt(sceneID);
 	}
+
+    IEnumerator ChangeLevel(string sceneName)
+    {
+        float fadeTime = GetComponent<AutoFade>().BeginFade(1);
+        yield return new WaitForSeconds(fadeTime);
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void PauseLoadScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
 
     public void StartGameBtn()
     {
