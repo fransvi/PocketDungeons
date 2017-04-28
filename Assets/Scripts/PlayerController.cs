@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour {
     private Transform _groundCheck;
     private Transform _meleeCheck;
     private Transform _headCheck;
-
+    private int _gender;
     private GameObject _playerManager;
     private bool _attackOnCooldown = false;
 
@@ -121,6 +121,15 @@ public class PlayerController : MonoBehaviour {
 
     private void Awake()
     {
+    }
+
+    public void SetGender(int g)
+    {
+        _gender = g;
+    }
+    public int GetGender()
+    {
+        return _gender;
     }
 
     void Start () {
@@ -703,15 +712,24 @@ public class PlayerController : MonoBehaviour {
     public void Move(float move, bool jump)
     {
 
-        if (_dying)
+        if (_dying && _gender == 0)
         {
             CharacterAnimator.Play("Die");
         }
+        else if(_dying && _gender == 1)
+        {
+            CharacterAnimator.Play("FDie");
+        }
+  
 
-        else if (_blocking)
+        else if (_blocking && _gender == 0)
         {
             _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
             CharacterAnimator.Play("ShieldBlock");
+        }else if(_blocking && _gender == 1)
+        {
+            _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
+            CharacterAnimator.Play("FShieldBlock");
         }
 
 
@@ -719,47 +737,75 @@ public class PlayerController : MonoBehaviour {
         {
             if (_attackOnCooldown)
             {
-                if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0)
+                if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0 && _gender == 0)
                 {
                     CharacterAnimator.Play("AttackSword");
+                }else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0 && _gender == 1)
+                {
+                    CharacterAnimator.Play("FAttackSword");
                 }
-                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1)
+                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1 && _gender == 0)
                 {
                     CharacterAnimator.Play("AttackMace");
+                }else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1 && _gender == 1)
+                {
+                    CharacterAnimator.Play("FAttackMace");
                 }
-                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2)
+                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2 && _gender == 0)
                 {
                     CharacterAnimator.Play("AttackSuperSword");
+                }else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2 && _gender == 1)
+                {
+                    CharacterAnimator.Play("FAttackSuperSword");
                 }
 
             }
-            else if (_usingWand)
+            else if (_usingWand && _gender == 0)
             {
                 CharacterAnimator.Play("AttackWand");
+            }else if(_usingWand && _gender == 1)
+            {
+                CharacterAnimator.Play("FAttackMagicWand");
             }
 
 
-            else if (_drawingBow && _ableToShootBow)
+            else if (_drawingBow && _ableToShootBow && _gender == 0)
             {
                 CharacterAnimator.Play("BowDraw");
+            }else if(_drawingBow && _ableToShootBow && _gender == 1)
+            {
+                CharacterAnimator.Play("FDrawBow");
             }
-            else if (_releasingBow)
+            else if (_releasingBow && _gender == 0)
             {
                 CharacterAnimator.Play("BowRelease");
+            }else if(_releasingBow && _gender == 1)
+            {
+                CharacterAnimator.Play("FReleaseBow");
             }
-            else if (_layingBomb)
+            else if (_layingBomb && _gender == 0)
             {
                 CharacterAnimator.Play("AttackDefault");
+            }else if(_layingBomb && _gender == 1)
+            {
+                CharacterAnimator.Play("FAttackDefault");
             }
-            else if (_invulnurable)
+            else if (_invulnurable && _gender == 0)
             {
                 CharacterAnimator.Play("Damage");
+            }else if(_invulnurable && _gender == 1)
+            {
+                CharacterAnimator.Play("FHurt");
             }
-            else if (_onLadder)
+            else if (_onLadder && _gender == 0)
             {
                 CharacterAnimator.Play("Climb");
+            }else if(_onLadder && _gender == 1)
+            {
+                //TODO MUUTA FEMALE ANIMS
+                CharacterAnimator.Play("Climb");
             }
-            else if (_grounded && move != 0)
+            else if (_grounded && move != 0 && _gender == 0)
             {
                 //CharacterAnimator.SetBool("Walk", true);
                 //CharacterAnimator.Play("Walk");
@@ -769,8 +815,17 @@ public class PlayerController : MonoBehaviour {
 					playerRunLoop.loop = true;
 					playerRunLoop.Play ();
 				}
+            }else if(_grounded && move != 0 &&_gender == 1)
+            {
+                CharacterAnimator.Play("FRun");
+                if (!runLoopPlayed)
+                {
+                    runLoopPlayed = true;
+                    playerRunLoop.loop = true;
+                    playerRunLoop.Play();
+                }
             }
-            else if (_isJumping)
+            else if (_isJumping && _gender == 0)
             {
 				if (!jumpSoundPlayed) {
 					jumpSound.Play ();
@@ -782,7 +837,21 @@ public class PlayerController : MonoBehaviour {
 					runLoopPlayed = false;
 				}
             }
-            else if (!_grounded && !_isJumping)
+            else if (_isJumping && _gender == 1)
+            {
+                if (!jumpSoundPlayed)
+                {
+                    jumpSound.Play();
+                    jumpSoundPlayed = true;
+                }
+                CharacterAnimator.Play("FJump");
+                if (runLoopPlayed)
+                {
+                    playerRunLoop.loop = false;
+                    runLoopPlayed = false;
+                }
+            }
+            else if (!_grounded && !_isJumping && _gender == 0)
             {
 				CharacterAnimator.Play("Fall");
 				if (jumpSoundPlayed) {
@@ -793,10 +862,31 @@ public class PlayerController : MonoBehaviour {
 					runLoopPlayed = false;
 				}
             }
+            else if (!_grounded && !_isJumping && _gender == 1)
+            {
+                CharacterAnimator.Play("FFall");
+                if (jumpSoundPlayed)
+                {
+                    jumpSoundPlayed = false;
+                }
+                if (runLoopPlayed)
+                {
+                    playerRunLoop.loop = false;
+                    runLoopPlayed = false;
+                }
+            }
 
             else
             {
-				CharacterAnimator.Play("Idle");
+                if(_gender == 0)
+                {
+                    CharacterAnimator.Play("Idle");
+                }
+                else
+                {
+                    CharacterAnimator.Play("FIdle");
+                }
+
 				if (runLoopPlayed) {
 					playerRunLoop.loop = false;
 					runLoopPlayed = false;
