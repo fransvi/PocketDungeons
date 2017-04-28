@@ -42,7 +42,6 @@ public class GameManager : MonoBehaviour {
             inventory = transform.Find("PlayerManager");
             Destroy(gameObject);
         }
-        selectedControls = 0;
         LoadLevel1_2(true);
 
 
