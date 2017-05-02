@@ -7,7 +7,7 @@ public class EnemyScript : MonoBehaviour {
     [SerializeField]
     private float _knockbackForce;
     [SerializeField]
-    private Transform _player;
+    private GameObject _player;
 
     [SerializeField]
     private GameObject _hurtPoint;
@@ -16,15 +16,17 @@ public class EnemyScript : MonoBehaviour {
     [SerializeField]
     private int _meleeDamage;
     [SerializeField]
-
-
     private bool _facingRight;
+    [SerializeField]
+    private GameObject _deathAnim;
+    [SerializeField]
+    private GameObject _stunnedAnim;
     private Rigidbody2D _rigidBody;
     private Color _color;
     private float _viewDistance = 5f;
+    private Transform _center;
     private float _minDistance = 0.05f;
     private bool _stunned;
-
 
     // Use this for initialization
     void Start() {
@@ -34,16 +36,18 @@ public class EnemyScript : MonoBehaviour {
         _color = gameObject.GetComponent<Renderer>().material.color;
         Physics2D.IgnoreLayerCollision(10, 16, true);
         Physics2D.IgnoreLayerCollision(10, 0, true);
+        _player = GameObject.FindWithTag("Player");
+        _center = transform.Find("CenterPoint");
     }
 
     // Update is called once per frame
     void Update() {
 
-        float distance = Vector2.Distance(transform.position, _player.position);
+        float distance = Vector2.Distance(transform.position, _player.transform.position);
         if (distance < _viewDistance && distance > _minDistance && !_stunned)
         {
             MeleeAttack();
-            transform.position = Vector2.MoveTowards(transform.position, _player.position, 3 * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, _player.transform.position, 3 * Time.deltaTime);
         }
 
         if (_health <= 0)
@@ -88,14 +92,16 @@ public class EnemyScript : MonoBehaviour {
     public void TakeDamage(float damage)
     {
         StartCoroutine(HurtAnim());
-        if (transform.position.x < _player.position.x)
+        if (transform.position.x < _player.transform.position.x)
         {
             //knock vasempaan
+            _rigidBody.velocity = Vector2.zero;
             _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
         }
-        else if (transform.position.x > _player.position.x)
+        else if (transform.position.x > _player.transform.position.x)
         {
             //knock oikealle
+            _rigidBody.velocity = Vector2.zero;
             _rigidBody.AddForce(new Vector2(_knockbackForce, _knockbackForce));
         }
         _health -= damage;
@@ -108,7 +114,9 @@ public class EnemyScript : MonoBehaviour {
     IEnumerator Stunned()
     {
         _stunned = true;
+        _stunnedAnim.SetActive(true);
         yield return new WaitForSeconds(2f);
+        _stunnedAnim.SetActive(false);
         _stunned = false;
     }
     private void MeleeAttack()
@@ -129,8 +137,12 @@ public class EnemyScript : MonoBehaviour {
     }
 
 
+
+
     private void Die()
     {
+        GameObject poof = Instantiate(_deathAnim, _center.position, _center.rotation);
         Destroy(gameObject);
+        Destroy(poof, 0.5f);
     }
 }

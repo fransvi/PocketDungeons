@@ -81,7 +81,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78ee9fae0533ef142bd39c88c697aedc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bullet: {fileID: 1559540331602946, guid: e427b82b6171d2b4d9ebebd6de5c4dcd, type: 2}
+  _bullet: {fileID: 1559540331602946, guid: 17191973378697a44bf258f30f997923, type: 2}
   _shootPoint: {fileID: 1793567923291644}
   _shootForce: 25
   _shootDirection: 0

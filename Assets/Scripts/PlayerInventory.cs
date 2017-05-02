@@ -48,11 +48,14 @@ public class PlayerInventory : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        _playerGold = 0f;
         _hasKey1 = false;
         _hasHealthPotion = false;
         _hasBow = false;
-        _playerController = GameObject.Find("Player");
+    }
+
+    public void SetPlayer(GameObject plr)
+    {
+        _playerController = plr;
     }
 
     void Awake()
@@ -102,6 +105,10 @@ public class PlayerInventory : MonoBehaviour {
     {
         return _playerGold;
     }
+    public void SetCurrentGold(float f)
+    {
+        _playerGold = f;
+    }
     void OnGUI()
     {
         /*
@@ -123,9 +130,17 @@ public class PlayerInventory : MonoBehaviour {
     {
         return _hasKey1;
     }
+    public void setHasKey1(bool b)
+    {
+        _hasKey1 = b;
+    }
     public bool getHasPotion()
     {
         return _hasHealthPotion;
+    }
+    public void SetHasPotion(bool b)
+    {
+        _hasHealthPotion = b;
     }
 
     public void useHealthPotion()

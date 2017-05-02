@@ -26,15 +26,6 @@ public class ChestScript : MonoBehaviour {
     private int _chestState;
 
 
-	// Use this for initialization
-	void Start () {
-
-        _chestContainsItem.GetComponent<ItemScript>().SetItemInt(_chestContainsInt);
-        _chestContainsItem.GetComponent<ItemScript>().SetItemType(_chestContainsType);
-		
-	}
-	
-	// Update is called once per frame
 	void Update () {
         if(_chestState == 0)
         {
@@ -58,7 +49,10 @@ public class ChestScript : MonoBehaviour {
                 euler.z = Random.Range(0f, 360f);
                 _openPoint.eulerAngles = euler;
                 */
+
                 GameObject go = Instantiate(_chestContainsItem, newPos, transform.rotation);
+                go.GetComponent<ItemScript>().SetItemInt(_chestContainsInt);
+                go.GetComponent<ItemScript>().SetItemType(_chestContainsType);
                 float itemForcey = Random.Range(150, 300);
                 float itemForcex = Random.Range(-60, 60);
                 go.GetComponent<Rigidbody2D>().AddForce(new Vector2(itemForcex, itemForcey));

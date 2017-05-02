@@ -8,6 +8,8 @@ public class DoorScript : MonoBehaviour {
     [SerializeField]
     Sprite[] _doorStates;
 
+    public bool _requiresKey;
+
     private int _doorState;
 	// Use this for initialization
 	void Start () {
@@ -29,6 +31,10 @@ public class DoorScript : MonoBehaviour {
     public int GetDoorState()
     {
         return _doorState;
+    }
+    public bool GetRequiresKey()
+    {
+        return _requiresKey;
     }
 
     public void SetDoorState(int ds)

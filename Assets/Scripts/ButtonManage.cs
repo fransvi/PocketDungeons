@@ -9,12 +9,20 @@ public class ButtonManage : MonoBehaviour
 
 	public Button[] buttons;
 	public Image cursor;
+    public GameManager gm;
+
 
 	private int highlightedButton=0;
 
+    void Start()
+    {
+        Time.timeScale = 1.0f;
+    }
+
 	void Update() {
-		// syöttö
-		if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
+        // syöttö
+
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
 			moveCursor (-1);
 		} else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
 			moveCursor (1);
@@ -39,6 +47,18 @@ public class ButtonManage : MonoBehaviour
 		}
 	}
 
+    public void SetControlSet(int f)
+    {
+        gm.GetComponent<GameManager>().SetControls(f);
+    }
+
+    public void SetGameManager(GameManager g)
+    {
+        gm = g;
+        buttons[5].onClick.AddListener(gm.ResetSaveData);
+        buttons[6].onClick.AddListener(gm.SaveData);
+    }
+
     public void RetryBtn()
     {
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -46,13 +66,26 @@ public class ButtonManage : MonoBehaviour
 
 	public void LoadLevelBtn(string sceneName)
 	{
-		SceneManager.LoadScene(sceneName);
+        StartCoroutine(ChangeLevel(sceneName));
 	}
 
 	public void LoadLevelBtn(int sceneID) // build index parametrina, voi olla hyödyllinen
 	{
-		SceneManager.LoadScene(sceneID);
+        Debug.Log("load scene " + sceneID);
+        gm.LoadLevelInt(sceneID);
 	}
+
+    IEnumerator ChangeLevel(string sceneName)
+    {
+        float fadeTime = GetComponent<AutoFade>().BeginFade(1);
+        yield return new WaitForSeconds(fadeTime);
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void PauseLoadScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
 
     public void StartGameBtn()
     {

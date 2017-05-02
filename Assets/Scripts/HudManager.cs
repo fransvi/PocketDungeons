@@ -18,29 +18,65 @@ public class HudManager : MonoBehaviour {
     [SerializeField]
     private Sprite[] _slotSprites;
     [SerializeField]
-    private Image _current1Slot;
-    [SerializeField]
     private Image _current2Slot;
     [SerializeField]
     private Image _current3Slot;
     [SerializeField]
     private Image _current4Slot;
     [SerializeField]
+    private GameObject _current1Button;
+    [SerializeField]
+    private GameObject _current2Button;
+    [SerializeField]
+    private GameObject _current3Button;
+    [SerializeField]
     private Image _keySlot;
     [SerializeField]
     private Text _coinsText;
+    [SerializeField]
+    private Sprite[] _QWEsprites;
+    [SerializeField]
+    private Sprite[] _ZXCsprites;
 
+    public int _controlsState;
+
+    [SerializeField]
     private GameObject _playerController;
     private GameObject _playerManager;
 
-	// Use this for initialization
-	void Start () {
-        _playerController = GameObject.Find("Player");
-        _playerManager = GameObject.Find("PlayerManager");
+
+    public void SetPlayerStats(GameObject player, GameObject inventory)
+    {
+        _playerController = player;
+        _playerManager = inventory;
+        
     }
-	
+
+    public void SetControlState(int cs)
+    {
+        _controlsState = cs;
+
+        if (_controlsState == 0)
+        {
+            _current1Button.GetComponent<Image>().sprite = _QWEsprites[0];
+            _current2Button.GetComponent<Image>().sprite = _QWEsprites[1];
+            _current3Button.GetComponent<Image>().sprite = _QWEsprites[2];
+        }
+        else if (_controlsState == 1)
+        {
+            _current1Button.GetComponent<Image>().sprite = _ZXCsprites[0];
+            _current2Button.GetComponent<Image>().sprite = _ZXCsprites[1];
+            _current3Button.GetComponent<Image>().sprite = _ZXCsprites[2];
+        }
+    }
+    public int GetControlsState()
+    {
+        return _controlsState;
+    }
+
 	// Update is called once per frame
 	void Update () {
+
         int hp = _playerController.GetComponent<PlayerController>().GetHealth();
         _currentHealthSprite.overrideSprite = _healthBar[hp];
 
@@ -55,8 +91,6 @@ public class HudManager : MonoBehaviour {
 
         _coinsText.text = "x" + goldAmount;
         //TODO A button what do?
-        _current1Slot.gameObject.SetActive(false);
-
         if(offWeapon == 0)
         {
             _current3Slot.gameObject.SetActive(false);
@@ -76,6 +110,11 @@ public class HudManager : MonoBehaviour {
             _current3Slot.gameObject.SetActive(true);
             _current3Slot.sprite = _offWeaponSprites[3];
         }
+        else if(offWeapon == 4)
+        {
+            _current3Slot.gameObject.SetActive(true);
+            _current3Slot.sprite = _offWeaponSprites[4];
+        }
 
         if(mainWeapon == 0)
         {
@@ -86,6 +125,11 @@ public class HudManager : MonoBehaviour {
         {
             _current2Slot.gameObject.SetActive(true);
             _current2Slot.sprite = _mainWeaponSprites[1];
+        }
+        else if (mainWeapon == 2)
+        {
+            _current2Slot.gameObject.SetActive(true);
+            _current2Slot.sprite = _mainWeaponSprites[2];
         }
         if (hasPotion)
         {

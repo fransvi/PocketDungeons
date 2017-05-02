@@ -13,13 +13,38 @@ public class BulletScript : MonoBehaviour {
     private bool _enemyProjectile;
     [SerializeField]
     private bool _dartTrapProjectile;
+    [SerializeField]
+    private Sprite[] _projectileSprites;
 
     private bool _facingRight;
 
+    private int _bulletType;
+    public Animator _animator;
     private bool _ignoreGroundCollider;
 
     // Use this for initialization
     void Start () {
+        _animator = GetComponent<Animator>();
+        if (_bulletType == 0)
+        {
+            GetComponent<SpriteRenderer>().sprite = _projectileSprites[0];
+            _animator.Play("arrow");
+        }
+        else if(_bulletType == 1)
+        {
+ 
+            GetComponent<SpriteRenderer>().sprite = _projectileSprites[1];
+            _animator.Play("FireBallAnim");
+        }
+
+        if (!_dartTrapProjectile)
+        {
+            Physics2D.IgnoreLayerCollision(18, 0, true);
+        }
+        else
+        {
+            Physics2D.IgnoreLayerCollision(18, 0, false);
+        }
 
         if (_dartTrapProjectile)
         {
@@ -29,13 +54,31 @@ public class BulletScript : MonoBehaviour {
         if (_facingRight)
         {
             GetComponent<Rigidbody2D>().velocity = transform.TransformDirection(new Vector3(_speed, 2f, 0));
-            Flip();
+            if(_bulletType == 0)
+            {
+                Flip();
+            }
+
         }
         else
         {
             GetComponent<Rigidbody2D>().velocity = transform.TransformDirection(new Vector3(-_speed, 2f, 0));
+            if (_bulletType == 1)
+            {
+                Flip();
+            }
         }
-        GetComponent<Rigidbody2D>().AddForce(transform.forward * 30, ForceMode2D.Impulse);
+        if(_bulletType == 0)
+        {
+            GetComponent<Rigidbody2D>().AddForce(transform.forward * 30, ForceMode2D.Impulse);
+        }
+        else if(_bulletType == 1)
+        {
+            Physics2D.gravity = Vector2.zero;
+            GetComponent<Rigidbody2D>().AddForce(transform.forward * 30, ForceMode2D.Impulse);
+        }
+
+        Destroy(gameObject, 3f);
 
     }
 
@@ -46,10 +89,12 @@ public class BulletScript : MonoBehaviour {
         _ignoreGroundCollider = false;
     }
 
-    public void createBullet(bool fr, float bf)
+    public void createBullet(bool fr, float bf, int type, bool dart)
     {
         _facingRight = fr;
         _speed = bf;
+        _bulletType = type;
+        _dartTrapProjectile = dart;
         if(_speed < 10)
         {
             _speed = 10;
@@ -58,7 +103,7 @@ public class BulletScript : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Default") && _enemyProjectile)
+        if (other.gameObject.tag == "Player" && _dartTrapProjectile)
         {
 
             other.gameObject.GetComponent<PlayerController>().Hurt(1);
@@ -71,6 +116,7 @@ public class BulletScript : MonoBehaviour {
         }
         if (other.gameObject.layer == LayerMask.NameToLayer("Ground") && !_dartTrapProjectile)
         {
+
             Destroy(gameObject);
         }
         if (other.gameObject.layer == LayerMask.NameToLayer("Spikes") && !_dartTrapProjectile)
@@ -81,7 +127,15 @@ public class BulletScript : MonoBehaviour {
         {
             Destroy(gameObject);
         }
-        if(other.gameObject.layer == LayerMask.NameToLayer("Item"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Stairs") && !_dartTrapProjectile)
+        {
+            Destroy(gameObject);
+        }
+        if (other.gameObject.layer == LayerMask.NameToLayer("PressurePad") && !_dartTrapProjectile)
+        {
+            Destroy(gameObject);
+        }
+        if (other.gameObject.layer == LayerMask.NameToLayer("Item"))
         {
             Physics2D.IgnoreCollision(other.gameObject.GetComponent<BoxCollider2D>(), GetComponent<BoxCollider2D>());
         }

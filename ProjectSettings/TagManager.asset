@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
+  - Breakable
+  - FX
   layers:
   - Default
   - TransparentFX
@@ -30,9 +32,9 @@ TagManager:
   - Lever
   - PressurePad
   - EnemyProjectile
-  - 
-  - 
-  - 
+  - Breakable
+  - FX
+  - MovingPlatform
   - 
   - 
   - 
