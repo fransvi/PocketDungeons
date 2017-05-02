@@ -1,11 +1,34 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
+    //Animaattori
+    //11
+    public Animator CharacterAnimator;
+
+    //Audio
+    public AudioSource jumpSound;
+	public AudioSource swordSound;
+	public AudioSource landingSound;
+	public AudioSource playerHitSound;
+	public AudioSource playerRunLoop;
+    private float volLowRange = .5f;
+    private float volHighRange = 1.0f;
+	bool jumpSoundPlayed=false;
+	bool runLoopPlayed=false;
+
+    public GameObject[] _weaponsList;
+
     [SerializeField]
     private float _maxSpeed;
     [SerializeField]
     private float _jumpForce;
+    [SerializeField]
+    private float _jumpCooldown;
+    [SerializeField]
+    private float _attackCooldown;
     [SerializeField]
     private bool _airControl;
     [SerializeField]
@@ -13,133 +36,860 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private LayerMask _whatIsPlatform;
     [SerializeField]
+    private LayerMask _whatIsSpikes;
+    [SerializeField]
+    private LayerMask _whatIsLadder;
+    [SerializeField]
     private LayerMask _enemyLayerMask;
     [SerializeField]
-    private float _jumpCooldown;
+    private LayerMask _whatIsItem;
+    [SerializeField]
+    private LayerMask _whatIsDoor;
+    [SerializeField]
+    private LayerMask _whatIsChest;
+    [SerializeField]
+    private LayerMask _whatIsStairs;
+    [SerializeField]
+    private LayerMask _whatIsLever;
     [SerializeField]
     private float _meleeRadius;
     [SerializeField]
     private float _meleeDamage;
+    [SerializeField]
+    private int _maxHealth;
+    [SerializeField]
+    private float _knockbackForce;
+    [SerializeField]
+    private Transform _ladderCheck;
+    [SerializeField]
+    private GameObject _bullet;
+    [SerializeField]
+    private GameObject _bomb;
+    [SerializeField]
+    private GameObject _potionEffectSprite;
 
+    [SerializeField]
+    private GameObject _itemPrefab;
+
+    private int _health;
+    private bool _jumpOnCooldown = false;
     private float _horizontalMove = 0;
     private bool _jump = false;
-    private bool _fallingThrough = false;
     private Transform _groundCheck;
     private Transform _meleeCheck;
     private Transform _headCheck;
+    private int _gender;
+    private GameObject _playerManager;
+    private bool _attackOnCooldown = false;
 
-    //Placeholder
+    private GameManager _gameManager;
 
     private Transform _weaponSwing;
-    private Rigidbody2D _rigidBody;
-    const float _groundedRadius = .2f;
-    private bool _grounded;
-    private bool _facingRight;
-    private bool _onPlatform;
-    private bool _isJumping;
-    private Vector2 _gravity;
+    private Transform _swordSwing;
+    private Transform _maceSwing;
 
-	void Start () {
+    private KeyCode _key1;
+    private KeyCode _key2;
+    private KeyCode _key3;
+
+    [SerializeField]
+    private float _slopeFriction;
+    [SerializeField]
+    private GameObject _shootPoint;
+    private float _bombForce = 1f;
+    private bool _drawingBow;
+    private bool _dying;
+    private bool _layingBomb;
+    private bool _releasingBow;
+    private float _bowForce;
+    private bool _onLadder;
+    private Rigidbody2D _rigidBody;
+    private bool _invulnurable;
+    const float _groundedRadius = .1f;
+    private bool _grounded;
+    private float tempSpeed; private bool _usingWand;
+    private bool _facingRight; private bool _blocking;
+    private bool _isTakingDamage; private bool _offCooldown;
+    private bool _onPlatform; private bool _onStairs;
+    private float _selectedControls;
+    private bool _isJumping = false;
+    private Vector2 _gravity;
+    private Color _color;
+    private bool _ableToShootBow;
+    [SerializeField]
+    private float _bowCoolDown;
+
+    private void Awake()
+    {
+    }
+
+    public void SetGender(int g)
+    {
+        _gender = g;
+    }
+    public int GetGender()
+    {
+        return _gender;
+    }
+
+    void Start () {
+        _layingBomb = false;
+        _ableToShootBow = true; _onStairs = false;
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
+        _ladderCheck = transform.Find("LadderCheck");
         _weaponSwing = transform.Find("Swing");
+        _swordSwing = transform.Find("Swing");
+        _maceSwing = transform.Find("MaceSwing");
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _rigidBody = GetComponent<Rigidbody2D>();
+        _health = _maxHealth;
+        _dying = false; _usingWand = false; _offCooldown = false;
+        _releasingBow = false;
+        _drawingBow = false;
+        _invulnurable = false;
+        _onLadder = false;
         _weaponSwing.gameObject.SetActive(false);
+        _maceSwing.gameObject.SetActive(false);
+        _swordSwing.gameObject.SetActive(false);
         _gravity = Physics2D.gravity;
-	
-	}
+        tempSpeed = _maxSpeed;
+        _playerManager = GameObject.Find("PlayerManager");
+        Physics2D.IgnoreLayerCollision(0, 16, true);
+        Physics2D.IgnoreLayerCollision(0, 25, true);
+        Physics2D.IgnoreLayerCollision(16, 25, true);
+        Physics2D.IgnoreLayerCollision(25, 25, true);
+        Physics2D.IgnoreLayerCollision(18, 25, true);
+
+        //Animaattori
+        _color = gameObject.GetComponent<Renderer>().material.color;
+        CharacterAnimator = GetComponent<Animator>();
+        if(_selectedControls == 0)
+        {
+            _key1 = KeyCode.Q;
+            _key2 = KeyCode.W;
+            _key3 = KeyCode.E;
+        }else if(_selectedControls == 1)
+        {
+            _key1 = KeyCode.Z;
+            _key2 = KeyCode.X;
+            _key3 = KeyCode.C;
+        }
+        //Audio
+        AudioSource audio = GetComponent<AudioSource>();
+        audio.Play();
+        audio.Play(44100);
+    }
 
     //KB Controls
     void Update()
     {
-        // float x = Input.GetAxis("Horizontal");
 
-        // Nuoli vasempaan
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0)
         {
-            CancelInvoke();
-            InvokeRepeating("DecreaseSpeed", 0, 0.05f);
+            _weaponSwing = _swordSwing;
         }
-        if (Input.GetKeyUp(KeyCode.LeftArrow))
+        else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1)
         {
-            CancelInvoke();
-            InvokeRepeating("StopMove", 0, 0.05f);
+            _weaponSwing = _maceSwing;
         }
-        // Nuoli oikeaan
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+      
+
+
+            /*
+            // Nuoli vasempaan
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                CancelInvoke();
+                InvokeRepeating("DecreaseSpeed", 0, 0.05f);
+            }
+            if (Input.GetKeyUp(KeyCode.LeftArrow))
+            {
+                CancelInvoke();
+                InvokeRepeating("StopMove", 0, 0.05f);
+            }
+            // Nuoli oikeaan
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                CancelInvoke();
+                InvokeRepeating("AddSpeed", 0, 0.05f);
+            }
+            if (Input.GetKeyUp(KeyCode.RightArrow))
+            {
+                CancelInvoke();
+                InvokeRepeating("StopMove", 0, 0.05f);
+            }
+            */
+            // Nuoli alas
+            // Go down platforms
+         if(_selectedControls == 0)
         {
-            CancelInvoke();
-            InvokeRepeating("AddSpeed", 0, 0.05f);
+
+        }else if(_selectedControls == 1)
+        {
+
         }
-        if (Input.GetKeyUp(KeyCode.RightArrow))
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                _jump = true;
+                //JumpDown();
+                //Jump-animaatio
+
+            }
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                _jump = false;
+                //JumpUp();
+            }
+            if (Input.GetKeyDown(_key1))
+            {
+                if (!_attackOnCooldown)
+                {
+                    Attack();
+                    swordSound.Play();
+                }
+
+            }
+
+            if (Input.GetKeyDown(_key3))
+            {
+                UsePotion();
+                //TODO
+            }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            CancelInvoke();
-            InvokeRepeating("StopMove", 0, 0.05f);
+            PickUpItem();
+            OpenObject();
         }
-        // Nuoli alas
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        if (Input.GetKey(_key2))
         {
-            
-            //TODO
+            int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+            if (ow == 1 && !_offCooldown)
+            {
+                _drawingBow = true;
+                if(_bowForce < 70)
+                {
+                    _bowForce += 1;
+                }
+
+            }
+            else if(ow == 2)
+            {
+
+            }
+            else if(ow == 3)
+            {
+                _blocking = true;
+            }
+            else if(ow == 4)
+            {
+                _bowForce = 10;
+            }
+
         }
-        if (Input.GetKeyUp(KeyCode.DownArrow))
+        if (Input.GetKeyUp(_key2)) // !_offWCooldown
         {
-            _fallingThrough = true;
+            int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+            if (ow == 1)
+            {
+                    _drawingBow = false;
+                    UseOffWeapon();
+                    _bowForce = 0;
+                    StartCoroutine(BowRelease());
+                
+
+                
+
+            }
+            else if(ow == 2)
+            {
+                UseOffWeapon();
+                StartCoroutine(BombLayAnim());
+            }
+            else if(ow == 3)
+            {
+                Debug.Log("Blocking false");
+                _blocking = false;
+            }
+            else if(ow == 4)
+            {
+                StartCoroutine(WandAttack());
+                _bowForce = 0;
+            }
+            StartCoroutine(OffWCooldown());
+
         }
-        if (Input.GetKeyDown(KeyCode.Space))
+}
+
+    IEnumerator OffWCooldown()
+    {
+        _offCooldown = true;
+        yield return new WaitForSeconds(1f);
+        _offCooldown = false;
+    }
+    IEnumerator BombLayAnim()
+    {
+        _layingBomb = true;
+        yield return new WaitForSeconds(0.45f);
+        _layingBomb = false;
+    }
+    IEnumerator BowRelease()
+    {
+        _releasingBow = true;
+        yield return new WaitForSeconds(0.25f);
+        _releasingBow = false;
+    }
+    IEnumerator WandAttack()
+    {
+        _usingWand = true;
+        yield return new WaitForSeconds(0.15f);
+        UseOffWeapon();
+        yield return new WaitForSeconds(0.30f);
+        _usingWand = false;
+    }
+
+    private void OpenObject()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.50f, _whatIsDoor);
+        for (int i = 0; i < colliders.Length; i++)
         {
-            JumpDown();
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            JumpUp();
-        }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Attack();
+            if (colliders[i].gameObject != gameObject)
+            {
+                if (colliders[i].gameObject.GetComponent<DoorScript>().GetRequiresKey())
+                {
+                    if (_playerManager.GetComponent<PlayerInventory>().getHasKey1() && colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
+                    {
+                        _gameManager.SaveData();
+                        _playerManager.GetComponent<PlayerInventory>().setHasKey1(false);
+                        _gameManager.LoadLevel1_2(false);
+                    }
+                    else if (_playerManager.GetComponent<PlayerInventory>().getHasKey1())
+                    {
+                        colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
+
+                    }
+                }
+                else
+                {
+                    if(colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 0)
+                    {
+                        colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
+                    }else if (colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
+                    {
+                        _gameManager.SaveData();
+                        _playerManager.GetComponent<PlayerInventory>().setHasKey1(false);
+                        _gameManager.LoadLevel1_2(false);
+                    }
+
+                }
+                
+
+            }
         }
 
-        if (Input.GetKeyDown(KeyCode.W))
+        Collider2D[] chests = Physics2D.OverlapCircleAll(_groundCheck.position, 0.50f, _whatIsChest);
+        for (int i = 0; i < chests.Length; i++)
         {
-            //TODO
+            if (chests[i].gameObject != gameObject)
+            {
+
+                    chests[i].gameObject.GetComponent<ChestScript>().OpenChest();
+            }
+        }
+
+        Collider2D[] levers = Physics2D.OverlapCircleAll(_groundCheck.position, 0.50f, _whatIsLever);
+        for (int i = 0; i < levers.Length; i++)
+        {
+            if (levers[i].gameObject != gameObject)
+            {
+                if (!levers[i].gameObject.GetComponent<LeverScript>().GetSpikesRaising() && !levers[i].gameObject.GetComponent<LeverScript>().GetSpikesLowering())
+                {
+                    if (levers[i].gameObject.GetComponent<LeverScript>().GetLeverState() == 0)
+                    {
+                        levers[i].gameObject.GetComponent<LeverScript>().SetLeverState(1);
+                    }
+                    else if (levers[i].gameObject.GetComponent<LeverScript>().GetLeverState() == 1)
+                    {
+                        levers[i].gameObject.GetComponent<LeverScript>().SetLeverState(0);
+                    }
+                }
+            }
         }
     }
 
+    IEnumerator BowCooldown()
+    {
+        _ableToShootBow = false;
+        yield return new WaitForSeconds(0.45f);
+        _ableToShootBow = true;
+    }
+
+
+    private void UseOffWeapon()
+    {
+        //Bow
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 1 && _ableToShootBow)
+        {
+            GameObject go = Instantiate(_bullet, _meleeCheck.position, _meleeCheck.rotation);
+            if (_facingRight)
+            {
+                go.GetComponent<BulletScript>().createBullet(true, _bowForce, 0, false);
+            }
+            else
+            {
+                go.GetComponent<BulletScript>().createBullet(false, _bowForce, 0, false);
+            }
+            StartCoroutine(BowCooldown());
+            Destroy(go, 3.0f);
+        }
+        //Bomb
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 2 && _ableToShootBow)
+        {
+            GameObject go = Instantiate(_bomb, _shootPoint.transform.position, _shootPoint.transform.rotation);
+            if (_facingRight)
+            {
+                go.GetComponent<BombScript>().CreateBomb(true, 5);
+            }
+            else
+            {
+                go.GetComponent<BombScript>().CreateBomb(false, 5);
+            }
+
+        }
+
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 3)
+        {
+            //Done as boolean value
+        }
+        //Wand
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon() == 4 && _ableToShootBow)
+        {
+            GameObject go = Instantiate(_bullet, _shootPoint.transform.position, _shootPoint.transform.rotation);
+            if (_facingRight)
+            {
+                go.GetComponent<BulletScript>().createBullet(true, 10, 1, false);
+            }
+            else
+            {
+                go.GetComponent<BulletScript>().createBullet(false, 10, 1, false);
+            }
+
+            Destroy(go, 6.0f);
+
+        }
+
+    }
+
+    private void PickUpItem()
+    {
+
+          /*
+          Item types:
+          0: Consumable
+              0: Health potion
+              1: Large Coin
+              2: Small Coin
+              3: Key1
+          1: Main Weapon
+              0: Sword
+              1: Mace
+              2: SuperSword
+          2: Off Weapon
+              0: None
+              1: Bow
+              2: Bomb
+              3: Shield
+              4: Magic Wand
+        */
+
+        int currentOffWep = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+        int currentMainWep = _playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon();
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, 0.5f, _whatIsItem);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].gameObject != gameObject)
+            {
+
+                int itemInt = colliders[i].gameObject.GetComponent<ItemScript>().GetItemInt();
+                int itemType = colliders[i].gameObject.GetComponent<ItemScript>().GetItemType();
+
+  
+                //Consumable loot
+                if (itemType == 0)
+                {
+                    if (itemInt == 0)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainHealthPotion();
+                    }
+                    else if (itemInt == 1)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainGold(5f);
+                    }
+                    else if (itemInt == 2)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
+                    }
+                    else if (itemInt == 3)
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().gainKey1();
+                    }
+
+                }
+                else if (itemType == 1)
+                {
+                    DropLastItem( itemType, currentMainWep);
+                    _playerManager.GetComponent<PlayerInventory>().SetCurrentMainWeapon(itemInt);
+                }
+                else if(itemType == 2)
+                {
+                    if(currentOffWep > 0)
+                    {
+                        DropLastItem(itemType, currentOffWep);
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(itemInt);
+                    }
+                    else
+                    {
+                        _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(itemInt);
+                    }
+
+                }
+
+                colliders[i].gameObject.GetComponent<ItemScript>().Die();
+            }
+
+        }
+    }
+
+    private void DropLastItem(int itemType, int itemInt)
+    {
+        GameObject go = Instantiate(_itemPrefab, transform.position, transform.rotation);
+        go.GetComponent<ItemScript>().SetItemType(itemType);
+        go.GetComponent<ItemScript>().SetItemInt(itemInt);
+
+    }
+
     void FixedUpdate () {
-        _rigidBody.AddForce(_gravity * _rigidBody.mass);
+
+        //Ignore platform when jumping on it
+        _horizontalMove = Input.GetAxis("Horizontal");
+
+        if (transform.GetComponent<Rigidbody2D>().velocity.y > 0)
+        {
+            Physics2D.IgnoreLayerCollision(0, 9, true);
+        }
+        else if(Input.GetAxis("Vertical") == -1)
+        {
+            Physics2D.IgnoreLayerCollision(0, 9, true);
+        }
+        else
+        {
+            Physics2D.IgnoreLayerCollision(0, 9, false);
+        }
+        //Counter velocity on ramps
+        /*
+        float angle;
+        RaycastHit2D[] hits = new RaycastHit2D[2];
+        //cast ray downwards
+        int h = Physics2D.RaycastNonAlloc(transform.position, -Vector2.up, hits);
+        if (h > 1)
+        {
+            angle = Mathf.Abs(Mathf.Atan2(hits[1].normal.x, hits[1].normal.y) * Mathf.Rad2Deg); //get angle
+            if (angle > 30)
+            {
+                _maxSpeed = tempSpeed / 2;
+            }
+            else
+            {
+                _maxSpeed = tempSpeed;
+            }
+        }
+        */
+        //old gravity code
+        //_rigidBody.AddForce(_gravity * _rigidBody.mass);
         _grounded = false;
+        _onStairs = false;
         //Checks for ground
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_groundCheck.position, _groundedRadius, _whatIsGround);
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].gameObject != gameObject)
             {
-                _gravity = Physics2D.gravity;
+                //_gravity = Physics2D.gravity;
                 _grounded = true;
             }
  
         }
-        //Checks for platforms
-        GameObject platform;
-        Collider2D[] platforms = Physics2D.OverlapCircleAll(_groundCheck.position, _groundedRadius, _whatIsPlatform);
-        for (int i = 0; i < platforms.Length; i++)
+        Collider2D[] stairs = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, _whatIsStairs);
+        for (int i = 0; i < stairs.Length; i++)
         {
-            if (platforms[i].gameObject != gameObject)
+            if (stairs[i].gameObject != gameObject)
             {
-                _gravity = Physics2D.gravity;
+                _onStairs = true;
                 _grounded = true;
-                _onPlatform = true;
-                platform = platforms[i].gameObject;
+                
             }
 
         }
+        Collider2D[] pressurePads = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f,  1<<LayerMask.NameToLayer("PressurePad"));
+        for (int i = 0; i < pressurePads.Length; i++)
+        {
+            if (pressurePads[i].gameObject != gameObject)
+            {
+                _grounded = true;
+                pressurePads[i].gameObject.GetComponent<PressurePadScript>().SetPressurePadState(1);
+
+            }
+
+        }
+        Collider2D[] stageLimits = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, 1 << LayerMask.NameToLayer("StageLimit"));
+        for (int i = 0; i < stageLimits.Length; i++)
+        {
+            if (stageLimits[i].gameObject != gameObject)
+            {
+                _health = 0;
+                Die();
+            }
+
+        }
+
+        Collider2D[] ladders = Physics2D.OverlapCircleAll(_ladderCheck.position, _groundedRadius, _whatIsLadder);
+        for (int i = 0; i < ladders.Length; i++)
+        {
+            if (ladders[i].gameObject != gameObject)
+            {
+                _onLadder = true;
+            }
+            
+
+        }
+        if(ladders.Length < 1)
+        {
+            _onLadder = false;
+        }
+
+        //Freeze movement on stairs when velocity == 0
+        if(_grounded && _horizontalMove == 0 && !_jump && !_isJumping && _onStairs)
+        {
+            _rigidBody.isKinematic = true;
+            _rigidBody.velocity = Vector2.zero;
+        }
+        else
+        {
+            _rigidBody.isKinematic = false;
+        }
+
+        if (_onLadder)
+        {
+
+            Physics2D.gravity = Vector2.zero;
+            _rigidBody.velocity = new Vector2(0, 0);
+            if (Input.GetAxis("Vertical") > 0)
+            {
+                transform.Translate(0, 3 * Time.deltaTime, 0);
+            }
+            else if (Input.GetAxis("Vertical") < 0)
+            {
+                transform.Translate(0, -3 * Time.deltaTime, 0);
+            }
+        }
+        else
+        {
+            Physics2D.gravity = _gravity;
+
+        }
+
         Move(_horizontalMove, _jump);
+
+
+
     }
 
     public void Move(float move, bool jump)
     {
-        if (_grounded || _airControl)
+
+        if (_dying && _gender == 0)
         {
+            CharacterAnimator.Play("Die");
+        }
+        else if(_dying && _gender == 1)
+        {
+            CharacterAnimator.Play("FDie");
+        }
+  
+
+        else if (_blocking && _gender == 0)
+        {
+            _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
+            CharacterAnimator.Play("ShieldBlock");
+        }else if(_blocking && _gender == 1)
+        {
+            _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
+            CharacterAnimator.Play("FShieldBlock");
+        }
+
+
+        else if (_grounded || _airControl)
+        {
+            if (_attackOnCooldown)
+            {
+                if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0 && _gender == 0)
+                {
+                    CharacterAnimator.Play("AttackSword");
+                }else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0 && _gender == 1)
+                {
+                    CharacterAnimator.Play("FAttackSword");
+                }
+                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1 && _gender == 0)
+                {
+                    CharacterAnimator.Play("AttackMace");
+                }else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1 && _gender == 1)
+                {
+                    CharacterAnimator.Play("FAttackMace");
+                }
+                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2 && _gender == 0)
+                {
+                    CharacterAnimator.Play("AttackSuperSword");
+                }else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2 && _gender == 1)
+                {
+                    CharacterAnimator.Play("FAttackSuperSword");
+                }
+
+            }
+            else if (_usingWand && _gender == 0)
+            {
+                CharacterAnimator.Play("AttackWand");
+            }else if(_usingWand && _gender == 1)
+            {
+                CharacterAnimator.Play("FAttackMagicWand");
+            }
+
+
+            else if (_drawingBow && _ableToShootBow && _gender == 0)
+            {
+                CharacterAnimator.Play("BowDraw");
+            }else if(_drawingBow && _ableToShootBow && _gender == 1)
+            {
+                CharacterAnimator.Play("FDrawBow");
+            }
+            else if (_releasingBow && _gender == 0)
+            {
+                CharacterAnimator.Play("BowRelease");
+            }else if(_releasingBow && _gender == 1)
+            {
+                CharacterAnimator.Play("FReleaseBow");
+            }
+            else if (_layingBomb && _gender == 0)
+            {
+                CharacterAnimator.Play("AttackDefault");
+            }else if(_layingBomb && _gender == 1)
+            {
+                CharacterAnimator.Play("FAttackDefault");
+            }
+            else if (_invulnurable && _gender == 0)
+            {
+                CharacterAnimator.Play("Damage");
+            }else if(_invulnurable && _gender == 1)
+            {
+                CharacterAnimator.Play("FHurt");
+            }
+            else if (_onLadder && _gender == 0)
+            {
+                CharacterAnimator.Play("Climb");
+            }else if(_onLadder && _gender == 1)
+            {
+                //TODO MUUTA FEMALE ANIMS
+                CharacterAnimator.Play("Climb");
+            }
+            else if (_grounded && move != 0 && _gender == 0)
+            {
+                //CharacterAnimator.SetBool("Walk", true);
+                //CharacterAnimator.Play("Walk");
+                CharacterAnimator.Play("Walk");
+                if (!runLoopPlayed) {
+					runLoopPlayed = true;
+					playerRunLoop.loop = true;
+					playerRunLoop.Play ();
+				}
+            }else if(_grounded && move != 0 &&_gender == 1)
+            {
+                CharacterAnimator.Play("FRun");
+                if (!runLoopPlayed)
+                {
+                    runLoopPlayed = true;
+                    playerRunLoop.loop = true;
+                    playerRunLoop.Play();
+                }
+            }
+            else if (_isJumping && _gender == 0)
+            {
+				if (!jumpSoundPlayed) {
+					jumpSound.Play ();
+					jumpSoundPlayed = true;
+				}
+				CharacterAnimator.Play("Jump");
+				if (runLoopPlayed) {
+					playerRunLoop.loop = false;
+					runLoopPlayed = false;
+				}
+            }
+            else if (_isJumping && _gender == 1)
+            {
+                if (!jumpSoundPlayed)
+                {
+                    jumpSound.Play();
+                    jumpSoundPlayed = true;
+                }
+                CharacterAnimator.Play("FJump");
+                if (runLoopPlayed)
+                {
+                    playerRunLoop.loop = false;
+                    runLoopPlayed = false;
+                }
+            }
+            else if (!_grounded && !_isJumping && _gender == 0)
+            {
+				CharacterAnimator.Play("Fall");
+				if (jumpSoundPlayed) {
+					jumpSoundPlayed = false;
+				}
+				if (runLoopPlayed) {
+					playerRunLoop.loop = false;
+					runLoopPlayed = false;
+				}
+            }
+            else if (!_grounded && !_isJumping && _gender == 1)
+            {
+                CharacterAnimator.Play("FFall");
+                if (jumpSoundPlayed)
+                {
+                    jumpSoundPlayed = false;
+                }
+                if (runLoopPlayed)
+                {
+                    playerRunLoop.loop = false;
+                    runLoopPlayed = false;
+                }
+            }
+
+            else
+            {
+                if(_gender == 0)
+                {
+                    CharacterAnimator.Play("Idle");
+                }
+                else
+                {
+                    CharacterAnimator.Play("FIdle");
+                }
+
+				if (runLoopPlayed) {
+					playerRunLoop.loop = false;
+					runLoopPlayed = false;
+				}
+                //CharacterAnimator.SetBool("Walk", false);
+            }
+
             //Horizontal force
             _rigidBody.velocity = new Vector2(move * _maxSpeed, _rigidBody.velocity.y);
 
@@ -152,30 +902,43 @@ public class PlayerController : MonoBehaviour {
             {
                 Flip();
             }
-        }
-        //Vertical force
-        if (_grounded && _jump)
-        {
-            _grounded = false;
-            _rigidBody.AddForce(new Vector2(0f, _jumpForce));
-        }
-        if (_onPlatform && _fallingThrough)
-        {
+   
+            if (_grounded && _jump && !_jumpOnCooldown && !_invulnurable)
+            {
+                _grounded = false;
+                _rigidBody.velocity = Vector2.zero;
+                _rigidBody.AddForce(new Vector2(0f, _jumpForce));
+                StartCoroutine(JumpCooldown());
+
+            }
 
         }
+
     }
-    private void DropDown()
+
+    public void UsePotion()
     {
-        if (_onPlatform)
+        if (_playerManager.GetComponent<PlayerInventory>().getHasPotion())
         {
-
+            if (_health == 20)
+            {
+                //Do nothing
+            }
+            else if (_health + 10 > 20)
+            {
+                StartCoroutine(PotionEffect(2f));
+                _health = 20;
+                _playerManager.GetComponent<PlayerInventory>().useHealthPotion();
+            }
+            else
+            {
+                StartCoroutine(PotionEffect(2f));
+                _health += 10;
+                _playerManager.GetComponent<PlayerInventory>().useHealthPotion();
+            }
         }
-    }
-    IEnumerator IgnorePlatform()
-    {
-        _grounded = false;
 
-        yield return new WaitForSeconds(1);
+
     }
 
     private void Flip()
@@ -187,30 +950,146 @@ public class PlayerController : MonoBehaviour {
         transform.localScale = theScale;
     }
 
+    //Player takes damage;
+    public void Hurt(int damage)
+    {
+        if (_health - damage > 0 && !_invulnurable && !_blocking)
+        {
+            _health -= damage;
+
+            _rigidBody.velocity = Vector2.zero;
+            _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
+            StartCoroutine(Flicker(5));
+            StartCoroutine(InvulnTimer());
+            playerHitSound.Play(); // AUDIO
+
+        }
+        else if(_health - damage <= 0)
+        {
+            _health = 0;
+            Die();
+        }
+    }
+
+    IEnumerator DeathAnimation()
+    {
+        //TODO play death animation and load Gameover/retry screen
+        _dying = true;
+        yield return new WaitForSeconds(1.5f);
+        _gameManager.GetComponent<GameManager>().LoadGameOverScreen();
+    }
+
+    private void Die()
+    {
+        StartCoroutine(DeathAnimation());
+    }
+
+    IEnumerator PotionEffect(float ft)
+    {
+        GameObject explosion = Instantiate(_potionEffectSprite, transform.position, Quaternion.identity) as GameObject;
+        Destroy(explosion, 1f);
+        yield return new WaitForSeconds(ft);
+
+    }
+
+    IEnumerator InvulnTimer()
+    {
+        _invulnurable = true;
+        yield return new WaitForSeconds(1f);
+        _invulnurable = false;
+    }
+
+    IEnumerator Flicker(int times)
+    {
+
+        //TODO play hurt animation
+        Renderer rend = gameObject.GetComponent<Renderer>();
+        for (int i = 0; i < times; i++)
+        {
+            rend.material.color = new Color(1f, 1f, 1f, 0f);
+            yield return new WaitForSeconds(0.1f);
+            rend.material.color = _color;
+            yield return new WaitForSeconds(0.1f);
+        }
+  
+     
+    }
+
+    public void SetSelectedControls(int i)
+    {
+        _selectedControls = i;
+    }
 
     //Placeholder for attack anims
-    IEnumerator AttackAnim()
+    IEnumerator AttackAnim(float cooldown)
     {
-        _weaponSwing.gameObject.SetActive(true);
-        yield return new WaitForSeconds(0.25f);
-        _weaponSwing.gameObject.SetActive(false);
+        //_weaponSwing.gameObject.SetActive(true);
+        _attackOnCooldown = true;
+        yield return new WaitForSeconds(cooldown);
+        //_weaponSwing.gameObject.SetActive(false);
+        _attackOnCooldown = false;
+    }
+
+    IEnumerator JumpCooldown()
+    {
+        _jumpOnCooldown = true;
+        _isJumping = true;
+        yield return new WaitForSeconds(_jumpCooldown);
+        _isJumping = false;
+        _jumpOnCooldown = false;
+
     }
 
     public void Attack()
     {
-        StartCoroutine(AttackAnim());
+
         //Check if enemies hit
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, _meleeRadius, _enemyLayerMask);
+
+        GameObject currWeapon = _weaponsList[_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon()];
+        float weaponDamage = currWeapon.GetComponent<WeaponStats>()._weaponDamage;
+        float weaponRadius = currWeapon.GetComponent<WeaponStats>()._weaponHitRadius;
+        bool weaponHasStun = currWeapon.GetComponent<WeaponStats>()._hasStunEffect;
+        float weaponSpeed = currWeapon.GetComponent<WeaponStats>()._weaponSpeed;
+        float weaponCooldown = currWeapon.GetComponent<WeaponStats>()._weaponCooldown;
+        StartCoroutine(AttackAnim(weaponCooldown));
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, weaponRadius, _enemyLayerMask);
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].gameObject != gameObject)
             {
                 //Enemy hit
-                colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(_meleeDamage);
+                if (colliders[i].gameObject.GetComponent<EnemyScript>())
+                {
+                    colliders[i].gameObject.GetComponent<EnemyScript>().TakeDamage(weaponDamage);
+                    if (weaponHasStun)
+                    {
+                        float rand = UnityEngine.Random.Range(0, 100);
+                        if (rand > 75)
+                        {
+                            if (colliders[i].gameObject.GetComponent<EnemyScript>())
+                            {
+                                colliders[i].gameObject.GetComponent<EnemyScript>().MaceStun();
+                            }
+                        }
+                    }
+                }
+                if (colliders[i].gameObject.GetComponent<Goblin_King>())
+                {
+                    colliders[i].gameObject.GetComponent<Goblin_King>().TakeDamage(weaponDamage);
+                }
             }
         }
     }
 
+
+    public int GetHealth()
+    {
+        return _health;
+    }
+    public void SetHealth(int h)
+    {
+        _health = h;
+    }
 
     //Funktiot touch screen liikkumiselle
     public void AddSpeed()
