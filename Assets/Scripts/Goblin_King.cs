@@ -9,7 +9,7 @@ public class Goblin_King : MonoBehaviour {
 
 	public int _meleeDamage;
 	public float _health;
-	public GameObject _deathAnim;
+	public GameObject _deathAnim,ball,chain1,chain2,chain3,hand;
 
 	// Use this for initialization
 	void Start () {
@@ -18,6 +18,10 @@ public class Goblin_King : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		chain2.transform.position = (hand.transform.position + ball.transform.position) / 2;
+		chain1.transform.position = (hand.transform.position + chain2.transform.position) / 2;
+		chain3.transform.position = (chain2.transform.position + ball.transform.position) / 2;
 
 		if (_health <= 0)
 		{
