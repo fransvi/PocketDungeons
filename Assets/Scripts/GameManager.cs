@@ -54,9 +54,10 @@ public class GameManager : MonoBehaviour {
         ui = GameObject.Find("UI");
         GameObject playerClone = Instantiate(player, playerSpawnPoint.transform.position, playerSpawnPoint.transform
             .rotation);
-        playerClone.GetComponent<PlayerController>().SetHealth(20);
-        playerClone.GetComponent<PlayerController>().SetSelectedControls(selectedControls);
-        playerClone.GetComponent<PlayerController>().SetGender(playergender);
+        //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
+        //playerClone.GetComponent<PlayerController>().SetHealth(20);
+        //playerClone.GetComponent<PlayerController>().SetSelectedControls(selectedControls);
+        //playerClone.GetComponent<PlayerController>().SetGender(playergender);
         inventory.gameObject.GetComponent<PlayerInventory>().SetPlayer(playerClone);
         ui.GetComponent<HudManager>().SetPlayerStats(playerClone, inventory.gameObject);
         ui.GetComponent<HudManager>().SetControlState(selectedControls);

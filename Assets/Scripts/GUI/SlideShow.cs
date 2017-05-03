@@ -33,8 +33,8 @@ public class SlideShow : MonoBehaviour {
 	#endregion
 	#region Built-in methods
 	void Start(){
-		this.logoMaxWidth = Screen.width * 0.8f;
-		this.logoMaxHeight = Screen.height * 0.8f;
+		this.logoMaxWidth = Screen.width * 0.6f;
+		this.logoMaxHeight = Screen.height * 0.6f;
 		StartCoroutine("SwitchLogo");
 	}
 	void Update(){

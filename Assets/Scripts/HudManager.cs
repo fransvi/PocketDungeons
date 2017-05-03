@@ -76,11 +76,12 @@ public class HudManager : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+        //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
+        //int hp = _playerController.GetComponent<PlayerController>().GetHealth();
+        //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017 / TONI
+        //_currentHealthSprite.overrideSprite = _healthBar[hp];
 
-        int hp = _playerController.GetComponent<PlayerController>().GetHealth();
-        _currentHealthSprite.overrideSprite = _healthBar[hp];
 
-        
 
         bool hasPotion = _playerManager.GetComponent<PlayerInventory>().getHasPotion();
         bool hasKey = _playerManager.GetComponent<PlayerInventory>().getHasKey1();

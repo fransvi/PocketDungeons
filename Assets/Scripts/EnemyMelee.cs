@@ -24,7 +24,8 @@ public class EnemyMelee : MonoBehaviour {
             {
                 if (colliders[i].gameObject.GetComponent<PlayerController>())
                 {
-                    colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
+                    //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
+                    //colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
                 }
 
             }
