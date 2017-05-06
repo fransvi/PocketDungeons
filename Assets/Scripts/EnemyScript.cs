@@ -8,7 +8,7 @@ public class EnemyScript : MonoBehaviour {
     private float _knockbackForce;
     [SerializeField]
     private GameObject _player;
-
+    public Animator CharacterAnimator;
     [SerializeField]
     private GameObject _hurtPoint;
     [SerializeField]
@@ -27,6 +27,20 @@ public class EnemyScript : MonoBehaviour {
     private Transform _center;
     private float _minDistance = 0.05f;
     private bool _stunned;
+    private bool _attackOnCooldown;
+    public float _attackCooldown;
+    public float _attackRange;
+
+    /*
+    EnemyTypes
+    0 = Goblin
+    1 = Bat
+    2 = Skeleton
+    3 = SkeletonHead
+    */
+
+    [SerializeField]
+    private int enemyType;
 
     // Use this for initialization
     void Start() {
@@ -38,16 +52,36 @@ public class EnemyScript : MonoBehaviour {
         Physics2D.IgnoreLayerCollision(10, 0, true);
         _player = GameObject.FindWithTag("Player");
         _center = transform.Find("CenterPoint");
+        CharacterAnimator = GetComponent<Animator>();
+        if (enemyType == 1)
+        {
+            GetComponent<Rigidbody2D>().gravityScale = 0f;
+        }
     }
 
     // Update is called once per frame
     void Update() {
 
         float distance = Vector2.Distance(transform.position, _player.transform.position);
-        if (distance < _viewDistance && distance > _minDistance && !_stunned)
+        if (_stunned)
+        {
+            _rigidBody.velocity = Vector2.zero;
+        }else if (_attackOnCooldown && distance < 4f)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, -_player.transform.position, _moveSpeed * Time.deltaTime);
+        }
+        else if(distance < _attackRange)
         {
             MeleeAttack();
-            transform.position = Vector2.MoveTowards(transform.position, _player.transform.position, 3 * Time.deltaTime);
+            StartCoroutine(AttackCooldown());
+        }
+        else if (distance < _viewDistance && distance > _minDistance && !_stunned)
+        {
+
+            transform.position = Vector2.MoveTowards(transform.position, _player.transform.position, _moveSpeed * Time.deltaTime);
+        }
+        else
+        {
         }
 
         if (_health <= 0)
@@ -65,6 +99,12 @@ public class EnemyScript : MonoBehaviour {
 
 
 
+    }
+    IEnumerator AttackCooldown()
+    {
+        _attackOnCooldown = true;
+        yield return new WaitForSeconds(_attackCooldown);
+        _attackOnCooldown = false;
     }
     //Placeholder for hurt anim
     IEnumerator HurtAnim()
@@ -96,13 +136,21 @@ public class EnemyScript : MonoBehaviour {
         {
             //knock vasempaan
             _rigidBody.velocity = Vector2.zero;
-            _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
+            if(enemyType == 0 || enemyType == 2)
+            {
+                _rigidBody.AddForce(new Vector2(-_knockbackForce, _knockbackForce));
+            }
+
         }
         else if (transform.position.x > _player.transform.position.x)
         {
             //knock oikealle
             _rigidBody.velocity = Vector2.zero;
-            _rigidBody.AddForce(new Vector2(_knockbackForce, _knockbackForce));
+            if (enemyType == 0 || enemyType == 2)
+            {
+                _rigidBody.AddForce(new Vector2(_knockbackForce, _knockbackForce));
+            }
+
         }
         _health -= damage;
     }
@@ -121,7 +169,7 @@ public class EnemyScript : MonoBehaviour {
     }
     private void MeleeAttack()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 0.05f, LayerMask.GetMask("Default"));
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, _attackRange, LayerMask.GetMask("Default"));
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].gameObject != gameObject)
@@ -129,7 +177,7 @@ public class EnemyScript : MonoBehaviour {
                 if (colliders[i].gameObject.GetComponent<PlayerController>())
                 {
                     //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
-                    //colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
+                    colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
                 }
 
             }

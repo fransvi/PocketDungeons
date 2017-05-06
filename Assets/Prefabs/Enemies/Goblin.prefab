@@ -116,8 +116,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDrag: 0.45
+  m_AngularDrag: 0.6
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -194,15 +194,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa84755b1d0a6af478aeff1877ccf51e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 5
+  _health: 3
   _knockbackForce: 200
   _player: {fileID: 1835335137751308, guid: 163ac1c790a95954499d27ae4292daed, type: 2}
+  CharacterAnimator: {fileID: 0}
   _hurtPoint: {fileID: 0}
-  _moveSpeed: 0
-  _meleeDamage: 1
+  _moveSpeed: 3
+  _meleeDamage: 3
   _facingRight: 0
   _deathAnim: {fileID: 1848732492042332, guid: 900fb978598f53949ac624c8b346a80e, type: 2}
   _stunnedAnim: {fileID: 1439164124171716}
+  _attackCooldown: 1
+  _attackRange: 0.5
+  enemyType: 0
 --- !u!212 &212744093045880614
 SpriteRenderer:
   m_ObjectHideFlags: 1

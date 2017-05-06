@@ -956,8 +956,7 @@ public class PlayerController : MonoBehaviour
             }
             else if (_onLadder && _gender == 1)
             {
-                //TODO MUUTA FEMALE ANIMS
-                CharacterAnimator.Play("Climb");
+                CharacterAnimator.Play("FClimb");
             }
             else if (_grounded && move != 0 && _gender == 0)
             {

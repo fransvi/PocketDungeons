@@ -13,7 +13,7 @@ public class SpikesScript : MonoBehaviour {
         if (other.gameObject.tag == "Player")
         {
             //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
-            //other.GetComponent<PlayerController>().Hurt(_spikeDamage);
+            other.GetComponent<PlayerController>().Hurt(_spikeDamage);
         }
 
     }

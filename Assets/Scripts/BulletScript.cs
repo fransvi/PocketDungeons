@@ -106,7 +106,7 @@ public class BulletScript : MonoBehaviour {
         if (other.gameObject.tag == "Player" && _dartTrapProjectile)
         {
             //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
-            //other.gameObject.GetComponent<PlayerController>().Hurt(1);
+            other.gameObject.GetComponent<PlayerController>().Hurt(1);
             Destroy(gameObject);
         }
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
