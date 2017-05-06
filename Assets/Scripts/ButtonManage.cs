@@ -90,7 +90,7 @@ public class ButtonManage : MonoBehaviour
     public void StartGameBtn()
     {
     }
-	
+
     public void ExitGameBtn()
     {
         Application.Quit();
