@@ -19,7 +19,9 @@ public class PlayerController : MonoBehaviour
     private float volHighRange = 1.0f;
     bool jumpSoundPlayed = false;
     bool runLoopPlayed = false;
-
+    public VirtualJoystick _joystick;
+    private float _horizontalJoystick; private bool _mobileOffDown = false;
+    private float _verticalJoystick;
     public GameObject[] _weaponsList;
 
     [SerializeField]
@@ -183,7 +185,138 @@ public class PlayerController : MonoBehaviour
         audio.Play();
         audio.Play(44100);
     }
+    //Commands for mobile controls
 
+    public void MobileJumpDown()
+    {
+        _jump = true;
+    }
+    public void MobileJumpUp()
+    {
+        _jump = false;
+    }
+    public void MobileMainDown()
+    {
+        if (!_attackOnCooldown)
+        {
+            Attack();
+            swordSound.Play();
+        }
+    }
+    public void MobileMainUp()
+    {
+
+    }
+    public void MobileOffDown()
+    {
+
+        _mobileOffDown = true;
+        
+
+    }
+    public void MobileOffUp()
+    {
+   
+        int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+        if (ow == 1)
+        {
+            _drawingBow = false;
+            UseOffWeapon();
+            _bowForce = 0;
+            StartCoroutine(BowRelease());
+
+
+
+
+        }
+        else if (ow == 2)
+        {
+            UseOffWeapon();
+            StartCoroutine(BombLayAnim());
+        }
+        else if (ow == 3)
+        {
+            Debug.Log("Blocking false");
+            _blocking = false;
+        }
+        else if (ow == 4)
+        {
+            StartCoroutine(WandAttack());
+            _bowForce = 0;
+        }
+        StartCoroutine(OffWCooldown());
+        _mobileOffDown = false;
+    }
+    public void MobileConsumableDown()
+    {
+        UsePotion();
+    }
+    public void OffHold()
+    {
+        int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+        if (ow == 1 && !_offCooldown)
+        {
+            _drawingBow = true;
+            if (_bowForce < 70)
+            {
+                _bowForce += 1;
+            }
+
+        }
+        else if (ow == 2)
+        {
+
+        }
+        else if (ow == 3)
+        {
+            _blocking = true;
+        }
+        else if (ow == 4)
+        {
+            _bowForce = 10;
+        }
+    }
+
+    public void OffRelease()
+    {
+        int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+        if (ow == 1)
+        {
+            _drawingBow = false;
+            UseOffWeapon();
+            _bowForce = 0;
+            StartCoroutine(BowRelease());
+
+
+
+
+        }
+        else if (ow == 2)
+        {
+            UseOffWeapon();
+            StartCoroutine(BombLayAnim());
+        }
+        else if (ow == 3)
+        {
+            Debug.Log("Blocking false");
+            _blocking = false;
+        }
+        else if (ow == 4)
+        {
+            StartCoroutine(WandAttack());
+            _bowForce = 0;
+        }
+        StartCoroutine(OffWCooldown());
+        _mobileOffDown = false;
+    }
+    public void MobileConsumableUp()
+    {
+
+    }
+    //
+    //
+    //
+    //
     //KB Controls
     void Update()
     {
@@ -196,34 +329,12 @@ public class PlayerController : MonoBehaviour
         {
             _weaponSwing = _maceSwing;
         }
+        if (_mobileOffDown)
+        {
+            OffHold();
+        }
 
 
-
-        /*
-        // Nuoli vasempaan
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            CancelInvoke();
-            InvokeRepeating("DecreaseSpeed", 0, 0.05f);
-        }
-        if (Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            CancelInvoke();
-            InvokeRepeating("StopMove", 0, 0.05f);
-        }
-        // Nuoli oikeaan
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            CancelInvoke();
-            InvokeRepeating("AddSpeed", 0, 0.05f);
-        }
-        if (Input.GetKeyUp(KeyCode.RightArrow))
-        {
-            CancelInvoke();
-            InvokeRepeating("StopMove", 0, 0.05f);
-        }
-        */
-        // Nuoli alas
         // Go down platforms
         if (_selectedControls == 0)
         {
@@ -261,7 +372,7 @@ public class PlayerController : MonoBehaviour
             //TODO
         }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (_verticalJoystick > 0.5f)
         {
             PickUpItem();
             OpenObject();
@@ -324,6 +435,14 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(OffWCooldown());
 
         }
+    }
+    private void OffWeaponAttackDown()
+    {
+
+    }
+    private void OffWeaponAttackUp()
+    {
+
     }
 
     IEnumerator OffWCooldown()
@@ -576,17 +695,36 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    public void SetJoystick(GameObject js)
+    {
+        _joystick = js.GetComponent<VirtualJoystick>();
+    }
+
     void FixedUpdate()
     {
 
         //Ignore platform when jumping on it
-        _horizontalMove = Input.GetAxis("Horizontal");
+        if(_joystick != null)
+        {
+            _horizontalJoystick = _joystick.Horizontal();
+            _verticalJoystick = _joystick.Vertical();
+            _horizontalMove = _horizontalJoystick;
+        }
+        else
+        {
+            _verticalJoystick = Input.GetAxis("Vertical");
+            _horizontalJoystick = Input.GetAxis("Horizontal");
+            _horizontalMove = _horizontalJoystick;
+            
+        }
+
 
         if (transform.GetComponent<Rigidbody2D>().velocity.y > 0)
         {
             Physics2D.IgnoreLayerCollision(0, 9, true);
         }
-        else if (Input.GetAxis("Vertical") == -1)
+
+        else if (_verticalJoystick < -0.5f)
         {
             Physics2D.IgnoreLayerCollision(0, 9, true);
         }
@@ -694,11 +832,11 @@ public class PlayerController : MonoBehaviour
 
             Physics2D.gravity = Vector2.zero;
             _rigidBody.velocity = new Vector2(0, 0);
-            if (Input.GetAxis("Vertical") > 0)
+            if (_verticalJoystick > 0)
             {
                 transform.Translate(0, 3 * Time.deltaTime, 0);
             }
-            else if (Input.GetAxis("Vertical") < 0)
+            else if (_verticalJoystick < 0)
             {
                 transform.Translate(0, -3 * Time.deltaTime, 0);
             }
