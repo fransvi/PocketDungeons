@@ -187,7 +187,6 @@ GameObject:
   - component: {fileID: 121401543}
   - component: {fileID: 121401542}
   - component: {fileID: 121401541}
-  - component: {fileID: 121401545}
   m_Layer: 0
   m_Name: Level1Button
   m_TagString: Untagged
@@ -253,13 +252,13 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 121401540}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -298,36 +297,6 @@ RectTransform:
   m_AnchoredPosition: {x: 6.780014, y: 93.2}
   m_SizeDelta: {x: 124, y: 47}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &121401545
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 121401540}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 2
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 228731414}
-          m_MethodName: LoadLevelBtn
-          m_Mode: 5
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: level01
-            m_BoolArgument: 0
-          m_CallState: 2
-      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
-        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  delegates: []
 --- !u!1 &178858902
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,6 +654,8 @@ MonoBehaviour:
   - {fileID: 1759982521}
   - {fileID: 1946770863}
   - {fileID: 1582237827}
+  - {fileID: 0}
+  - {fileID: 0}
   cursor: {fileID: 965609023}
   gm: {fileID: 0}
 --- !u!114 &228731415
@@ -1022,7 +993,7 @@ Prefab:
     - target: {fileID: 20191041519978726, guid: 88ea8deacc21b3c4bbd4500855803f32,
         type: 2}
       propertyPath: orthographic size
-      value: 1083.6782
+      value: 1142.6633
       objectReference: {fileID: 0}
     - target: {fileID: 4699442829064452, guid: 88ea8deacc21b3c4bbd4500855803f32, type: 2}
       propertyPath: m_LocalScale.x
@@ -1128,7 +1099,6 @@ GameObject:
   - component: {fileID: 563177327}
   - component: {fileID: 563177326}
   - component: {fileID: 563177325}
-  - component: {fileID: 563177329}
   m_Layer: 0
   m_Name: Level2Button
   m_TagString: Untagged
@@ -1194,13 +1164,13 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 563177324}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1239,36 +1209,6 @@ RectTransform:
   m_AnchoredPosition: {x: 6.780014, y: 37.6}
   m_SizeDelta: {x: 124, y: 47}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &563177329
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 563177324}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 2
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 228731414}
-          m_MethodName: LoadLevelBtn
-          m_Mode: 5
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: level02_fixed
-            m_BoolArgument: 0
-          m_CallState: 2
-      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
-        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  delegates: []
 --- !u!1 &573396340
 GameObject:
   m_ObjectHideFlags: 0
@@ -2567,7 +2507,6 @@ GameObject:
   - component: {fileID: 1759982523}
   - component: {fileID: 1759982522}
   - component: {fileID: 1759982521}
-  - component: {fileID: 1759982525}
   m_Layer: 0
   m_Name: Level3Button
   m_TagString: Untagged
@@ -2639,7 +2578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -2678,36 +2617,6 @@ RectTransform:
   m_AnchoredPosition: {x: 6.780014, y: -17.4}
   m_SizeDelta: {x: 124, y: 47}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1759982525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1759982520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Delegates:
-  - eventID: 2
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 228731414}
-          m_MethodName: LoadLevelBtn
-          m_Mode: 5
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: level03_fixed
-            m_BoolArgument: 0
-          m_CallState: 2
-      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
-        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  delegates: []
 --- !u!1 &1810085491
 GameObject:
   m_ObjectHideFlags: 0
@@ -2928,7 +2837,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: CharacterCreation
+          m_StringArgument: level04
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
