@@ -231,8 +231,12 @@ public class PlayerController : MonoBehaviour
         }
         else if (ow == 2)
         {
-            UseOffWeapon();
-            StartCoroutine(BombLayAnim());
+            if (!_offCooldown)
+            {
+                UseOffWeapon();
+                StartCoroutine(BombLayAnim());
+            }
+
         }
         else if (ow == 3)
         {
@@ -244,7 +248,6 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(WandAttack());
             _bowForce = 0;
         }
-        StartCoroutine(OffWCooldown());
         _mobileOffDown = false;
     }
     public void MobileConsumableDown()
@@ -293,8 +296,12 @@ public class PlayerController : MonoBehaviour
         }
         else if (ow == 2)
         {
-            UseOffWeapon();
-            StartCoroutine(BombLayAnim());
+            if (!_offCooldown)
+            {
+                UseOffWeapon();
+                StartCoroutine(BombLayAnim());
+            }
+ 
         }
         else if (ow == 3)
         {
@@ -306,7 +313,6 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(WandAttack());
             _bowForce = 0;
         }
-        StartCoroutine(OffWCooldown());
         _mobileOffDown = false;
     }
     public void MobileConsumableUp()
@@ -419,8 +425,12 @@ public class PlayerController : MonoBehaviour
             }
             else if (ow == 2)
             {
-                UseOffWeapon();
-                StartCoroutine(BombLayAnim());
+                if (!_offCooldown)
+                {
+                    UseOffWeapon();
+                    StartCoroutine(BombLayAnim());
+                }
+
             }
             else if (ow == 3)
             {
@@ -432,7 +442,6 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(WandAttack());
                 _bowForce = 0;
             }
-            StartCoroutine(OffWCooldown());
 
         }
     }
@@ -579,6 +588,7 @@ public class PlayerController : MonoBehaviour
             {
                 go.GetComponent<BombScript>().CreateBomb(false, 5);
             }
+            StartCoroutine(OffWCooldown());
 
         }
 
@@ -830,7 +840,7 @@ public class PlayerController : MonoBehaviour
         if (_onLadder)
         {
 
-            Physics2D.gravity = Vector2.zero;
+            _rigidBody.gravityScale = 0f;
             _rigidBody.velocity = new Vector2(0, 0);
             if (_verticalJoystick > 0)
             {
@@ -843,7 +853,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Physics2D.gravity = _gravity;
+            _rigidBody.gravityScale = 1.5f;
 
         }
 
@@ -1146,6 +1156,8 @@ public class PlayerController : MonoBehaviour
     private void Die()
     {
         StartCoroutine(DeathAnimation());
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
     }
 
     IEnumerator PotionEffect(float ft)
@@ -1216,6 +1228,16 @@ public class PlayerController : MonoBehaviour
         float weaponSpeed = currWeapon.GetComponent<WeaponStats>()._weaponSpeed;
         float weaponCooldown = currWeapon.GetComponent<WeaponStats>()._weaponCooldown;
         StartCoroutine(AttackAnim(weaponCooldown));
+        //Mace can break walls
+        Collider2D[] walls = Physics2D.OverlapCircleAll(_meleeCheck.position, weaponRadius, LayerMask.GetMask("Breakable"));
+        for(int i = 0; i < walls.Length; i++)
+        {
+            if(walls[i].gameObject != gameObject)
+            {
+                walls[i].gameObject.GetComponent<BreakableWall>().BreakWall();
+            }
+        }
+
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, weaponRadius, _enemyLayerMask);
         for (int i = 0; i < colliders.Length; i++)
         {

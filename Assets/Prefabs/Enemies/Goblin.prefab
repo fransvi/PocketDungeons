@@ -204,6 +204,9 @@ MonoBehaviour:
   _facingRight: 0
   _deathAnim: {fileID: 1848732492042332, guid: 900fb978598f53949ac624c8b346a80e, type: 2}
   _stunnedAnim: {fileID: 1439164124171716}
+  _skeletonSkullPrefab: {fileID: 1103436994893770, guid: 125228946533eed4bbe95ae232d468e3,
+    type: 2}
+  _hitAnim: {fileID: 1076439102545166, guid: 823a5511bbb856d4eba0ffefcc9bbb24, type: 2}
   _attackCooldown: 1
   _attackRange: 0.5
   enemyType: 0

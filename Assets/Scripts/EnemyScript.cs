@@ -21,6 +21,10 @@ public class EnemyScript : MonoBehaviour {
     private GameObject _deathAnim;
     [SerializeField]
     private GameObject _stunnedAnim;
+    [SerializeField]
+    private GameObject _skeletonSkullPrefab;
+    [SerializeField]
+    private GameObject _hitAnim;
     private Rigidbody2D _rigidBody;
     private Color _color;
     private float _viewDistance = 5f;
@@ -110,9 +114,14 @@ public class EnemyScript : MonoBehaviour {
     IEnumerator HurtAnim()
     {
         Renderer rend = gameObject.GetComponent<Renderer>();
+        Vector3 newPos = new Vector3(_center.position.x, _center.position.y, _center.position.z - 5);
+        GameObject hitEffect = Instantiate(_hitAnim, newPos, _center.rotation);
+        Destroy(hitEffect, 0.25f);
         for (int i = 0; i < 2; i++)
         {
             rend.material.color = new Color(1f, 1f, 1f, 0f);
+ 
+
             yield return new WaitForSeconds(0.1f);
             rend.material.color = _color;
             yield return new WaitForSeconds(0.1f);
@@ -190,6 +199,10 @@ public class EnemyScript : MonoBehaviour {
 
     private void Die()
     {
+        if(enemyType == 2)
+        {
+            GameObject skull = Instantiate(_skeletonSkullPrefab, _center.position, _center.rotation);
+        }
         GameObject poof = Instantiate(_deathAnim, _center.position, _center.rotation);
         Destroy(gameObject);
         Destroy(poof, 0.5f);
