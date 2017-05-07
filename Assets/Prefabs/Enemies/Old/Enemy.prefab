@@ -124,7 +124,13 @@ MonoBehaviour:
   _health: 100
   _knockbackForce: 100
   _player: {fileID: 0}
+  CharacterAnimator: {fileID: 0}
   _hurtPoint: {fileID: 0}
   _moveSpeed: 0
   _meleeDamage: 0
   _facingRight: 0
+  _deathAnim: {fileID: 0}
+  _stunnedAnim: {fileID: 0}
+  _attackCooldown: 0
+  _attackRange: 0
+  enemyType: 0

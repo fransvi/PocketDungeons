@@ -10,6 +10,7 @@ public class BombScript : MonoBehaviour {
     public float speed;
     public float damage;
     public float _speed;
+    public int _friendlyFireDamage;
 
     private bool _grounded;
     public Animator _animator;
@@ -79,6 +80,10 @@ public class BombScript : MonoBehaviour {
             if (hit.gameObject.tag == "Enemy" && hit.gameObject.GetComponent<Rigidbody2D>())
             {
                 hit.gameObject.GetComponent<EnemyScript>().TakeDamage(damage);
+            }
+            if(hit.gameObject.tag == "Player")
+            {
+                hit.gameObject.GetComponent<PlayerController>().Hurt(_friendlyFireDamage);
             }
             if (hit.gameObject.tag == "Breakable")
             {

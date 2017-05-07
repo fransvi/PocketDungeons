@@ -37,6 +37,7 @@ public class CharacterCreatorScript : MonoBehaviour {
     public void SetName(string str)
     {
         _name = str;
+        highlightedButton += 1;
     }
 
     void moveCursor(int amount)

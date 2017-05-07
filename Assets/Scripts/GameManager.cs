@@ -14,10 +14,14 @@ public class GameManager : MonoBehaviour {
     public static GameManager gm;
     public static Transform pmenu;
     public GameObject ui;
+    public GameObject mobileControls;
+    public GameObject pcControls;
     public GameObject menu;
     public GameObject playerSpawnPoint;
     public GameObject ccmenu;
     public GameObject gameOverScreen;
+    public GameObject playerCloneInstance;
+    public int MOBILEVERSION;
 
     public int selectedControls;
     //Data for saving
@@ -49,6 +53,7 @@ public class GameManager : MonoBehaviour {
 
     public void LoadPlayer()
     {
+
         Debug.Log("PlayerGender" + playergender);
         playerSpawnPoint = GameObject.Find("PlayerSpawnPoint");
         ui = GameObject.Find("UI");
@@ -57,9 +62,29 @@ public class GameManager : MonoBehaviour {
         playerClone.GetComponent<PlayerController>().SetHealth(20);
         playerClone.GetComponent<PlayerController>().SetSelectedControls(selectedControls);
         playerClone.GetComponent<PlayerController>().SetGender(playergender);
+        playerCloneInstance = playerClone;
         inventory.gameObject.GetComponent<PlayerInventory>().SetPlayer(playerClone);
         ui.GetComponent<HudManager>().SetPlayerStats(playerClone, inventory.gameObject);
         ui.GetComponent<HudManager>().SetControlState(selectedControls);
+        mobileControls = GameObject.Find("MobileControls");
+        pcControls = GameObject.Find("PcControls");
+        if (MOBILEVERSION == 1)
+        {
+
+            mobileControls.SetActive(true);
+            pcControls.SetActive(false);
+            ui.GetComponent<HudManager>().SetMobileControls(true);
+            mobileControls = ui.GetComponentInChildren<MobileControlsScript>().gameObject;
+            playerClone.GetComponent<PlayerController>().SetJoystick(mobileControls.GetComponent<MobileControlsScript>().joystick.GetComponent<VirtualJoystick>().gameObject);
+
+        }
+        else
+        {
+            ui.GetComponent<HudManager>().SetMobileControls(false);
+            mobileControls.SetActive(false);
+            pcControls.SetActive(true);
+        }
+
 
     }
 
@@ -222,8 +247,33 @@ public class GameManager : MonoBehaviour {
         playername = name;
         StartCoroutine(ChangeLevel(0));
     }
-
+    public void MobileJumpDown()
+    {
+        playerCloneInstance.GetComponent<PlayerController>().MobileJumpDown();
+    }
+    public void MobileJumpUp()
+    {
+        playerCloneInstance.GetComponent<PlayerController>().MobileJumpUp();
+    }
+    public void MobileMainDown()
+    {
+        playerCloneInstance.GetComponent<PlayerController>().MobileMainDown();
+    }
+    public void MobileOffDown()
+    {
+        playerCloneInstance.GetComponent<PlayerController>().MobileOffDown();
+    }
+    public void MobileOffUp()
+    {
+        playerCloneInstance.GetComponent<PlayerController>().MobileOffUp();
+    }
+    public void MobileConsDown()
+    {
+        playerCloneInstance.GetComponent<PlayerController>().MobileConsumableDown();
+    }
 }
+
+
 //Serialized class for saved player data
 [Serializable]
 class PlayerData

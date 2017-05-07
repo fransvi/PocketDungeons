@@ -55,8 +55,8 @@ public class ButtonManage : MonoBehaviour
     public void SetGameManager(GameManager g)
     {
         gm = g;
-        buttons[5].onClick.AddListener(gm.ResetSaveData);
-        buttons[6].onClick.AddListener(gm.SaveData);
+        //buttons[5].onClick.AddListener(gm.ResetSaveData);
+        //buttons[6].onClick.AddListener(gm.SaveData);
     }
 
     public void RetryBtn()
@@ -90,7 +90,7 @@ public class ButtonManage : MonoBehaviour
     public void StartGameBtn()
     {
     }
-	
+
     public void ExitGameBtn()
     {
         Application.Quit();

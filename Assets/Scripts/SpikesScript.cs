@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class SpikesScript : MonoBehaviour {
 
-    [SerializeField]
-    private int _spikeDamage;
+    private int _spikeDamage = 4;
 
     void OnTriggerEnter2D(Collider2D other)
     {

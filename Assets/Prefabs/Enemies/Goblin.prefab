@@ -70,7 +70,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1111853025238522}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.16, y: 0.138, z: 0}
+  m_LocalPosition: {x: 0.16, y: 0.093, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4900789196035704}
@@ -96,7 +96,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1327757768738072}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.17, y: -2.64, z: 3.2167969}
+  m_LocalPosition: {x: 66.52027, y: 101.31237, z: 3.2167969}
   m_LocalScale: {x: 5, y: 5, z: 1}
   m_Children:
   - {fileID: 4892978948002472}
@@ -116,8 +116,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDrag: 0.45
+  m_AngularDrag: 0.6
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -194,15 +194,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa84755b1d0a6af478aeff1877ccf51e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 5
+  _health: 3
   _knockbackForce: 200
   _player: {fileID: 1835335137751308, guid: 163ac1c790a95954499d27ae4292daed, type: 2}
+  CharacterAnimator: {fileID: 0}
   _hurtPoint: {fileID: 0}
-  _moveSpeed: 0
-  _meleeDamage: 1
+  _moveSpeed: 3
+  _meleeDamage: 3
   _facingRight: 0
   _deathAnim: {fileID: 1848732492042332, guid: 900fb978598f53949ac624c8b346a80e, type: 2}
   _stunnedAnim: {fileID: 1439164124171716}
+  _skeletonSkullPrefab: {fileID: 1103436994893770, guid: 125228946533eed4bbe95ae232d468e3,
+    type: 2}
+  _hitAnim: {fileID: 1076439102545166, guid: 823a5511bbb856d4eba0ffefcc9bbb24, type: 2}
+  _viewDistance: 5
+  _attackCooldown: 1
+  _attackRange: 0.5
+  _jumpForce: 0
+  _grounded: 0
+  _groundedRadius: 0
+  _whatIsGround:
+    serializedVersion: 2
+    m_Bits: 0
+  enemyType: 0
 --- !u!212 &212744093045880614
 SpriteRenderer:
   m_ObjectHideFlags: 1
