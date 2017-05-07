@@ -207,8 +207,15 @@ MonoBehaviour:
   _skeletonSkullPrefab: {fileID: 1103436994893770, guid: 125228946533eed4bbe95ae232d468e3,
     type: 2}
   _hitAnim: {fileID: 1076439102545166, guid: 823a5511bbb856d4eba0ffefcc9bbb24, type: 2}
+  _viewDistance: 8
   _attackCooldown: 1
   _attackRange: 0.5
+  _jumpForce: 0
+  _grounded: 0
+  _groundedRadius: 0
+  _whatIsGround:
+    serializedVersion: 2
+    m_Bits: 0
   enemyType: 1
 --- !u!212 &212424310294938606
 SpriteRenderer:

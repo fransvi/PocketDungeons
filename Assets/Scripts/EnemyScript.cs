@@ -27,13 +27,18 @@ public class EnemyScript : MonoBehaviour {
     private GameObject _hitAnim;
     private Rigidbody2D _rigidBody;
     private Color _color;
-    private float _viewDistance = 5f;
+    public float _viewDistance;
     private Transform _center;
     private float _minDistance = 0.05f;
     private bool _stunned;
     private bool _attackOnCooldown;
     public float _attackCooldown;
     public float _attackRange;
+    public float _jumpForce;
+    private bool _jumpCooldown;
+    public bool _grounded;
+    public float _groundedRadius;
+    public LayerMask _whatIsGround;
 
     /*
     EnemyTypes
@@ -66,6 +71,18 @@ public class EnemyScript : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
+        _grounded = false;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_center.transform.position, _groundedRadius, _whatIsGround);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].gameObject != gameObject)
+            {
+                //_gravity = Physics2D.gravity;
+                _grounded = true;
+            }
+
+        }
+
         float distance = Vector2.Distance(transform.position, _player.transform.position);
         if (_stunned)
         {
@@ -81,8 +98,25 @@ public class EnemyScript : MonoBehaviour {
         }
         else if (distance < _viewDistance && distance > _minDistance && !_stunned)
         {
+            //Enemy hopping
+            if(enemyType == 3)
+            {
+                if (transform.position.x < _player.transform.position.x && _grounded && !_jumpCooldown)
+                {
+                    StartCoroutine(JumpMovement(1));
+                }
+                else if (transform.position.x > _player.transform.position.x && _grounded && !_jumpCooldown )
+                {
+                    StartCoroutine(JumpMovement(-1));
+                }
 
-            transform.position = Vector2.MoveTowards(transform.position, _player.transform.position, _moveSpeed * Time.deltaTime);
+            }
+            //Normal Movement
+            else if(enemyType != 3)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, _player.transform.position, _moveSpeed * Time.deltaTime);
+            }
+          
         }
         else
         {
@@ -176,16 +210,23 @@ public class EnemyScript : MonoBehaviour {
         _stunnedAnim.SetActive(false);
         _stunned = false;
     }
+    IEnumerator JumpMovement(int multiplier)
+    {
+        _rigidBody.velocity = Vector2.zero;
+        _rigidBody.AddForce(new Vector2(_jumpForce * multiplier, _jumpForce));
+        _jumpCooldown = true;
+        yield return new WaitForSeconds(1.5f);
+        _jumpCooldown = false;
+    }
     private void MeleeAttack()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, _attackRange, LayerMask.GetMask("Default"));
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(_center.transform.position, _attackRange, LayerMask.GetMask("Default"));
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].gameObject != gameObject)
             {
                 if (colliders[i].gameObject.GetComponent<PlayerController>())
                 {
-                    //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
                     colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
                 }
 
