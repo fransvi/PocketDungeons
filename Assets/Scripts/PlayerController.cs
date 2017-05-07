@@ -3,22 +3,25 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
     //Animaattori
     //11
     public Animator CharacterAnimator;
 
     //Audio
     public AudioSource jumpSound;
-	public AudioSource swordSound;
-	public AudioSource landingSound;
-	public AudioSource playerHitSound;
-	public AudioSource playerRunLoop;
+    public AudioSource swordSound;
+    public AudioSource landingSound;
+    public AudioSource playerHitSound;
+    public AudioSource playerRunLoop;
     private float volLowRange = .5f;
     private float volHighRange = 1.0f;
-	bool jumpSoundPlayed=false;
-	bool runLoopPlayed=false;
-
+    bool jumpSoundPlayed = false;
+    bool runLoopPlayed = false;
+    public VirtualJoystick _joystick;
+    private float _horizontalJoystick; private bool _mobileOffDown = false;
+    private float _verticalJoystick;
     public GameObject[] _weaponsList;
 
     [SerializeField]
@@ -132,7 +135,8 @@ public class PlayerController : MonoBehaviour {
         return _gender;
     }
 
-    void Start () {
+    void Start()
+    {
         _layingBomb = false;
         _ableToShootBow = true; _onStairs = false;
         _meleeCheck = transform.Find("MeleeCheck");
@@ -164,12 +168,13 @@ public class PlayerController : MonoBehaviour {
         //Animaattori
         _color = gameObject.GetComponent<Renderer>().material.color;
         CharacterAnimator = GetComponent<Animator>();
-        if(_selectedControls == 0)
+        if (_selectedControls == 0)
         {
             _key1 = KeyCode.Q;
             _key2 = KeyCode.W;
             _key3 = KeyCode.E;
-        }else if(_selectedControls == 1)
+        }
+        else if (_selectedControls == 1)
         {
             _key1 = KeyCode.Z;
             _key2 = KeyCode.X;
@@ -180,12 +185,149 @@ public class PlayerController : MonoBehaviour {
         audio.Play();
         audio.Play(44100);
     }
+    //Commands for mobile controls
 
+    public void MobileJumpDown()
+    {
+        _jump = true;
+    }
+    public void MobileJumpUp()
+    {
+        _jump = false;
+    }
+    public void MobileMainDown()
+    {
+        if (!_attackOnCooldown)
+        {
+            Attack();
+            swordSound.Play();
+        }
+    }
+    public void MobileMainUp()
+    {
+
+    }
+    public void MobileOffDown()
+    {
+
+        _mobileOffDown = true;
+        
+
+    }
+    public void MobileOffUp()
+    {
+   
+        int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+        if (ow == 1)
+        {
+            _drawingBow = false;
+            UseOffWeapon();
+            _bowForce = 0;
+            StartCoroutine(BowRelease());
+
+
+
+
+        }
+        else if (ow == 2)
+        {
+            if (!_offCooldown)
+            {
+                UseOffWeapon();
+                StartCoroutine(BombLayAnim());
+            }
+
+        }
+        else if (ow == 3)
+        {
+            Debug.Log("Blocking false");
+            _blocking = false;
+        }
+        else if (ow == 4)
+        {
+            StartCoroutine(WandAttack());
+            _bowForce = 0;
+        }
+        _mobileOffDown = false;
+    }
+    public void MobileConsumableDown()
+    {
+        UsePotion();
+    }
+    public void OffHold()
+    {
+        int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+        if (ow == 1 && !_offCooldown)
+        {
+            _drawingBow = true;
+            if (_bowForce < 70)
+            {
+                _bowForce += 1;
+            }
+
+        }
+        else if (ow == 2)
+        {
+
+        }
+        else if (ow == 3)
+        {
+            _blocking = true;
+        }
+        else if (ow == 4)
+        {
+            _bowForce = 10;
+        }
+    }
+
+    public void OffRelease()
+    {
+        int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
+        if (ow == 1)
+        {
+            _drawingBow = false;
+            UseOffWeapon();
+            _bowForce = 0;
+            StartCoroutine(BowRelease());
+
+
+
+
+        }
+        else if (ow == 2)
+        {
+            if (!_offCooldown)
+            {
+                UseOffWeapon();
+                StartCoroutine(BombLayAnim());
+            }
+ 
+        }
+        else if (ow == 3)
+        {
+            Debug.Log("Blocking false");
+            _blocking = false;
+        }
+        else if (ow == 4)
+        {
+            StartCoroutine(WandAttack());
+            _bowForce = 0;
+        }
+        _mobileOffDown = false;
+    }
+    public void MobileConsumableUp()
+    {
+
+    }
+    //
+    //
+    //
+    //
     //KB Controls
     void Update()
     {
 
-        if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0)
+        if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0)
         {
             _weaponSwing = _swordSwing;
         }
@@ -193,71 +335,50 @@ public class PlayerController : MonoBehaviour {
         {
             _weaponSwing = _maceSwing;
         }
-      
-
-
-            /*
-            // Nuoli vasempaan
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                CancelInvoke();
-                InvokeRepeating("DecreaseSpeed", 0, 0.05f);
-            }
-            if (Input.GetKeyUp(KeyCode.LeftArrow))
-            {
-                CancelInvoke();
-                InvokeRepeating("StopMove", 0, 0.05f);
-            }
-            // Nuoli oikeaan
-            if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                CancelInvoke();
-                InvokeRepeating("AddSpeed", 0, 0.05f);
-            }
-            if (Input.GetKeyUp(KeyCode.RightArrow))
-            {
-                CancelInvoke();
-                InvokeRepeating("StopMove", 0, 0.05f);
-            }
-            */
-            // Nuoli alas
-            // Go down platforms
-         if(_selectedControls == 0)
+        if (_mobileOffDown)
         {
+            OffHold();
+        }
 
-        }else if(_selectedControls == 1)
+
+        // Go down platforms
+        if (_selectedControls == 0)
         {
 
         }
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                _jump = true;
-                //JumpDown();
-                //Jump-animaatio
+        else if (_selectedControls == 1)
+        {
 
-            }
-            if (Input.GetKeyUp(KeyCode.Space))
-            {
-                _jump = false;
-                //JumpUp();
-            }
-            if (Input.GetKeyDown(_key1))
-            {
-                if (!_attackOnCooldown)
-                {
-                    Attack();
-                    swordSound.Play();
-                }
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            _jump = true;
+            //JumpDown();
+            //Jump-animaatio
 
-            }
-
-            if (Input.GetKeyDown(_key3))
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            _jump = false;
+            //JumpUp();
+        }
+        if (Input.GetKeyDown(_key1))
+        {
+            if (!_attackOnCooldown)
             {
-                UsePotion();
-                //TODO
+                Attack();
+                swordSound.Play();
             }
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        }
+
+        if (Input.GetKeyDown(_key3))
+        {
+            UsePotion();
+            //TODO
+        }
+
+        if (_verticalJoystick > 0.5f)
         {
             PickUpItem();
             OpenObject();
@@ -268,21 +389,21 @@ public class PlayerController : MonoBehaviour {
             if (ow == 1 && !_offCooldown)
             {
                 _drawingBow = true;
-                if(_bowForce < 70)
+                if (_bowForce < 70)
                 {
                     _bowForce += 1;
                 }
 
             }
-            else if(ow == 2)
+            else if (ow == 2)
             {
 
             }
-            else if(ow == 3)
+            else if (ow == 3)
             {
                 _blocking = true;
             }
-            else if(ow == 4)
+            else if (ow == 4)
             {
                 _bowForce = 10;
             }
@@ -293,34 +414,45 @@ public class PlayerController : MonoBehaviour {
             int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
             if (ow == 1)
             {
-                    _drawingBow = false;
-                    UseOffWeapon();
-                    _bowForce = 0;
-                    StartCoroutine(BowRelease());
-                
-
-                
-
-            }
-            else if(ow == 2)
-            {
+                _drawingBow = false;
                 UseOffWeapon();
-                StartCoroutine(BombLayAnim());
+                _bowForce = 0;
+                StartCoroutine(BowRelease());
+
+
+
+
             }
-            else if(ow == 3)
+            else if (ow == 2)
+            {
+                if (!_offCooldown)
+                {
+                    UseOffWeapon();
+                    StartCoroutine(BombLayAnim());
+                }
+
+            }
+            else if (ow == 3)
             {
                 Debug.Log("Blocking false");
                 _blocking = false;
             }
-            else if(ow == 4)
+            else if (ow == 4)
             {
                 StartCoroutine(WandAttack());
                 _bowForce = 0;
             }
-            StartCoroutine(OffWCooldown());
 
         }
-}
+    }
+    private void OffWeaponAttackDown()
+    {
+
+    }
+    private void OffWeaponAttackUp()
+    {
+
+    }
 
     IEnumerator OffWCooldown()
     {
@@ -372,10 +504,11 @@ public class PlayerController : MonoBehaviour {
                 }
                 else
                 {
-                    if(colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 0)
+                    if (colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 0)
                     {
                         colliders[i].gameObject.GetComponent<DoorScript>().SetDoorState(1);
-                    }else if (colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
+                    }
+                    else if (colliders[i].gameObject.GetComponent<DoorScript>().GetDoorState() == 1)
                     {
                         _gameManager.SaveData();
                         _playerManager.GetComponent<PlayerInventory>().setHasKey1(false);
@@ -383,7 +516,7 @@ public class PlayerController : MonoBehaviour {
                     }
 
                 }
-                
+
 
             }
         }
@@ -394,7 +527,7 @@ public class PlayerController : MonoBehaviour {
             if (chests[i].gameObject != gameObject)
             {
 
-                    chests[i].gameObject.GetComponent<ChestScript>().OpenChest();
+                chests[i].gameObject.GetComponent<ChestScript>().OpenChest();
             }
         }
 
@@ -455,6 +588,7 @@ public class PlayerController : MonoBehaviour {
             {
                 go.GetComponent<BombScript>().CreateBomb(false, 5);
             }
+            StartCoroutine(OffWCooldown());
 
         }
 
@@ -484,24 +618,26 @@ public class PlayerController : MonoBehaviour {
     private void PickUpItem()
     {
 
-          /*
-          Item types:
-          0: Consumable
-              0: Health potion
-              1: Large Coin
-              2: Small Coin
-              3: Key1
-          1: Main Weapon
-              0: Sword
-              1: Mace
-              2: SuperSword
-          2: Off Weapon
-              0: None
-              1: Bow
-              2: Bomb
-              3: Shield
-              4: Magic Wand
-        */
+        /*
+        Item types:
+
+        0: Consumable
+            0: Health potion
+            1: Large Coin
+            2: Small Coin
+            3: Key1
+        1: Main Weapon
+            0: Sword
+            1: Mace
+            2: SuperSword
+        2: Off Weapon
+            0: None
+            1: Bow
+            2: Bomb
+            3: Shield
+            4: Magic Wand
+
+      */
 
         int currentOffWep = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
         int currentMainWep = _playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon();
@@ -514,7 +650,7 @@ public class PlayerController : MonoBehaviour {
                 int itemInt = colliders[i].gameObject.GetComponent<ItemScript>().GetItemInt();
                 int itemType = colliders[i].gameObject.GetComponent<ItemScript>().GetItemType();
 
-  
+
                 //Consumable loot
                 if (itemType == 0)
                 {
@@ -538,12 +674,12 @@ public class PlayerController : MonoBehaviour {
                 }
                 else if (itemType == 1)
                 {
-                    DropLastItem( itemType, currentMainWep);
+                    DropLastItem(itemType, currentMainWep);
                     _playerManager.GetComponent<PlayerInventory>().SetCurrentMainWeapon(itemInt);
                 }
-                else if(itemType == 2)
+                else if (itemType == 2)
                 {
-                    if(currentOffWep > 0)
+                    if (currentOffWep > 0)
                     {
                         DropLastItem(itemType, currentOffWep);
                         _playerManager.GetComponent<PlayerInventory>().SetCurrentOffWeapon(itemInt);
@@ -569,16 +705,36 @@ public class PlayerController : MonoBehaviour {
 
     }
 
-    void FixedUpdate () {
+    public void SetJoystick(GameObject js)
+    {
+        _joystick = js.GetComponent<VirtualJoystick>();
+    }
+
+    void FixedUpdate()
+    {
 
         //Ignore platform when jumping on it
-        _horizontalMove = Input.GetAxis("Horizontal");
+        if(_joystick != null)
+        {
+            _horizontalJoystick = _joystick.Horizontal();
+            _verticalJoystick = _joystick.Vertical();
+            _horizontalMove = _horizontalJoystick;
+        }
+        else
+        {
+            _verticalJoystick = Input.GetAxis("Vertical");
+            _horizontalJoystick = Input.GetAxis("Horizontal");
+            _horizontalMove = _horizontalJoystick;
+            
+        }
+
 
         if (transform.GetComponent<Rigidbody2D>().velocity.y > 0)
         {
             Physics2D.IgnoreLayerCollision(0, 9, true);
         }
-        else if(Input.GetAxis("Vertical") == -1)
+
+        else if (_verticalJoystick < -0.5f)
         {
             Physics2D.IgnoreLayerCollision(0, 9, true);
         }
@@ -597,6 +753,7 @@ public class PlayerController : MonoBehaviour {
             angle = Mathf.Abs(Mathf.Atan2(hits[1].normal.x, hits[1].normal.y) * Mathf.Rad2Deg); //get angle
             if (angle > 30)
             {
+
                 _maxSpeed = tempSpeed / 2;
             }
             else
@@ -604,6 +761,7 @@ public class PlayerController : MonoBehaviour {
                 _maxSpeed = tempSpeed;
             }
         }
+
         */
         //old gravity code
         //_rigidBody.AddForce(_gravity * _rigidBody.mass);
@@ -618,7 +776,7 @@ public class PlayerController : MonoBehaviour {
                 //_gravity = Physics2D.gravity;
                 _grounded = true;
             }
- 
+
         }
         Collider2D[] stairs = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, _whatIsStairs);
         for (int i = 0; i < stairs.Length; i++)
@@ -627,11 +785,11 @@ public class PlayerController : MonoBehaviour {
             {
                 _onStairs = true;
                 _grounded = true;
-                
+
             }
 
         }
-        Collider2D[] pressurePads = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f,  1<<LayerMask.NameToLayer("PressurePad"));
+        Collider2D[] pressurePads = Physics2D.OverlapCircleAll(_groundCheck.position, 0.2f, 1 << LayerMask.NameToLayer("PressurePad"));
         for (int i = 0; i < pressurePads.Length; i++)
         {
             if (pressurePads[i].gameObject != gameObject)
@@ -660,16 +818,16 @@ public class PlayerController : MonoBehaviour {
             {
                 _onLadder = true;
             }
-            
+
 
         }
-        if(ladders.Length < 1)
+        if (ladders.Length < 1)
         {
             _onLadder = false;
         }
 
         //Freeze movement on stairs when velocity == 0
-        if(_grounded && _horizontalMove == 0 && !_jump && !_isJumping && _onStairs)
+        if (_grounded && _horizontalMove == 0 && !_jump && !_isJumping && _onStairs)
         {
             _rigidBody.isKinematic = true;
             _rigidBody.velocity = Vector2.zero;
@@ -682,20 +840,20 @@ public class PlayerController : MonoBehaviour {
         if (_onLadder)
         {
 
-            Physics2D.gravity = Vector2.zero;
+            _rigidBody.gravityScale = 0f;
             _rigidBody.velocity = new Vector2(0, 0);
-            if (Input.GetAxis("Vertical") > 0)
+            if (_verticalJoystick > 0)
             {
                 transform.Translate(0, 3 * Time.deltaTime, 0);
             }
-            else if (Input.GetAxis("Vertical") < 0)
+            else if (_verticalJoystick < 0)
             {
                 transform.Translate(0, -3 * Time.deltaTime, 0);
             }
         }
         else
         {
-            Physics2D.gravity = _gravity;
+            _rigidBody.gravityScale = 1.5f;
 
         }
 
@@ -712,17 +870,18 @@ public class PlayerController : MonoBehaviour {
         {
             CharacterAnimator.Play("Die");
         }
-        else if(_dying && _gender == 1)
+        else if (_dying && _gender == 1)
         {
             CharacterAnimator.Play("FDie");
         }
-  
+
 
         else if (_blocking && _gender == 0)
         {
             _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
             CharacterAnimator.Play("ShieldBlock");
-        }else if(_blocking && _gender == 1)
+        }
+        else if (_blocking && _gender == 1)
         {
             _rigidBody.velocity = new Vector2(0, _rigidBody.velocity.y);
             CharacterAnimator.Play("FShieldBlock");
@@ -736,21 +895,24 @@ public class PlayerController : MonoBehaviour {
                 if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0 && _gender == 0)
                 {
                     CharacterAnimator.Play("AttackSword");
-                }else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0 && _gender == 1)
+                }
+                else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 0 && _gender == 1)
                 {
                     CharacterAnimator.Play("FAttackSword");
                 }
-                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1 && _gender == 0)
+                else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1 && _gender == 0)
                 {
                     CharacterAnimator.Play("AttackMace");
-                }else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1 && _gender == 1)
+                }
+                else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1 && _gender == 1)
                 {
                     CharacterAnimator.Play("FAttackMace");
                 }
-                else if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2 && _gender == 0)
+                else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2 && _gender == 0)
                 {
                     CharacterAnimator.Play("AttackSuperSword");
-                }else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2 && _gender == 1)
+                }
+                else if (_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 2 && _gender == 1)
                 {
                     CharacterAnimator.Play("FAttackSuperSword");
                 }
@@ -759,7 +921,8 @@ public class PlayerController : MonoBehaviour {
             else if (_usingWand && _gender == 0)
             {
                 CharacterAnimator.Play("AttackWand");
-            }else if(_usingWand && _gender == 1)
+            }
+            else if (_usingWand && _gender == 1)
             {
                 CharacterAnimator.Play("FAttackMagicWand");
             }
@@ -768,50 +931,56 @@ public class PlayerController : MonoBehaviour {
             else if (_drawingBow && _ableToShootBow && _gender == 0)
             {
                 CharacterAnimator.Play("BowDraw");
-            }else if(_drawingBow && _ableToShootBow && _gender == 1)
+            }
+            else if (_drawingBow && _ableToShootBow && _gender == 1)
             {
                 CharacterAnimator.Play("FDrawBow");
             }
             else if (_releasingBow && _gender == 0)
             {
                 CharacterAnimator.Play("BowRelease");
-            }else if(_releasingBow && _gender == 1)
+            }
+            else if (_releasingBow && _gender == 1)
             {
                 CharacterAnimator.Play("FReleaseBow");
             }
             else if (_layingBomb && _gender == 0)
             {
                 CharacterAnimator.Play("AttackDefault");
-            }else if(_layingBomb && _gender == 1)
+            }
+            else if (_layingBomb && _gender == 1)
             {
                 CharacterAnimator.Play("FAttackDefault");
             }
             else if (_invulnurable && _gender == 0)
             {
                 CharacterAnimator.Play("Damage");
-            }else if(_invulnurable && _gender == 1)
+            }
+            else if (_invulnurable && _gender == 1)
             {
                 CharacterAnimator.Play("FHurt");
             }
             else if (_onLadder && _gender == 0)
             {
                 CharacterAnimator.Play("Climb");
-            }else if(_onLadder && _gender == 1)
+            }
+            else if (_onLadder && _gender == 1)
             {
-                //TODO MUUTA FEMALE ANIMS
-                CharacterAnimator.Play("Climb");
+                CharacterAnimator.Play("FClimb");
             }
             else if (_grounded && move != 0 && _gender == 0)
             {
                 //CharacterAnimator.SetBool("Walk", true);
                 //CharacterAnimator.Play("Walk");
                 CharacterAnimator.Play("Walk");
-                if (!runLoopPlayed) {
-					runLoopPlayed = true;
-					playerRunLoop.loop = true;
-					playerRunLoop.Play ();
-				}
-            }else if(_grounded && move != 0 &&_gender == 1)
+                if (!runLoopPlayed)
+                {
+                    runLoopPlayed = true;
+                    playerRunLoop.loop = true;
+                    playerRunLoop.Play();
+                }
+            }
+            else if (_grounded && move != 0 && _gender == 1)
             {
                 CharacterAnimator.Play("FRun");
                 if (!runLoopPlayed)
@@ -823,15 +992,17 @@ public class PlayerController : MonoBehaviour {
             }
             else if (_isJumping && _gender == 0)
             {
-				if (!jumpSoundPlayed) {
-					jumpSound.Play ();
-					jumpSoundPlayed = true;
-				}
-				CharacterAnimator.Play("Jump");
-				if (runLoopPlayed) {
-					playerRunLoop.loop = false;
-					runLoopPlayed = false;
-				}
+                if (!jumpSoundPlayed)
+                {
+                    jumpSound.Play();
+                    jumpSoundPlayed = true;
+                }
+                CharacterAnimator.Play("Jump");
+                if (runLoopPlayed)
+                {
+                    playerRunLoop.loop = false;
+                    runLoopPlayed = false;
+                }
             }
             else if (_isJumping && _gender == 1)
             {
@@ -849,14 +1020,16 @@ public class PlayerController : MonoBehaviour {
             }
             else if (!_grounded && !_isJumping && _gender == 0)
             {
-				CharacterAnimator.Play("Fall");
-				if (jumpSoundPlayed) {
-					jumpSoundPlayed = false;
-				}
-				if (runLoopPlayed) {
-					playerRunLoop.loop = false;
-					runLoopPlayed = false;
-				}
+                CharacterAnimator.Play("Fall");
+                if (jumpSoundPlayed)
+                {
+                    jumpSoundPlayed = false;
+                }
+                if (runLoopPlayed)
+                {
+                    playerRunLoop.loop = false;
+                    runLoopPlayed = false;
+                }
             }
             else if (!_grounded && !_isJumping && _gender == 1)
             {
@@ -874,7 +1047,7 @@ public class PlayerController : MonoBehaviour {
 
             else
             {
-                if(_gender == 0)
+                if (_gender == 0)
                 {
                     CharacterAnimator.Play("Idle");
                 }
@@ -883,10 +1056,11 @@ public class PlayerController : MonoBehaviour {
                     CharacterAnimator.Play("FIdle");
                 }
 
-				if (runLoopPlayed) {
-					playerRunLoop.loop = false;
-					runLoopPlayed = false;
-				}
+                if (runLoopPlayed)
+                {
+                    playerRunLoop.loop = false;
+                    runLoopPlayed = false;
+                }
                 //CharacterAnimator.SetBool("Walk", false);
             }
 
@@ -902,7 +1076,7 @@ public class PlayerController : MonoBehaviour {
             {
                 Flip();
             }
-   
+
             if (_grounded && _jump && !_jumpOnCooldown && !_invulnurable)
             {
                 _grounded = false;
@@ -964,7 +1138,7 @@ public class PlayerController : MonoBehaviour {
             playerHitSound.Play(); // AUDIO
 
         }
-        else if(_health - damage <= 0)
+        else if (_health - damage <= 0)
         {
             _health = 0;
             Die();
@@ -982,6 +1156,8 @@ public class PlayerController : MonoBehaviour {
     private void Die()
     {
         StartCoroutine(DeathAnimation());
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
     }
 
     IEnumerator PotionEffect(float ft)
@@ -1011,8 +1187,8 @@ public class PlayerController : MonoBehaviour {
             rend.material.color = _color;
             yield return new WaitForSeconds(0.1f);
         }
-  
-     
+
+
     }
 
     public void SetSelectedControls(int i)
@@ -1052,6 +1228,16 @@ public class PlayerController : MonoBehaviour {
         float weaponSpeed = currWeapon.GetComponent<WeaponStats>()._weaponSpeed;
         float weaponCooldown = currWeapon.GetComponent<WeaponStats>()._weaponCooldown;
         StartCoroutine(AttackAnim(weaponCooldown));
+        //Mace can break walls
+        Collider2D[] walls = Physics2D.OverlapCircleAll(_meleeCheck.position, weaponRadius, LayerMask.GetMask("Breakable"));
+        for(int i = 0; i < walls.Length; i++)
+        {
+            if(walls[i].gameObject != gameObject)
+            {
+                walls[i].gameObject.GetComponent<BreakableWall>().BreakWall();
+            }
+        }
+
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, weaponRadius, _enemyLayerMask);
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -1094,9 +1280,9 @@ public class PlayerController : MonoBehaviour {
     //Funktiot touch screen liikkumiselle
     public void AddSpeed()
     {
-        if(_horizontalMove <= 1f)
+        if (_horizontalMove <= 1f)
         {
-            if(_horizontalMove + 0.15f > 1f)
+            if (_horizontalMove + 0.15f > 1f)
             {
                 _horizontalMove = 1f;
             }
@@ -1109,9 +1295,9 @@ public class PlayerController : MonoBehaviour {
     }
     public void DecreaseSpeed()
     {
-        if(_horizontalMove >= -1f)
+        if (_horizontalMove >= -1f)
         {
-            if(_horizontalMove - 0.15f < -1f)
+            if (_horizontalMove - 0.15f < -1f)
             {
                 _horizontalMove = -1f;
             }
@@ -1127,10 +1313,11 @@ public class PlayerController : MonoBehaviour {
         if (_horizontalMove > 0f)
         {
             {
-                if(_horizontalMove - 0.10f < 0f)
+                if (_horizontalMove - 0.10f < 0f)
                 {
                     _horizontalMove = 0f;
-                }else if(_horizontalMove > 0f)
+                }
+                else if (_horizontalMove > 0f)
                 {
                     _horizontalMove -= 0.10f;
                 }
