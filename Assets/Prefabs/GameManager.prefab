@@ -85,10 +85,14 @@ MonoBehaviour:
   inventory: {fileID: 0}
   player: {fileID: 1835335137751308, guid: 163ac1c790a95954499d27ae4292daed, type: 2}
   ui: {fileID: 1979836522737938, guid: 60d5c26c8016f364f974c6a0a362e7d1, type: 2}
+  mobileControls: {fileID: 0}
+  pcControls: {fileID: 0}
   menu: {fileID: 0}
   playerSpawnPoint: {fileID: 0}
   ccmenu: {fileID: 0}
   gameOverScreen: {fileID: 0}
+  playerCloneInstance: {fileID: 0}
+  MOBILEVERSION: 0
   selectedControls: 0
   playerHealth: 0
   playerMainWeapon: 0

@@ -205,7 +205,7 @@ public class GameManager : MonoBehaviour {
     public void LoadLevel1_2(bool firstLoad)
     {
         if(File.Exists(Application.persistentDataPath + "/playerInfo.dat") && firstLoad){
-            StartCoroutine(ChangeLevel(1));
+            StartCoroutine(ChangeLevel(2));
         }
         else
         {

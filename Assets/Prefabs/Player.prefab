@@ -258,7 +258,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1835335137751308}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.1, y: -3.18, z: -7.74}
+  m_LocalPosition: {x: -979.7547, y: -534.1592, z: -7.74}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4609208707155618}
@@ -316,6 +316,7 @@ CapsuleCollider2D:
   m_Material: {fileID: 6200000, guid: ed1396f4cacb05a4490f96e3d9267cd9, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
+  m_UsedByComposite: 0
   m_Offset: {x: 0.05, y: 0.21}
   m_Size: {x: 0.5, y: 1}
   m_Direction: 0
@@ -772,6 +773,7 @@ MonoBehaviour:
   landingSound: {fileID: 82634711100093032}
   playerHitSound: {fileID: 82702295507433556}
   playerRunLoop: {fileID: 82933713374388420}
+  _joystick: {fileID: 0}
   _weaponsList:
   - {fileID: 1785521294696198, guid: a8f54e58207ac8540a7d8482ffa20c2a, type: 2}
   - {fileID: 1785521294696198, guid: 78186b2cde6489c4b9289ca21cfa7111, type: 2}
@@ -822,6 +824,7 @@ MonoBehaviour:
     type: 2}
   _itemPrefab: {fileID: 1634300509365320, guid: c3a0e1668075282419dc605dad6891b2,
     type: 2}
+  _bowGlint: {fileID: 1379076354474418, guid: fbc72e2c74e402c409a80ce3cbbaed44, type: 2}
   _slopeFriction: 0.01
   _shootPoint: {fileID: 1190143442600180}
   _bowCoolDown: 0.25
@@ -855,11 +858,16 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 059fcf32c860c6449b536a6caf1a556b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
 --- !u!212 &212287521609565554
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -890,11 +898,16 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 91e7fed5fb08b2f418cfc3bfb27f7ac0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
 --- !u!212 &212620535818843912
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -925,11 +938,16 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
 --- !u!212 &212790943648873160
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -960,8 +978,13 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 059fcf32c860c6449b536a6caf1a556b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0

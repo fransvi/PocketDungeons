@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     bool runLoopPlayed = false;
     public VirtualJoystick _joystick;
     private float _horizontalJoystick; private bool _mobileOffDown = false;
-    private float _verticalJoystick;
+    private float _verticalJoystick; private bool _bowFullyCharged;
     public GameObject[] _weaponsList;
 
     [SerializeField]
@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
     private float _horizontalMove = 0;
     private bool _jump = false;
     private Transform _groundCheck;
-    private Transform _meleeCheck;
+    private Transform _meleeCheck; public GameObject _bowGlint;
     private Transform _headCheck;
     private int _gender;
     private GameObject _playerManager;
@@ -138,7 +138,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         _layingBomb = false;
-        _ableToShootBow = true; _onStairs = false;
+        _ableToShootBow = true; _onStairs = false; _bowFullyCharged = false;
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
         _ladderCheck = transform.Find("LadderCheck");
@@ -221,6 +221,7 @@ public class PlayerController : MonoBehaviour
         if (ow == 1)
         {
             _drawingBow = false;
+            _bowFullyCharged = false;
             UseOffWeapon();
             _bowForce = 0;
             StartCoroutine(BowRelease());
@@ -264,6 +265,16 @@ public class PlayerController : MonoBehaviour
             {
                 _bowForce += 1;
             }
+            else if (_bowForce > 50)
+            {
+                if (!_bowFullyCharged)
+                {
+                    StartCoroutine(BowGlintAnim());
+                    _bowFullyCharged = true;
+                }
+
+            }
+
 
         }
         else if (ow == 2)
@@ -318,6 +329,13 @@ public class PlayerController : MonoBehaviour
     public void MobileConsumableUp()
     {
 
+    }
+    IEnumerator BowGlintAnim()
+    {
+        Vector3 newPos = new Vector3(_shootPoint.transform.position.x+0.1f, _shootPoint.transform.position.y-0.1f, _shootPoint.transform.position.z - 5);
+        GameObject glint = Instantiate(_bowGlint, newPos, _shootPoint.transform.rotation);
+        Destroy(glint, 0.25f);
+        yield return new WaitForSeconds(0.25f);
     }
     //
     //
@@ -388,10 +406,20 @@ public class PlayerController : MonoBehaviour
             int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
             if (ow == 1 && !_offCooldown)
             {
+                Debug.Log("???" + _bowForce);
                 _drawingBow = true;
                 if (_bowForce < 70)
                 {
                     _bowForce += 1;
+                }
+                else if (_bowForce > 50)
+                {
+                    if (!_bowFullyCharged)
+                    {
+                        StartCoroutine(BowGlintAnim());
+                        _bowFullyCharged = true;
+                    }
+
                 }
 
             }
@@ -415,6 +443,7 @@ public class PlayerController : MonoBehaviour
             if (ow == 1)
             {
                 _drawingBow = false;
+                _bowFullyCharged = false;
                 UseOffWeapon();
                 _bowForce = 0;
                 StartCoroutine(BowRelease());
