@@ -9,7 +9,9 @@ public class Goblin_King : MonoBehaviour {
 
 	public int _meleeDamage;
 	public float _health;
-	public GameObject _deathAnim,ball,chain1,chain2,chain3,hand;
+	public GameObject _deathAnim,ball,chain1,chain2,chain3,hand,healthBarGO;
+	public Sprite[] healthbar;
+	public Animator animator;
 
 	// Use this for initialization
 	void Start () {
@@ -18,7 +20,9 @@ public class Goblin_King : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+		if (healthBarGO.GetComponent <SpriteRenderer>().sprite != healthbar [((int)_health)]){
+			healthBarGO.GetComponent <SpriteRenderer>().sprite = healthbar [((int)_health)];
+		}
 		chain2.transform.position = (hand.transform.position + ball.transform.position) / 2;
 		chain1.transform.position = (hand.transform.position + chain2.transform.position) / 2;
 		chain3.transform.position = (chain2.transform.position + ball.transform.position) / 2;
@@ -36,7 +40,7 @@ public class Goblin_King : MonoBehaviour {
 				if (colliders[i].gameObject.GetComponent<PlayerController>())
 				{
                     //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
-                    //colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
+                    colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
                 }
             }
 		}
@@ -64,7 +68,8 @@ public class Goblin_King : MonoBehaviour {
 
 	public void TakeDamage(float damage)
 	{
-		StartCoroutine(HurtAnim());
+		//StartCoroutine(HurtAnim());
+		animator.SetTrigger("Hurt");
 		_health -= damage;
 	}
 }
