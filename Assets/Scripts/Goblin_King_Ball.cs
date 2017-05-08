@@ -22,7 +22,7 @@ public class Goblin_King_Ball : MonoBehaviour {
 				if (colliders[i].gameObject.GetComponent<PlayerController>())
 				{
                     //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
-                    //colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
+                    colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
                 }
 
             }
