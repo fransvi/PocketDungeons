@@ -7,18 +7,23 @@ public class Goblin_King : MonoBehaviour {
 
 	Collider2D[] colliders;
 	Color _color;
+	Renderer renderer;
 
 	public int _meleeDamage;
 	public float _health;
 	public GameObject _deathAnim,ball,chain1,chain2,chain3,hand/*,healthBarGO*/;
 	public Image healthBarImg;
 	public Sprite[] healthbar;
+	public bool deathStarted;
+
 	public Animator animator;
 
 	// Use this for initialization
 	void Start () {
 		_color = gameObject.GetComponent<Renderer>().material.color;
 		Physics2D.IgnoreLayerCollision (10, 0, true);
+		deathStarted = false;
+		renderer = GetComponent<Renderer> ();
 	}
 	
 	// Update is called once per frame
@@ -32,37 +37,78 @@ public class Goblin_King : MonoBehaviour {
 			healthBarImg.sprite = healthbar [((int)_health)];
 		}
 
-		chain2.transform.position = (hand.transform.position + ball.transform.position) / 2;
-		chain1.transform.position = (hand.transform.position + chain2.transform.position) / 2;
-		chain3.transform.position = (chain2.transform.position + ball.transform.position) / 2;
+		if (!deathStarted) {
+			chain2.transform.position = (hand.transform.position + ball.transform.position) / 2;
+			chain1.transform.position = (hand.transform.position + chain2.transform.position) / 2;
+			chain3.transform.position = (chain2.transform.position + ball.transform.position) / 2;
 
-		if (_health <= 0)
-		{
-			Die();
+			colliders = Physics2D.OverlapCircleAll (transform.position, 1f, LayerMask.GetMask ("Default"));
+			for (int i = 0; i < colliders.Length; i++) {
+				if (colliders [i].gameObject != gameObject) {
+					if (colliders [i].gameObject.GetComponent<PlayerController> ()) {
+						//KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
+						colliders [i].gameObject.GetComponent<PlayerController> ().Hurt (_meleeDamage);
+					}
+				}
+			}
 		}
 
-		colliders = Physics2D.OverlapCircleAll(transform.position, 1f, LayerMask.GetMask("Default"));
-		for (int i = 0; i < colliders.Length; i++)
+		if (_health <= 0 && !deathStarted)
 		{
-			if (colliders[i].gameObject != gameObject)
-			{
-				if (colliders[i].gameObject.GetComponent<PlayerController>())
-				{
-                    //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
-                    colliders[i].gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
-                }
-            }
+			StartCoroutine(Poof (ball.transform.position));
+			Destroy (ball);
+
+			StartCoroutine(Poof (chain1.transform.position));
+			Destroy (chain1);
+
+			StartCoroutine(Poof (chain2.transform.position));
+			Destroy (chain2);
+
+			StartCoroutine(Poof (chain3.transform.position));
+			Destroy (chain3);
+
+			StartCoroutine(Die());
+			//StartCoroutine(Ajastin());
+			deathStarted = true;
 		}
 	}
 
-
-	private void Die()
+	IEnumerator Die()
 	{
-		GameObject poof = Instantiate(_deathAnim, transform.position, transform.rotation);
+		
+		for (int i = 0; i < 30; i++) {
+			StartCoroutine (Poof (new Vector3(Random.Range(renderer.bounds.min.x,renderer.bounds.max.x),Random.Range(renderer.bounds.min.y,renderer.bounds.max.y),transform.position.z)));
+			yield return new WaitForSeconds (0.1f);
+			
+		}
+		yield return new WaitForSeconds (0.5f);
+		//Debug.Log ("nyt pitäis olla 3.5");
 		Destroy(gameObject);
-		Destroy(poof, 0.5f);
+	}
+	/*
+	IEnumerator Ajastin()
+	{
+		Debug.Log ("0");
+		yield return new WaitForSeconds (1f);
+		Debug.Log ("1");
+		yield return new WaitForSeconds (1f);
+		Debug.Log ("2");
+		yield return new WaitForSeconds (1f);
+		Debug.Log ("3");
+		yield return new WaitForSeconds (0.5f);
+		Debug.Log ("3.5");
+		yield return new WaitForSeconds (0.5f);
+		Debug.Log ("4");
+		yield return new WaitForSeconds (1f);
+	}
+	*/
+	IEnumerator Poof(Vector3 pos){
+		GameObject poof = Instantiate(_deathAnim, pos, Quaternion.identity);
+		yield return new WaitForSeconds (0.5f);
+		Destroy(poof);
 	}
 
+	/*
 	IEnumerator HurtAnim()
 	{
 		Renderer rend = gameObject.GetComponent<Renderer>();
@@ -74,6 +120,7 @@ public class Goblin_King : MonoBehaviour {
 			yield return new WaitForSeconds(0.1f);
 		}
 	}
+	*/
 
 	public void TakeDamage(float damage)
 	{
