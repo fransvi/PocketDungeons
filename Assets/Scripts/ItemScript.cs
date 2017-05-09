@@ -54,6 +54,8 @@ public class ItemScript : MonoBehaviour {
         CheckType();
         if(_itemType == 0 && _itemInt == 1 || _itemInt == 2)
         {
+            BoxCollider2D collider = GetComponent<BoxCollider2D>();
+            collider.size = collider.size / 3;
             _isCoin = true;
         }
 

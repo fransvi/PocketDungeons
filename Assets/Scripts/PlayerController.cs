@@ -368,7 +368,8 @@ public class PlayerController : MonoBehaviour
             {
                 if (items[i].gameObject.GetComponent<ItemScript>().GetIsCoin())
                 {
-                    PickUpItem();
+                    StartCoroutine(AutomatedCoinPickup());
+
                 }
    
             }
@@ -499,7 +500,12 @@ public class PlayerController : MonoBehaviour
     {
 
     }
+    IEnumerator AutomatedCoinPickup()
+    {
+        yield return new WaitForSeconds(2f);
+        PickUpItem();
 
+    }
     IEnumerator OffWCooldown()
     {
         _offCooldown = true;
