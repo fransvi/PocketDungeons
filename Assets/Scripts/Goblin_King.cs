@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Goblin_King : MonoBehaviour {
 
@@ -9,20 +10,28 @@ public class Goblin_King : MonoBehaviour {
 
 	public int _meleeDamage;
 	public float _health;
-	public GameObject _deathAnim,ball,chain1,chain2,chain3,hand,healthBarGO;
+	public GameObject _deathAnim,ball,chain1,chain2,chain3,hand/*,healthBarGO*/;
+	public Image healthBarImg;
 	public Sprite[] healthbar;
 	public Animator animator;
 
 	// Use this for initialization
 	void Start () {
 		_color = gameObject.GetComponent<Renderer>().material.color;
+		Physics2D.IgnoreLayerCollision (10, 0, true);
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		/*
 		if (healthBarGO.GetComponent <SpriteRenderer>().sprite != healthbar [((int)_health)]){
 			healthBarGO.GetComponent <SpriteRenderer>().sprite = healthbar [((int)_health)];
 		}
+		*/
+		if (healthBarImg.sprite != healthbar [((int)_health)]){
+			healthBarImg.sprite = healthbar [((int)_health)];
+		}
+
 		chain2.transform.position = (hand.transform.position + ball.transform.position) / 2;
 		chain1.transform.position = (hand.transform.position + chain2.transform.position) / 2;
 		chain3.transform.position = (chain2.transform.position + ball.transform.position) / 2;

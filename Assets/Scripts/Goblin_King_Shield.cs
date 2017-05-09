@@ -6,20 +6,21 @@ public class Goblin_King_Shield : MonoBehaviour {
 
 	Bounds playerBounds;
 	Animator animator;
+	GameObject player;
 
 	public int _meleeDamage;
-	public Renderer player;
-	public GameObject playerGO;
 
 	// Use this for initialization
 	void Start () {
 		animator = GetComponent<Animator>();
 		//StartCoroutine (Shield ());
+		player=GameObject.Find("Player(Clone)");
 	}
 
 	// Update is called once per frame
 	void Update () {
-		if (playerGO.transform.position.y > transform.position.y) {
+
+		if (player.transform.position.y > transform.position.y) {
 			if (!animator.GetBool ("ShieldHigh")) {
 				animator.SetBool ("ShieldHigh", true);
 			}
@@ -29,21 +30,24 @@ public class Goblin_King_Shield : MonoBehaviour {
 			}
 		}
 
-		//Debug.Log ("Shield: " +gameObject.GetComponent<Renderer> ().bounds);
-		//Debug.Log ("Player: " +player.bounds);
 		playerBounds=new Bounds(player.transform.position, new Vector3(1,1,0));
+
+		/*
+		 Debug.Log ("Intersects: "+gameObject.GetComponent<Renderer> ().bounds.Intersects (playerBounds)
+			+" -- Shield: " +gameObject.GetComponent<Renderer> ().bounds+" -- Player: " +playerBounds);
+		*/
+		
 		if (gameObject.GetComponent<Renderer> ().bounds.Intersects (playerBounds)) {
-			if (player.gameObject.GetComponent<PlayerController>())
+			if (player.GetComponent<PlayerController>())
 			{
-                //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
-                player.gameObject.GetComponent<PlayerController>().Hurt(_meleeDamage);
+                player.GetComponent<PlayerController>().Hurt(_meleeDamage);
             }
         }
 	}
 	/*
 	IEnumerator Shield(){
 		while (true) { 
-			if (playerGO.transform.position.y > transform.position.y) {
+			if (player.transform.position.y > transform.position.y) {
 				if (!animator.GetBool ("ShieldHigh")) {
 					animator.SetBool ("ShieldHigh", true);
 					yield return new WaitForSeconds (1);
