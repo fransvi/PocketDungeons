@@ -37,22 +37,25 @@ public class ItemScript : MonoBehaviour {
     GameObject[] _offWeapons;
     [SerializeField]
     private int _itemType;
-    [SerializeField]
-    private int _itemInt;
+    [SerializeField] 
+    private int _itemInt; 
     private bool _isCoin;
-
+    private Vector3 _moveDir1 = Vector3.up;
+    private Vector3 _moveDir2 = Vector3.down;
+    public GameObject _pickUpArrow;
     private GameObject _playerController;
     GameObject _activeItem;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         _isCoin = false;
+        _pickUpArrow.gameObject.SetActive(false);
         _playerController = GameObject.Find("Player");
         Physics2D.IgnoreLayerCollision(16, 16, true);
         Physics2D.IgnoreLayerCollision(16, 0, true);
         CheckSprite();
         CheckType();
-        if(_itemType == 0 && _itemInt == 1 || _itemInt == 2)
+        if(_itemType == 0 && (_itemInt == 1 || _itemInt == 2))
         {
             BoxCollider2D collider = GetComponent<BoxCollider2D>();
             collider.size = collider.size / 3;
@@ -82,6 +85,18 @@ public class ItemScript : MonoBehaviour {
     public void Die()
     {
         Destroy(gameObject);
+    }
+
+    public void SetPickupArrowActive(bool b)
+    {
+        StartCoroutine(PickupArrow());
+    }
+
+    IEnumerator PickupArrow()
+    {
+        _pickUpArrow.gameObject.SetActive(true);
+        yield return new WaitForSeconds(5f);
+        _pickUpArrow.gameObject.SetActive(false);
     }
 
     public void SetItemInt(int i)
@@ -206,3 +221,4 @@ public class ItemScript : MonoBehaviour {
         }
     }
 }
+

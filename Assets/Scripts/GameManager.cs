@@ -75,12 +75,14 @@ public class GameManager : MonoBehaviour {
             pcControls.SetActive(false);
             ui.GetComponent<HudManager>().SetMobileControls(true);
             mobileControls = ui.GetComponentInChildren<MobileControlsScript>().gameObject;
+            playerClone.GetComponent<PlayerController>().SetMobileVersion(true);
             playerClone.GetComponent<PlayerController>().SetJoystick(mobileControls.GetComponent<MobileControlsScript>().joystick.GetComponent<VirtualJoystick>().gameObject);
 
         }
         else
         {
             ui.GetComponent<HudManager>().SetMobileControls(false);
+            playerClone.GetComponent<PlayerController>().SetMobileVersion(false);
             mobileControls.SetActive(false);
             pcControls.SetActive(true);
         }

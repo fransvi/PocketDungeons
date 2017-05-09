@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     bool jumpSoundPlayed = false;
     bool runLoopPlayed = false;
     public VirtualJoystick _joystick;
-    private float _horizontalJoystick; private bool _mobileOffDown = false;
+    private float _horizontalJoystick; private bool _mobileOffDown = false; private bool _mobileVersion;
     private float _verticalJoystick; private bool _bowFullyCharged;
     public GameObject[] _weaponsList;
 
@@ -73,6 +73,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private GameObject _potionEffectSprite;
 
+    private bool _itemPickupCooldown;
     [SerializeField]
     private GameObject _itemPrefab;
 
@@ -139,7 +140,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        _layingBomb = false;
+        _layingBomb = false; _itemPickupCooldown = false;
         _ableToShootBow = true; _onStairs = false; _bowFullyCharged = false;
         _meleeCheck = transform.Find("MeleeCheck");
         _groundCheck = transform.Find("GroundCheck");
@@ -339,11 +340,11 @@ public class PlayerController : MonoBehaviour
         Destroy(glint, 0.25f);
         yield return new WaitForSeconds(0.25f);
     }
-    //
-    //
-    //
-    //
-    //KB Controls
+
+    public void SetMobileVersion(bool boo)
+    {
+        _mobileVersion = boo;
+    }
     void Update()
     {
 
@@ -361,17 +362,24 @@ public class PlayerController : MonoBehaviour
         }
 
         //Gold automated pickup
+
         Collider2D[] items = Physics2D.OverlapCircleAll(_groundCheck.position, 0.5f, _whatIsItem);
+
         for (int i = 0; i < items.Length; i++)
         {
             if (items[i].gameObject != gameObject)
             {
+                float distance = Vector2.Distance(items[i].transform.position, transform.position);
                 if (items[i].gameObject.GetComponent<ItemScript>().GetIsCoin())
                 {
                     StartCoroutine(AutomatedCoinPickup());
 
+                }else if (!items[i].gameObject.GetComponent<ItemScript>().GetIsCoin())
+                {
+                    items[i].GetComponent<ItemScript>().SetPickupArrowActive(true);
                 }
-   
+
+
             }
         }
 
@@ -413,18 +421,34 @@ public class PlayerController : MonoBehaviour
             UsePotion();
             //TODO
         }
-
-        if (_verticalJoystick > 0.5f)
+        if (_mobileVersion)
         {
-            PickUpItem();
-            OpenObject();
+            if (_verticalJoystick > 0.5f)
+            {
+                if (!_itemPickupCooldown)
+                {
+                    StartCoroutine(ItemPickupCooldown());
+                    PickUpItem();
+                    OpenObject();
+                }
+
+            }
         }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                StartCoroutine(ItemPickupCooldown());
+                PickUpItem();
+                OpenObject();
+            }
+        }
+
         if (Input.GetKey(_key2))
         {
             int ow = _playerManager.GetComponent<PlayerInventory>().GetCurrentOffWeapon();
             if (ow == 1 && !_offCooldown)
             {
-                Debug.Log("???" + _bowForce);
                 _drawingBow = true;
                 if (_bowForce < 70)
                 {
@@ -502,7 +526,7 @@ public class PlayerController : MonoBehaviour
     }
     IEnumerator AutomatedCoinPickup()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         PickUpItem();
 
     }
@@ -1218,6 +1242,12 @@ public class PlayerController : MonoBehaviour
         Destroy(explosion, 1f);
         yield return new WaitForSeconds(ft);
 
+    }
+    IEnumerator ItemPickupCooldown()
+    {
+        _itemPickupCooldown = true;
+        yield return new WaitForSeconds(1f);
+        _itemPickupCooldown = false;
     }
 
     IEnumerator InvulnTimer()
