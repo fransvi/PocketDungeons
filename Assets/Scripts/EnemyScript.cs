@@ -5,10 +5,10 @@ public class EnemyScript : MonoBehaviour {
     [SerializeField]
     private float _health;
     [SerializeField]
-    private float _knockbackForce;
+    private float _knockbackForce; private bool _takingDamage;
     [SerializeField]
     private GameObject _player;
-    public Animator CharacterAnimator;
+    public Animator _animator;
     [SerializeField]
     private GameObject _hurtPoint;
     [SerializeField]
@@ -34,11 +34,12 @@ public class EnemyScript : MonoBehaviour {
     private bool _attackOnCooldown;
     public float _attackCooldown;
     public float _attackRange;
-    public float _jumpForce;
+    public float _jumpForce; private bool _moving;
     private bool _jumpCooldown;
     public bool _grounded;
     public float _groundedRadius;
     public LayerMask _whatIsGround;
+    private bool _idle;
 
     /*
     EnemyTypes
@@ -53,6 +54,9 @@ public class EnemyScript : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
+        _moving = false;
+        _animator = GetComponent<Animator>();
+        _idle = true; _takingDamage = false;
         _stunned = false;
         _rigidBody = GetComponent<Rigidbody2D>();
         Physics2D.IgnoreCollision(_player.GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
@@ -61,9 +65,10 @@ public class EnemyScript : MonoBehaviour {
         Physics2D.IgnoreLayerCollision(10, 0, true);
         _player = GameObject.FindWithTag("Player");
         _center = transform.Find("CenterPoint");
-        CharacterAnimator = GetComponent<Animator>();
+
         if (enemyType == 1)
         {
+            //Physics2D.IgnoreLayerCollision(10, 9, true);
             GetComponent<Rigidbody2D>().gravityScale = 0f;
         }
     }
@@ -71,6 +76,26 @@ public class EnemyScript : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
+
+        if (enemyType == 0 && !_takingDamage && !_moving)
+        {
+            _animator.Play("GoblinMove");
+        }
+        else if(enemyType == 1 && !_takingDamage && !_moving)
+        {
+            _animator.Play("BatIdle");
+        }else if(enemyType == 1 && !_takingDamage && _moving)
+        {
+            _animator.Play("BatMove");
+        }
+        else if (enemyType == 2 && !_takingDamage && !_moving)
+        {
+            _animator.Play("SkeletonMove");
+        }
+        else if(enemyType == 3 && !_takingDamage)
+        {
+            _animator.Play("SkullIdle");
+        }
         _grounded = false;
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_center.transform.position, _groundedRadius, _whatIsGround);
         for (int i = 0; i < colliders.Length; i++)
@@ -98,8 +123,18 @@ public class EnemyScript : MonoBehaviour {
         }
         else if (distance < _viewDistance && distance > _minDistance && !_stunned)
         {
+            _moving = true;
+
+
+            if (enemyType == 0 && !_takingDamage)
+            {
+                _animator.Play("GoblinMoveFast");
+            }else if(enemyType == 2 && !_takingDamage)
+            {
+                _animator.Play("SkeletonMoveFast");
+            }
             //Enemy hopping
-            if(enemyType == 3)
+            if (enemyType == 3)
             {
                 if (transform.position.x < _player.transform.position.x && _grounded && !_jumpCooldown)
                 {
@@ -114,6 +149,7 @@ public class EnemyScript : MonoBehaviour {
             //Normal Movement
             else if(enemyType != 3)
             {
+    
                 transform.position = Vector2.MoveTowards(transform.position, _player.transform.position, _moveSpeed * Time.deltaTime);
             }
           
@@ -126,13 +162,13 @@ public class EnemyScript : MonoBehaviour {
         {
             Die();
         }
-        if (_rigidBody.velocity.y > 0 && !_facingRight)
+        if (transform.position.x < _player.transform.position.x && !_facingRight)
         {
-            //Flip();
+            Flip();
         }
-        else if (_rigidBody.velocity.y< 0 && _facingRight)
+        else if (transform.position.x > _player.transform.position.x && _facingRight)
         {
-            //Flip();
+            Flip();
         }
 
 
@@ -147,10 +183,26 @@ public class EnemyScript : MonoBehaviour {
     //Placeholder for hurt anim
     IEnumerator HurtAnim()
     {
+        _takingDamage = true;
         Renderer rend = gameObject.GetComponent<Renderer>();
         Vector3 newPos = new Vector3(_center.position.x, _center.position.y, _center.position.z - 5);
         GameObject hitEffect = Instantiate(_hitAnim, newPos, _center.rotation);
         Destroy(hitEffect, 0.25f);
+        if(enemyType == 0)
+        {
+            _animator.Play("GoblinHit");
+        }else if(enemyType == 1)
+        {
+            _animator.Play("BatHit");
+        }else if(enemyType == 2)
+        {
+            _animator.Play("SkeletonHit");
+        }else if(enemyType == 3)
+        {
+            _animator.Play("SkullHit");
+        }
+        yield return new WaitForSeconds(0.25f);
+        /*
         for (int i = 0; i < 2; i++)
         {
             rend.material.color = new Color(1f, 1f, 1f, 0f);
@@ -160,6 +212,8 @@ public class EnemyScript : MonoBehaviour {
             rend.material.color = _color;
             yield return new WaitForSeconds(0.1f);
         }
+        */
+        _takingDamage = false;
     }
 
     private void Flip()

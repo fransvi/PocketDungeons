@@ -39,6 +39,7 @@ public class BulletScript : MonoBehaviour {
 
         if (!_dartTrapProjectile)
         {
+            GetComponent<SpriteRenderer>().sprite = _projectileSprites[2];
             Physics2D.IgnoreLayerCollision(18, 0, true);
         }
         else
@@ -74,11 +75,17 @@ public class BulletScript : MonoBehaviour {
         }
         else if(_bulletType == 1)
         {
-            Physics2D.gravity = Vector2.zero;
             GetComponent<Rigidbody2D>().AddForce(transform.forward * 30, ForceMode2D.Impulse);
         }
+        if(_bulletType == 1)
+        {
+            Destroy(gameObject, 8f);
+        }
+        else
+        {
+            Destroy(gameObject, 3f);
+        }
 
-        Destroy(gameObject, 3f);
 
     }
 
@@ -89,12 +96,13 @@ public class BulletScript : MonoBehaviour {
         _ignoreGroundCollider = false;
     }
 
-    public void createBullet(bool fr, float bf, int type, bool dart)
+    public void createBullet(bool fr, float bf, int type, bool dart, int bd)
     {
         _facingRight = fr;
         _speed = bf;
         _bulletType = type;
         _dartTrapProjectile = dart;
+        _bulletDamage = bd;
         if(_speed < 10)
         {
             _speed = 10;
@@ -105,9 +113,12 @@ public class BulletScript : MonoBehaviour {
     {
         if (other.gameObject.tag == "Player" && _dartTrapProjectile)
         {
-            //KOMMENTOITU ULOS, RIKKOO KOODIN. 3.5.2017/TONI
             other.gameObject.GetComponent<PlayerController>().Hurt(1);
-            Destroy(gameObject);
+            if(_bulletType != 1)
+            {
+                Destroy(gameObject);
+            }
+
         }
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {

@@ -139,6 +139,7 @@ MonoBehaviour:
   _projectileSprites:
   - {fileID: 21300000, guid: 09a3d052189126c4ea31c907c0bcc381, type: 3}
   - {fileID: 21300000, guid: 81b9da7c762e9c144b7453d6ce821a72, type: 3}
+  - {fileID: 21300000, guid: de1bbcaf336d84945ae9a744b2126985, type: 3}
   _animator: {fileID: 0}
 --- !u!212 &212250738782659120
 SpriteRenderer:

@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     public AudioSource landingSound;
     public AudioSource playerHitSound;
     public AudioSource playerRunLoop;
+    public int _bowDamage = 1;
+    public int _wandDamage = 1;
     private float volLowRange = .5f;
     private float volHighRange = 1.0f;
     bool jumpSoundPlayed = false;
@@ -358,6 +360,22 @@ public class PlayerController : MonoBehaviour
             OffHold();
         }
 
+        //Gold automated pickup
+        Collider2D[] items = Physics2D.OverlapCircleAll(_groundCheck.position, 0.5f, _whatIsItem);
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i].gameObject != gameObject)
+            {
+                if (items[i].gameObject.GetComponent<ItemScript>().GetIsCoin())
+                {
+                    StartCoroutine(AutomatedCoinPickup());
+
+                }
+   
+            }
+        }
+
+
 
         // Go down platforms
         if (_selectedControls == 0)
@@ -482,7 +500,12 @@ public class PlayerController : MonoBehaviour
     {
 
     }
+    IEnumerator AutomatedCoinPickup()
+    {
+        yield return new WaitForSeconds(2f);
+        PickUpItem();
 
+    }
     IEnumerator OffWCooldown()
     {
         _offCooldown = true;
@@ -596,11 +619,11 @@ public class PlayerController : MonoBehaviour
             GameObject go = Instantiate(_bullet, _meleeCheck.position, _meleeCheck.rotation);
             if (_facingRight)
             {
-                go.GetComponent<BulletScript>().createBullet(true, _bowForce, 0, false);
+                go.GetComponent<BulletScript>().createBullet(true, _bowForce, 0, false, _bowDamage);
             }
             else
             {
-                go.GetComponent<BulletScript>().createBullet(false, _bowForce, 0, false);
+                go.GetComponent<BulletScript>().createBullet(false, _bowForce, 0, false, _bowDamage);
             }
             StartCoroutine(BowCooldown());
             Destroy(go, 3.0f);
@@ -631,11 +654,11 @@ public class PlayerController : MonoBehaviour
             GameObject go = Instantiate(_bullet, _shootPoint.transform.position, _shootPoint.transform.rotation);
             if (_facingRight)
             {
-                go.GetComponent<BulletScript>().createBullet(true, 10, 1, false);
+                go.GetComponent<BulletScript>().createBullet(true, 10, 1, false, _wandDamage);
             }
             else
             {
-                go.GetComponent<BulletScript>().createBullet(false, 10, 1, false);
+                go.GetComponent<BulletScript>().createBullet(false, 10, 1, false, _wandDamage);
             }
 
             Destroy(go, 6.0f);
@@ -1258,14 +1281,18 @@ public class PlayerController : MonoBehaviour
         float weaponCooldown = currWeapon.GetComponent<WeaponStats>()._weaponCooldown;
         StartCoroutine(AttackAnim(weaponCooldown));
         //Mace can break walls
-        Collider2D[] walls = Physics2D.OverlapCircleAll(_meleeCheck.position, weaponRadius, LayerMask.GetMask("Breakable"));
-        for(int i = 0; i < walls.Length; i++)
+        if(_playerManager.GetComponent<PlayerInventory>().GetCurrentMainWeapon() == 1)
         {
-            if(walls[i].gameObject != gameObject)
+            Collider2D[] walls = Physics2D.OverlapCircleAll(_meleeCheck.position, weaponRadius, LayerMask.GetMask("Breakable"));
+            for (int i = 0; i < walls.Length; i++)
             {
-                walls[i].gameObject.GetComponent<BreakableWall>().BreakWall();
+                if (walls[i].gameObject != gameObject)
+                {
+                    walls[i].gameObject.GetComponent<BreakableWall>().BreakWall();
+                }
             }
         }
+
 
         Collider2D[] colliders = Physics2D.OverlapCircleAll(_meleeCheck.position, weaponRadius, _enemyLayerMask);
         for (int i = 0; i < colliders.Length; i++)

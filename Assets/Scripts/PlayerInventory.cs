@@ -58,6 +58,7 @@ public class PlayerInventory : MonoBehaviour {
         _playerController = plr;
     }
 
+
     void Awake()
     {
         DontDestroyOnLoad(transform.gameObject);
