@@ -61,10 +61,6 @@ public class EnemyScript : MonoBehaviour {
         _rigidBody = GetComponent<Rigidbody2D>();
         Physics2D.IgnoreCollision(_player.GetComponent<CapsuleCollider2D>(), GetComponent<BoxCollider2D>());
         _color = gameObject.GetComponent<Renderer>().material.color;
-        if(enemyType == 1)
-        {
-            Physics2D.IgnoreLayerCollision(10, 9, true);
-        }
         Physics2D.IgnoreLayerCollision(10, 16, true);
         Physics2D.IgnoreLayerCollision(10, 0, true);
         _player = GameObject.FindWithTag("Player");
@@ -72,6 +68,7 @@ public class EnemyScript : MonoBehaviour {
 
         if (enemyType == 1)
         {
+            //Physics2D.IgnoreLayerCollision(10, 9, true);
             GetComponent<Rigidbody2D>().gravityScale = 0f;
         }
     }
@@ -80,7 +77,7 @@ public class EnemyScript : MonoBehaviour {
     void Update() {
 
 
-        if (enemyType == 0 && !_takingDamage)
+        if (enemyType == 0 && !_takingDamage && !_moving)
         {
             _animator.Play("GoblinMove");
         }
@@ -91,7 +88,7 @@ public class EnemyScript : MonoBehaviour {
         {
             _animator.Play("BatMove");
         }
-        else if (enemyType == 2 && !_takingDamage)
+        else if (enemyType == 2 && !_takingDamage && !_moving)
         {
             _animator.Play("SkeletonMove");
         }
@@ -127,8 +124,17 @@ public class EnemyScript : MonoBehaviour {
         else if (distance < _viewDistance && distance > _minDistance && !_stunned)
         {
             _moving = true;
+
+
+            if (enemyType == 0 && !_takingDamage)
+            {
+                _animator.Play("GoblinMoveFast");
+            }else if(enemyType == 2 && !_takingDamage)
+            {
+                _animator.Play("SkeletonMoveFast");
+            }
             //Enemy hopping
-            if(enemyType == 3)
+            if (enemyType == 3)
             {
                 if (transform.position.x < _player.transform.position.x && _grounded && !_jumpCooldown)
                 {

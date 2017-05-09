@@ -39,25 +39,33 @@ public class ItemScript : MonoBehaviour {
     private int _itemType;
     [SerializeField]
     private int _itemInt;
-
+    private bool _isCoin;
 
     private GameObject _playerController;
     GameObject _activeItem;
 
 	// Use this for initialization
 	void Start () {
-
+        _isCoin = false;
         _playerController = GameObject.Find("Player");
         Physics2D.IgnoreLayerCollision(16, 16, true);
         Physics2D.IgnoreLayerCollision(16, 0, true);
         CheckSprite();
         CheckType();
+        if(_itemType == 0 && _itemInt == 1 || _itemInt == 2)
+        {
+            _isCoin = true;
+        }
 
 	}
 
     public int GetItemInt()
     {
         return _itemInt;
+    }
+    public bool GetIsCoin()
+    {
+        return _isCoin;
     }
 
 
