@@ -66,10 +66,23 @@ public class EnemyScript : MonoBehaviour {
         _player = GameObject.FindWithTag("Player");
         _center = transform.Find("CenterPoint");
 
-        if (enemyType == 1)
+
+        if(enemyType == 0)
         {
-            //Physics2D.IgnoreLayerCollision(10, 9, true);
+            Physics2D.IgnoreLayerCollision(10, 9, false);
+        }
+        else if (enemyType == 1)
+        {
+            Physics2D.IgnoreLayerCollision(10, 9, true);
             GetComponent<Rigidbody2D>().gravityScale = 0f;
+        }
+        else if(enemyType == 2)
+        {
+            Physics2D.IgnoreLayerCollision(10, 9, false);
+        }
+        else if(enemyType == 3)
+        {
+            Physics2D.IgnoreLayerCollision(10, 9, false);          
         }
     }
 

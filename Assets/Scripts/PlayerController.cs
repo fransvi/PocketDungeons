@@ -810,7 +810,7 @@ public class PlayerController : MonoBehaviour
             Physics2D.IgnoreLayerCollision(0, 9, true);
         }
 
-        else if (_verticalJoystick < -0.5f)
+        else if (_verticalJoystick < -0.90f)
         {
             Physics2D.IgnoreLayerCollision(0, 9, true);
         }
