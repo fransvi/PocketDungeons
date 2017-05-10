@@ -16,6 +16,9 @@ EditorBuildSettings:
     guid: cd516f036bf6a8043950309efc55a608
   - enabled: 1
     path: Assets/Scenes/GameMenu.unity
+    guid: c19ebc2af0e2b794c803393df1172897
+  - enabled: 0
+    path: Assets/Scenes/GameMenuOLD.unity
     guid: 7cc93dce27e2e0d488ce3d803675ac98
   - enabled: 0
     path: Assets/Scenes/Poistetaanko/GameMenuTestailua.unity
