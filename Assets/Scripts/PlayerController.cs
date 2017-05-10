@@ -726,7 +726,6 @@ public class PlayerController : MonoBehaviour
                 int itemInt = colliders[i].gameObject.GetComponent<ItemScript>().GetItemInt();
                 int itemType = colliders[i].gameObject.GetComponent<ItemScript>().GetItemType();
 
-
                 //Consumable loot
                 if (itemType == 0)
                 {
@@ -741,6 +740,7 @@ public class PlayerController : MonoBehaviour
                     else if (itemInt == 2)
                     {
                         _playerManager.GetComponent<PlayerInventory>().gainGold(1f);
+
                     }
                     else if (itemInt == 3)
                     {
@@ -767,9 +767,13 @@ public class PlayerController : MonoBehaviour
 
                 }
 
+				for (int j=0;j<colliders[i].transform.childCount; j++){
+					if(colliders[i].transform.GetChild(j).gameObject.activeSelf==true){
+						colliders [i].transform.GetChild (j).GetComponent<AudioSource> ().PlayOneShot (colliders [i].transform.GetChild (j).GetComponent<AudioSource> ().clip);
+					}
+				}
                 colliders[i].gameObject.GetComponent<ItemScript>().Die();
             }
-
         }
     }
 
