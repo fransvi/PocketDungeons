@@ -11,11 +11,10 @@ public class Goblin_King : MonoBehaviour {
 
 	public int _meleeDamage;
 	public float _health;
-	public GameObject _deathAnim,ball,chain1,chain2,chain3,hand/*,healthBarGO*/;
+	public GameObject _deathAnim,ball,chain1,chain2,chain3,hand,shield,dead/*,healthBarGO*/;
 	public Image healthBarImg;
 	public Sprite[] healthbar;
 	public bool deathStarted;
-
 	public Animator animator;
 
 	// Use this for initialization
@@ -55,6 +54,21 @@ public class Goblin_King : MonoBehaviour {
 
 		if (_health <= 0 && !deathStarted)
 		{
+
+			Vector3 kingPos = transform.position;
+
+			gameObject.GetComponent<Animator> ().enabled = false;
+
+			transform.position = kingPos;
+
+			dead.SetActive (true);
+
+			gameObject.GetComponent<Renderer>().enabled=false;
+			gameObject.GetComponent<BoxCollider2D> ().enabled = false;
+
+			Destroy (hand);
+			Destroy (shield);
+
 			StartCoroutine(Poof (ball.transform.position));
 			Destroy (ball);
 
@@ -126,6 +140,8 @@ public class Goblin_King : MonoBehaviour {
 	{
 		//StartCoroutine(HurtAnim());
 		animator.SetTrigger("Hurt");
+		shield.GetComponent<Animator> ().SetTrigger ("Hurt");
+		//hand.GetComponent<Animator> ().SetTrigger ("Hurt");
 		_health -= damage;
 	}
 }
