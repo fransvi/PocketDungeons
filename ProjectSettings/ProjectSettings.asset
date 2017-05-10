@@ -11,7 +11,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: AwRoo
-  productName: PocketDungeons
+  productName: TreasuresOfGrindaPC
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13333334, g: 0.17254902, b: 0.21176471, a: 1}
@@ -226,7 +226,8 @@ PlayerSettings:
     height: 180
     banner: {fileID: 0}
   androidGamepadSupportLevel: 0
-  resolutionDialogBanner: {fileID: 0}
+  resolutionDialogBanner: {fileID: 2800000, guid: c2dbdbc7f25a0fe479d8a50592312547,
+    type: 3}
   m_BuildTargetIcons:
   - m_BuildTarget: Android
     m_Icons:
@@ -254,6 +255,12 @@ PlayerSettings:
       m_Icon: {fileID: 0}
       m_Width: 36
       m_Height: 36
+  - m_BuildTarget: 
+    m_Icons:
+    - serializedVersion: 2
+      m_Icon: {fileID: 2800000, guid: 716276201d7c57045a43868627fcfc9f, type: 3}
+      m_Width: 128
+      m_Height: 128
   m_BuildTargetBatching: []
   m_BuildTargetGraphicsAPIs: []
   m_BuildTargetVRSettings: []
