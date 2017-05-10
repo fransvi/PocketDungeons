@@ -18,10 +18,10 @@ EditorBuildSettings:
     path: Assets/Scenes/GameMenu.unity
     guid: 7cc93dce27e2e0d488ce3d803675ac98
   - enabled: 0
-    path: Assets/Scenes/GameMenuTestailua.unity
+    path: Assets/Scenes/Poistetaanko/GameMenuTestailua.unity
     guid: 381e701cea809e146b12d37445a81c86
   - enabled: 0
-    path: Assets/Scenes/GameMenuOld.unity
+    path: Assets/Scenes/Poistetaanko/GameMenuOld.unity
     guid: f47de2f3cad66b747a31310cd7324a01
   - enabled: 1
     path: Assets/Scenes/level01.unity
@@ -36,5 +36,5 @@ EditorBuildSettings:
     path: Assets/Scenes/level04.unity
     guid: 6f8334e7ef479724584e12db525b75e8
   - enabled: 0
-    path: Assets/Scenes/sandbox.unity
+    path: Assets/Scenes/Poistetaanko/sandbox.unity
     guid: 61085725d0cd8124cb3d0c4516b0afd3

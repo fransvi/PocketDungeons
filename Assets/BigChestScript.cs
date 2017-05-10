@@ -25,24 +25,47 @@ public class BigChestScript : MonoBehaviour {
 
     private int _chestState;
 
+    private bool _chestFalling; private bool _chestOpen;
     private Animator _animator;
 
+    
 
+    void Start()
+    {
+        _chestFalling = false; _chestOpen = false;
+        _animator = GetComponent<Animator>();
+    }
     void Update()
     {
-        if (_chestState == 0)
+        if (!_chestFalling && !_chestOpen)
         {
-            GetComponent<SpriteRenderer>().sprite = _chestStates[0];
+            _animator.Play("BigChestIdle");
         }
-        else if (_chestState == 1)
+        else if(_chestFalling && !_chestOpen)
         {
-            GetComponent<SpriteRenderer>().sprite = _chestStates[1];
+            _animator.Play("BigChestFall");
+        }else if (_chestOpen)
+        {
+            _animator.Play("BigChestOpen");
         }
 
     }
 
+    public void PlayFallAnimation()
+    {
+        _animator.Play("BigChestFall");
+    }
+
+    IEnumerator ChestFalling()
+    {
+        _chestFalling = true;
+        yield return new WaitForSeconds(3f);
+        _chestFalling = false;
+    }
+
     public void OpenChest()
     {
+        _chestOpen = true;
         if (_chestState == 0)
         {
             for (int i = 0; i < _chestContainsAmount; i++)

@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public AudioSource landingSound;
     public AudioSource playerHitSound;
     public AudioSource playerRunLoop;
-    public int _bowDamage = 1;
+    public int _bowDamage = 1;  public LayerMask _whatIsBigChest;
     public int _wandDamage = 1;
     private float volLowRange = .5f;
     private float volHighRange = 1.0f;
@@ -604,6 +604,16 @@ public class PlayerController : MonoBehaviour
             {
 
                 chests[i].gameObject.GetComponent<ChestScript>().OpenChest();
+            }
+        }
+
+        Collider2D[] chestss = Physics2D.OverlapCircleAll(_groundCheck.position, 0.50f, _whatIsBigChest);
+        for (int i = 0; i < chestss.Length; i++)
+        {
+            if (chestss[i].gameObject != gameObject)
+            {
+
+                chestss[i].gameObject.GetComponent<BigChestScript>().OpenChest();
             }
         }
 

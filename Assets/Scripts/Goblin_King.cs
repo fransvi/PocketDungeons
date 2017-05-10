@@ -16,6 +16,7 @@ public class Goblin_King : MonoBehaviour {
 	public Sprite[] healthbar;
 	public bool deathStarted;
 	public Animator animator;
+    public GameObject _bigChest;
 
 	// Use this for initialization
 	void Start () {
