@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public AudioSource landingSound;
     public AudioSource playerHitSound;
     public AudioSource playerRunLoop;
-    public int _bowDamage = 1;  public LayerMask _whatIsBigChest;
+    public int _bowDamage = 1;  
     public int _wandDamage = 1;
     private float volLowRange = .5f;
     private float volHighRange = 1.0f;
@@ -56,6 +56,8 @@ public class PlayerController : MonoBehaviour
     private LayerMask _whatIsStairs;
     [SerializeField]
     private LayerMask _whatIsLever;
+    [SerializeField]
+    private LayerMask _whatIsBigChest;
     [SerializeField]
     private float _meleeRadius;
     [SerializeField]
@@ -602,14 +604,15 @@ public class PlayerController : MonoBehaviour
         {
             if (chests[i].gameObject != gameObject)
             {
-
+                Debug.Log("pieni chest");
                 chests[i].gameObject.GetComponent<ChestScript>().OpenChest();
             }
         }
 
-        Collider2D[] chestss = Physics2D.OverlapCircleAll(_groundCheck.position, 0.50f, _whatIsBigChest);
+        Collider2D[] chestss = Physics2D.OverlapCircleAll(_groundCheck.position, 1f, _whatIsBigChest);
         for (int i = 0; i < chestss.Length; i++)
         {
+            Debug.Log("Chesti löytyy");
             if (chestss[i].gameObject != gameObject)
             {
 

@@ -773,6 +773,8 @@ MonoBehaviour:
   landingSound: {fileID: 82634711100093032}
   playerHitSound: {fileID: 82702295507433556}
   playerRunLoop: {fileID: 82933713374388420}
+  _bowDamage: 1
+  _wandDamage: 1
   _joystick: {fileID: 0}
   _weaponsList:
   - {fileID: 1785521294696198, guid: a8f54e58207ac8540a7d8482ffa20c2a, type: 2}
@@ -813,6 +815,9 @@ MonoBehaviour:
   _whatIsLever:
     serializedVersion: 2
     m_Bits: 2097152
+  _whatIsBigChest:
+    serializedVersion: 2
+    m_Bits: 134217728
   _meleeRadius: 0.75
   _meleeDamage: 1
   _maxHealth: 20
