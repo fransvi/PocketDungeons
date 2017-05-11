@@ -24,6 +24,7 @@ public class BigChestScript : MonoBehaviour {
     private int _chestContainsAmount;
 
     private int _chestState;
+    private bool _isBigChest = true;
 
     private bool _chestFalling; private bool _chestOpen;
     private Animator _animator;
@@ -53,7 +54,7 @@ public class BigChestScript : MonoBehaviour {
 
     public void PlayFallAnimation()
     {
-        _animator.Play("BigChestFall");
+        StartCoroutine(ChestFalling());
     }
 
     IEnumerator ChestFalling()
@@ -62,10 +63,35 @@ public class BigChestScript : MonoBehaviour {
         yield return new WaitForSeconds(3f);
         _chestFalling = false;
     }
+    IEnumerator BigChestGoldSpray()
+    {
 
+        yield return new WaitForSeconds(10f);
+        CancelInvoke("BigChestGoldSprayRepeat");
+        yield return new WaitForSeconds(15f);
+        Application.LoadLevel("GameMenu");
+    }
+
+
+    private void BigChestGoldSprayRepeat()
+    {
+        Vector3 newPos = new Vector3(_openPoint.position.x, _openPoint.position.y, _openPoint.position.z - 2);
+        GameObject go = Instantiate(_chestContainsItem, newPos, transform.rotation);
+        go.GetComponent<ItemScript>().SetItemInt(_chestContainsInt);
+        go.GetComponent<ItemScript>().SetItemType(_chestContainsType);
+        float itemForcey = Random.Range(150, 300);
+        float itemForcex = Random.Range(-60, 60);
+        go.GetComponent<Rigidbody2D>().AddForce(new Vector2(itemForcex, itemForcey));
+    }
     public void OpenChest()
     {
+        gameObject.SetActive(true);
+        Debug.Log("Opening big chest");
         _chestOpen = true;
+        if (_isBigChest)
+        {
+            _chestState = 0;
+        }
         if (_chestState == 0)
         {
             for (int i = 0; i < _chestContainsAmount; i++)
@@ -77,13 +103,10 @@ public class BigChestScript : MonoBehaviour {
                 _openPoint.eulerAngles = euler;
                 */
 
-                GameObject go = Instantiate(_chestContainsItem, newPos, transform.rotation);
-                go.GetComponent<ItemScript>().SetItemInt(_chestContainsInt);
-                go.GetComponent<ItemScript>().SetItemType(_chestContainsType);
-                float itemForcey = Random.Range(150, 300);
-                float itemForcex = Random.Range(-60, 60);
-                go.GetComponent<Rigidbody2D>().AddForce(new Vector2(itemForcex, itemForcey));
+               
             }
+            InvokeRepeating("BigChestGoldSprayRepeat", 0f, 0.05f);
+            StartCoroutine(BigChestGoldSpray());
             _chestState = 1;
         }
 

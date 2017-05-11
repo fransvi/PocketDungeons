@@ -97,7 +97,10 @@ public class Goblin_King : MonoBehaviour {
 			
 		}
 		yield return new WaitForSeconds (0.5f);
-		//Debug.Log ("nyt pitäis olla 3.5");
+        //Debug.Log ("nyt pitäis olla 3.5");
+        GameObject endChest = Instantiate(_bigChest, transform.position, transform.rotation);
+        endChest.gameObject.SetActive(true);
+        endChest.GetComponent<BigChestScript>().PlayFallAnimation();
 		Destroy(gameObject);
 	}
 	/*
